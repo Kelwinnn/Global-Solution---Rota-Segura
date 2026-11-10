@@ -1,0 +1,11 @@
+# O contexto do build e domain-driven-design-java/ (veja backend/Dockerfile)
+**/.env
+**/.env.*
+**/target/
+**/node_modules/
+**/dist/
+**/.idea/
+**/*.iml
+**/.vscode/
+**/.git
+docs/

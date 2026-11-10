@@ -1,0 +1,18 @@
+# Segredos
+.env
+.env.*
+!.env.example
+
+# Build
+target/
+
+# IDEs
+.idea/
+*.iml
+.vscode/
+.classpath
+.project
+.settings/
+
+# Sistema
+.DS_Store

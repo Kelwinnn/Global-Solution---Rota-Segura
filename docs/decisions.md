@@ -43,6 +43,10 @@ Regra: o Claude Code segue o que está em **Decidido** e **pergunta antes** de q
 | 09/11 | Níveis de risco (RF04/RN01) | 5 níveis pelo nível d'água em cm, iguais para todos os sensores: baixo 0 a 1; médio 1,1 a 2,9; alto 3 a 5; muito alto 5,1 a 10; muito urgente acima de 10. Os níveis dizem o quão urgente é ir para um abrigo ou procurar um local mais alto |
 | 09/11 | Quando gera alerta (RF05/RN07) | A partir do nível médio. Enquanto o alerta durar, o morador recebe a atualização do nível a cada 15 min; a pergunta do check-in se repete só para quem ainda não está seguro. Quem respondeu "Estou seguro" recebe só as atualizações |
 | 09/11 | Probabilidade de alagamento | O serviço Python informa a alta probabilidade de alagamento antes de acontecer (alerta antecipado). É um sinal separado dos níveis em cm, que medem a urgência |
+| 10/11 | Variáveis do Oracle | `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`, lidas no `application.properties` com `${...}`. Porta da API em `PORT` (padrão 8080) |
+| 10/11 | Criação das tabelas | `spring.jpa.hibernate.ddl-auto=validate`: as tabelas vêm do `ddl.sql` de `database-design/` e o Hibernate só confere se as entidades batem com elas |
+| 10/11 | Build do Docker | `Dockerfile` em `domain-driven-design-java/backend/`, com contexto de build em `domain-driven-design-java/` (raiz do serviço no Render), para depois entrar um estágio Node que compila o front |
+| 10/11 | Coordenadas Maven | `groupId` `br.com.rotasegura`, `artifactId` `rota-segura-api`; Maven Wrapper (`./mvnw`) no projeto; springdoc 2.7.0 |
 
 ### Estrutura do monorepo
 
@@ -89,4 +93,5 @@ Fluxo: `controller → bo → dao → repository`. Nenhuma camada pula a seguint
 - [ ] **Deploy do serviço Python** e variáveis de ambiente de cada serviço. Aguardando o João Paulo.
 - [ ] **Front: pacote do Google Maps** (ex.: `@vis.gl/react-google-maps`) e conta/chave da API. RF14 passou a ser a tela inicial: confirmar se sobe para Must.
 - [ ] **Probabilidade de alagamento:** a partir de qual valor é "alta", e o que o alerta antecipado diz ao morador. Depende do João Paulo.
+- [ ] **Onde a entidade vira DTO:** com `open-in-view=false`, relacionamentos `LAZY` só carregam dentro da transação. Decidir na primeira entidade com relacionamento (Sensor → Área) se a conversão fica no BO (`@Transactional`) ou se o DAO já busca o relacionamento junto (ex.: `JOIN FETCH`).
 - [ ] **Número da equipe** para a faixa 192.168.X.0/24 de Network. Kelwin informa em 10/11.
