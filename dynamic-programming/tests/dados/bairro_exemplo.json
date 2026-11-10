@@ -1,0 +1,8 @@
+{
+  "esquinas": [1, 2, 3, 4],
+  "trechos": [
+    {"origem": 1, "destino": 2, "distancia_m": 100, "fator_risco": 0.0},
+    {"origem": 2, "destino": 3, "distancia_m": 150, "fator_risco": 0.5},
+    {"origem": 3, "destino": 4, "distancia_m": 80,  "fator_risco": 0.0}
+  ]
+}

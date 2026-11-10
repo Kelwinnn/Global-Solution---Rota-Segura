@@ -1,0 +1,6 @@
+{
+  "trechos_alagados": [[2, 3]],
+  "abrigos": [
+    {"esquina": 4, "capacidade": 50, "ocupacao": 10}
+  ]
+}
