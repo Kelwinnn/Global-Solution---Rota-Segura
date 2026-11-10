@@ -68,8 +68,8 @@ Nunca edite `data-science/`, `dynamic-programming/` (inclui o serviço Python), 
 | RF01 | CRUD de áreas de risco |
 | RF02 | Cadastrar sensores e vincular cada um a uma área |
 | RF03 | Registrar leituras do sensor (chuva em mm, nível d'água em cm, data e hora) |
-| RF04 | Calcular o nível de risco da área (baixo, médio, alto) |
-| RF05 | Gerar alerta para a área quando o risco for alto |
+| RF04 | Calcular o nível de risco da área (baixo, médio, alto, muito alto, muito urgente) |
+| RF05 | Gerar alerta para a área a partir do risco médio, atualizando o morador a cada 15 min e repetindo o check-in para quem ainda não está seguro |
 | RF06 | Cadastrar abrigos com endereço e capacidade |
 | RF07 | Calcular a rota mais segura até o abrigo (via serviço Python) |
 | RF08 | Cadastrar pessoa assistida com seu responsável |
@@ -80,13 +80,13 @@ Should (só se sobrar tempo): RF10 painel de prioridade de resgate, RF11 avisar 
 
 ## Regras de negócio
 
-- **RN01:** risco alto quando o nível d'água passa do limite cadastrado do sensor ou quando o modelo indica alta probabilidade de alagamento. Os limites exatos a equipe define.
+- **RN01:** o nível de risco sai do nível d'água em cm, igual para todos os sensores: baixo 0 a 1; médio 1,1 a 2,9; alto 3 a 5; muito alto 5,1 a 10; muito urgente acima de 10. O nível mede a urgência de ir para um abrigo ou local mais alto. Separado dele, o serviço Python informa a probabilidade de alagamento, que avisa antes de acontecer; o limite de "alta probabilidade" ainda está em aberto em `docs/decisions.md`.
 - **RN02:** só um alerta ativo por área; ele encerra quando o risco volta a baixo.
 - **RN03:** todo assistido tem ao menos um responsável e uma área vinculada.
 - **RN04:** assistido sem resposta em até 15 min após o alerta entra no painel como prioridade de resgate.
 - **RN05:** a rota nunca passa por rua alagada; sem rota segura, orienta ficar em local alto e aciona o painel.
 - **RN06:** o abrigo indicado é o mais próximo pela rota que ainda tenha vaga.
-- **RN07:** quem responde "Estou a caminho de um local seguro" recebe uma nova pergunta 15 min depois.
+- **RN07:** enquanto o alerta da área estiver ativo, o morador recebe a atualização do nível de risco a cada 15 min; quem ainda não está seguro recebe também a pergunta do check-in. Quem respondeu "Estou seguro" recebe só as atualizações.
 - **RN08:** as respostas "Estou a caminho", "Ainda não saí" e a falta de resposta em 15 min acionam mensagem para voluntários e pessoas que podem ajudar (parte do RF13, Should).
 
 ## Regras que valem sempre
