@@ -4,6 +4,7 @@ import br.com.rotasegura.dto.CsrfTokenResponse;
 import br.com.rotasegura.dto.CurrentUserResponse;
 import br.com.rotasegura.dto.LoginRequest;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -19,6 +20,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.web.csrf.CsrfToken;
+import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -36,13 +38,16 @@ public class AuthController {
 
     private final AuthenticationManager authenticationManager;
     private final SecurityContextRepository securityContextRepository;
+    private final CsrfTokenRepository csrfTokenRepository;
     private final SecurityContextHolderStrategy securityContextHolderStrategy =
             SecurityContextHolder.getContextHolderStrategy();
 
     public AuthController(AuthenticationManager authenticationManager,
-                          SecurityContextRepository securityContextRepository) {
+                          SecurityContextRepository securityContextRepository,
+                          CsrfTokenRepository csrfTokenRepository) {
         this.authenticationManager = authenticationManager;
         this.securityContextRepository = securityContextRepository;
+        this.csrfTokenRepository = csrfTokenRepository;
     }
 
     @PostMapping("/login")
@@ -69,6 +74,9 @@ public class AuthController {
         securityContextHolderStrategy.setContext(context);
         securityContextRepository.saveContext(context, request, response);
 
+        // Descarta o token CSRF de antes do login; o front busca um novo em GET /api/auth/csrf
+        csrfTokenRepository.saveToken(null, request, response);
+
         return ResponseEntity.ok(new CurrentUserResponse(authentication.getName()));
     }
 
@@ -82,7 +90,7 @@ public class AuthController {
     @GetMapping("/csrf")
     @Operation(summary = "Token CSRF",
             description = "Devolve o token e o nome do cabeçalho que o front envia em cada POST, PUT e DELETE.")
-    public CsrfTokenResponse csrf(CsrfToken csrfToken) {
+    public CsrfTokenResponse csrf(@Parameter(hidden = true) CsrfToken csrfToken) {
         return new CsrfTokenResponse(csrfToken.getHeaderName(), csrfToken.getToken());
     }
 }

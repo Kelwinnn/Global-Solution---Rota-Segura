@@ -23,33 +23,53 @@ import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
+import org.springframework.security.web.csrf.CsrfTokenRepository;
+import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
+import org.springframework.security.web.util.matcher.RequestMatcher;
+
+import java.util.List;
+
+import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-    /** Rotas abertas para POST: o login e o que o cidadão ou o sensor enviam durante a emergência. */
-    static final String[] PUBLIC_POST_ENDPOINTS = {
+    /**
+     * Rotas abertas só para POST: o login e o que o cidadão ou o sensor enviam durante a emergência.
+     * Só caminhos literais (sem curingas como "*"): o Swagger compara estes textos com as rotas.
+     */
+    public static final List<String> PUBLIC_POST_ENDPOINTS = List.of(
             "/api/auth/login",
             "/api/sensor-readings",
             "/api/check-ins"
-    };
+    );
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
-                                                   SecurityContextRepository securityContextRepository) throws Exception {
+                                                   SecurityContextRepository securityContextRepository,
+                                                   CsrfTokenRepository csrfTokenRepository) throws Exception {
+        // CSRF desligado só no POST dessas rotas; um PUT ou DELETE nelas continua exigindo token
+        RequestMatcher[] publicPosts = PUBLIC_POST_ENDPOINTS.stream()
+                .map(path -> antMatcher(HttpMethod.POST, path))
+                .toArray(RequestMatcher[]::new);
+
         http
                 .cors(Customizer.withDefaults())
-                .csrf(csrf -> csrf.ignoringRequestMatchers(PUBLIC_POST_ENDPOINTS))
+                .csrf(csrf -> csrf
+                        .csrfTokenRepository(csrfTokenRepository)
+                        .ignoringRequestMatchers(publicPosts))
                 .authorizeHttpRequests(auth -> auth
                         .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
-                        .requestMatchers(HttpMethod.POST, PUBLIC_POST_ENDPOINTS).permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/auth/me").authenticated()
+                        .requestMatchers(publicPosts).permitAll()
+                        .requestMatchers("/api/auth/me").authenticated()
                         .requestMatchers(HttpMethod.GET, "/**").permitAll()
+                        .requestMatchers(HttpMethod.HEAD, "/**").permitAll()
                         .anyRequest().authenticated())
                 .securityContext(context -> context.securityContextRepository(securityContextRepository))
                 .exceptionHandling(exception -> exception
-                        .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
+                        .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
+                        .accessDeniedHandler(new RestAccessDeniedHandler()))
                 .requestCache(cache -> cache.disable())
                 .logout(logout -> logout
                         .logoutUrl("/api/auth/logout")
@@ -60,6 +80,11 @@ public class SecurityConfig {
     @Bean
     public SecurityContextRepository securityContextRepository() {
         return new HttpSessionSecurityContextRepository();
+    }
+
+    @Bean
+    public CsrfTokenRepository csrfTokenRepository() {
+        return new HttpSessionCsrfTokenRepository();
     }
 
     @Bean

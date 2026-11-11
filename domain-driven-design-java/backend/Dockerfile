@@ -23,4 +23,5 @@ USER appuser
 COPY --from=build /app/target/rota-segura-api.jar app.jar
 
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# A JVM usa ate 75% da memoria do container para o heap (o padrao seria 25%)
+ENTRYPOINT ["java", "-XX:MaxRAMPercentage=75", "-jar", "app.jar"]

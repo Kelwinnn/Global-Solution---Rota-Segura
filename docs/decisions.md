@@ -55,12 +55,17 @@ Regra: o Claude Code segue o que está em **Decidido** e **pergunta antes** de q
 | 10/11 | Coordenadas Maven | `groupId` `br.com.rotasegura`, `artifactId` `rota-segura-api`; Maven Wrapper (`./mvnw`) no projeto; springdoc 2.7.0 |
 | 10/11 | Variáveis do login e do CORS | `ADMIN_USERNAME`, `ADMIN_PASSWORD` e `CORS_ALLOWED_ORIGINS` (várias origens separadas por vírgula; padrão `http://localhost:5173`) |
 | 10/11 | Endpoint de login | `POST /api/auth/login` com JSON `{username, password}`, tratado no `AuthController` (escolha do Kelwin: mais legível que o `formLogin`). Resposta 200 com o usuário ou 401. Logout em `POST /api/auth/logout` (204), feito pelo filtro do Spring Security. `GET /api/auth/me` devolve o usuário da sessão ou 401 |
-| 10/11 | Token CSRF no front | `GET /api/auth/csrf` devolve `{headerName, token}`; o front envia o token no cabeçalho indicado (`X-CSRF-TOKEN`) em cada POST, PUT e DELETE. Depois do logout, buscar um token novo |
+| 10/11 | Token CSRF no front | `GET /api/auth/csrf` devolve `{headerName, token}`; o front envia o token no cabeçalho indicado (`X-CSRF-TOKEN`) em cada POST, PUT e DELETE. O login não precisa de token (está fora do CSRF). Depois do login e do logout, buscar um token novo (11/11: o login passou a descartar o token anterior). As rotas liberadas ficam fora do CSRF só no POST |
 | 10/11 | Prefixo das rotas | Toda a API fica em `/api/...`. Rotas liberadas reservadas: `POST /api/auth/login`, `POST /api/sensor-readings` (RF03) e `POST /api/check-ins` (RF09) |
 | 10/11 | `AuthController` sem BO | Exceção ao fluxo `controller → bo → dao`: autenticação não é regra de negócio, então o controller fala direto com o Spring Security |
 | 10/11 | Nome das demais colunas | Em inglês, `SNAKE_CASE` em maiúsculas (ex.: `WATER_LEVEL_CM`, `CREATED_AT`), além do padrão de PK e FK |
 | 10/11 | Bairro-piloto do grafo de ruas | Jardim Helena. Os demais bairros ficam cadastrados, sem grafo. O grafo e a estação do INMET são do João Paulo: avisar a escolha |
 | 10/11 | RF14 (mapa interativo) | Sobe de Could para **Must** e é a tela inicial do front |
+| 11/11 | Proxy do Render | `server.forward-headers-strategy=framework`: o Java lê `X-Forwarded-*` e sabe que a chamada original era `https`. Sem isso, o front servido pelo próprio Java levaria 403 de CORS em todo POST. Limitação: o filtro aceita esses cabeçalhos de qualquer cliente, então o IP de `getRemoteAddr()` pode ser forjado; não usar esse IP em limite de taxa, bloqueio ou auditoria |
+| 11/11 | 401 ou 403 | Sem login, inclusive com a sessão expirada, a resposta é 401 (o front manda para o login). Com login e sem permissão ou sem token CSRF válido, 403 (`RestAccessDeniedHandler`) |
+| 11/11 | Swagger com CSRF | Esquema `csrf` (cabeçalho `X-CSRF-TOKEN`) no botão Authorize, aplicado só a POST, PUT e DELETE protegidos. Fluxo: login em `POST /api/auth/login` → token em `GET /api/auth/csrf` → Authorize |
+| 11/11 | HEAD | Aberto como o GET (monitores de disponibilidade). `/api/auth/me` exige login em qualquer método |
+| 11/11 | Memória da JVM | `-XX:MaxRAMPercentage=75` no Dockerfile (o plano gratuito do Render tem 512 MB) |
 
 ### Estrutura do monorepo
 
@@ -107,4 +112,5 @@ Fluxo: `controller → bo → dao → repository`. Nenhuma camada pula a seguint
 - [ ] **Probabilidade de alagamento:** a partir de qual valor é "alta", e o que o alerta antecipado diz ao morador. Depende do João Paulo.
 - [ ] **Formato do JSON de erro** (400, 401, 403, 404, 422...): ex.: `ProblemDetail` do Spring (RFC 7807) ou um record próprio. Decidir junto do `@RestControllerAdvice`. Até lá, 401 e 403 voltam só com o status, sem corpo.
 - [ ] **Onde a entidade vira DTO:** com `open-in-view=false`, relacionamentos `LAZY` só carregam dentro da transação. Decidir na primeira entidade com relacionamento (Sensor → Área) se a conversão fica no BO (`@Transactional`) ou se o DAO já busca o relacionamento junto (ex.: `JOIN FETCH`).
+- [ ] **Leituras do sensor sem autenticação:** `POST /api/sensor-readings` é aberto (decidido em 09/11), então qualquer pessoa pode enviar uma leitura falsa e disparar alerta e SMS. Opções: aceitar como risco do MVP e citar no PDF, ou exigir uma chave do sensor no cabeçalho (desenho novo).
 - [ ] **Número da equipe** para a faixa 192.168.X.0/24 de Network. Kelwin informa em 10/11.
