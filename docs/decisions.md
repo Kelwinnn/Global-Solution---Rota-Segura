@@ -42,11 +42,25 @@ Regra: o Claude Code segue o que está em **Decidido** e **pergunta antes** de q
 | 09/11 | Nome das FKs | Repetem o nome da PK referenciada (ex.: `ID_AREA` em `T_RS_SENSOR`) |
 | 09/11 | Níveis de risco (RF04/RN01) | 5 níveis pelo nível d'água em cm, iguais para todos os sensores: baixo 0 a 1; médio 1,1 a 2,9; alto 3 a 5; muito alto 5,1 a 10; muito urgente acima de 10. Os níveis dizem o quão urgente é ir para um abrigo ou procurar um local mais alto |
 | 09/11 | Quando gera alerta (RF05/RN07) | A partir do nível médio. Enquanto o alerta durar, o morador recebe a atualização do nível a cada 15 min; a pergunta do check-in se repete só para quem ainda não está seguro. Quem respondeu "Estou seguro" recebe só as atualizações |
+| 10/11 | Mapa de ruas | Fica no serviço Python (OpenStreetMap). O Java não guarda mapa: manda só a posição do morador, os abrigos com vaga e as áreas alagadas |
+| 10/11 | Coordenadas | Área de risco com ponto central (latitude e longitude) e raio em metros; abrigo com latitude e longitude. O Java envia as áreas alagadas ao Python como lista com `areaId`, `lat`, `lng` e `radiusM` |
+| 10/11 | Timeout da chamada ao Python | 10 s. Um ping no `/health` a cada poucos minutos evita que o Render gratuito hiberne o serviço |
+| 10/11 | Se o Python estiver fora | O alerta não depende dele: o Java calcula o nível em cm e alerta a partir do médio. Sem o Python, o SMS informa que a rota está indisponível e orienta ir ao abrigo ou a um local mais alto |
+| 10/11 | Bordas das faixas de risco | O valor fica no nível cujo número inicial já alcançou: baixo < 1,1; médio de 1,1 a < 3; alto de 3 a < 5,1; muito alto de 5,1 a 10; muito urgente > 10 (1,05 é baixo; 10,01 é muito urgente). Quem classifica o nível é o Java |
+| 10/11 | Rota | Para quem vai a pé: o grafo usa só ruas caminháveis, cerca de 70 m por minuto |
 | 09/11 | Probabilidade de alagamento | O serviço Python informa a alta probabilidade de alagamento antes de acontecer (alerta antecipado). É um sinal separado dos níveis em cm, que medem a urgência |
 | 10/11 | Variáveis do Oracle | `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`, lidas no `application.properties` com `${...}`. Porta da API em `PORT` (padrão 8080) |
 | 10/11 | Criação das tabelas | `spring.jpa.hibernate.ddl-auto=validate`: as tabelas vêm do `ddl.sql` de `database-design/` e o Hibernate só confere se as entidades batem com elas |
 | 10/11 | Build do Docker | `Dockerfile` em `domain-driven-design-java/backend/`, com contexto de build em `domain-driven-design-java/` (raiz do serviço no Render), para depois entrar um estágio Node que compila o front |
 | 10/11 | Coordenadas Maven | `groupId` `br.com.rotasegura`, `artifactId` `rota-segura-api`; Maven Wrapper (`./mvnw`) no projeto; springdoc 2.7.0 |
+| 10/11 | Variáveis do login e do CORS | `ADMIN_USERNAME`, `ADMIN_PASSWORD` e `CORS_ALLOWED_ORIGINS` (várias origens separadas por vírgula; padrão `http://localhost:5173`) |
+| 10/11 | Endpoint de login | `POST /api/auth/login` com JSON `{username, password}`, tratado no `AuthController` (escolha do Kelwin: mais legível que o `formLogin`). Resposta 200 com o usuário ou 401. Logout em `POST /api/auth/logout` (204), feito pelo filtro do Spring Security. `GET /api/auth/me` devolve o usuário da sessão ou 401 |
+| 10/11 | Token CSRF no front | `GET /api/auth/csrf` devolve `{headerName, token}`; o front envia o token no cabeçalho indicado (`X-CSRF-TOKEN`) em cada POST, PUT e DELETE. Depois do logout, buscar um token novo |
+| 10/11 | Prefixo das rotas | Toda a API fica em `/api/...`. Rotas liberadas reservadas: `POST /api/auth/login`, `POST /api/sensor-readings` (RF03) e `POST /api/check-ins` (RF09) |
+| 10/11 | `AuthController` sem BO | Exceção ao fluxo `controller → bo → dao`: autenticação não é regra de negócio, então o controller fala direto com o Spring Security |
+| 10/11 | Nome das demais colunas | Em inglês, `SNAKE_CASE` em maiúsculas (ex.: `WATER_LEVEL_CM`, `CREATED_AT`), além do padrão de PK e FK |
+| 10/11 | Bairro-piloto do grafo de ruas | Jardim Helena. Os demais bairros ficam cadastrados, sem grafo. O grafo e a estação do INMET são do João Paulo: avisar a escolha |
+| 10/11 | RF14 (mapa interativo) | Sobe de Could para **Must** e é a tela inicial do front |
 
 ### Estrutura do monorepo
 
@@ -87,11 +101,10 @@ Fluxo: `controller → bo → dao → repository`. Nenhuma camada pula a seguint
 
 ## Em aberto (perguntar antes de decidir)
 
-- [ ] **Padrão das demais colunas** (além de PK e FK): nomes em inglês `SNAKE_CASE` em maiúsculas? Confirmar na primeira entidade.
 - [ ] **Contrato do serviço Python:** endpoints, formato de request e response, URL base. Rascunho de proposta no documento "Serviço Python: decisões para o João Paulo"; aguardando as respostas dele.
-- [ ] **Chamada ao Python:** timeout e o que fazer se o serviço estiver fora (sugestão: o Java segue só com os limites em cm e avisa que a rota está indisponível).
 - [ ] **Deploy do serviço Python** e variáveis de ambiente de cada serviço. Aguardando o João Paulo.
-- [ ] **Front: pacote do Google Maps** (ex.: `@vis.gl/react-google-maps`) e conta/chave da API. RF14 passou a ser a tela inicial: confirmar se sobe para Must.
+- [ ] **Front: pacote do Google Maps** (ex.: `@vis.gl/react-google-maps`) e conta/chave da API. Urgente: o RF14 virou Must e depende disso.
 - [ ] **Probabilidade de alagamento:** a partir de qual valor é "alta", e o que o alerta antecipado diz ao morador. Depende do João Paulo.
+- [ ] **Formato do JSON de erro** (400, 401, 403, 404, 422...): ex.: `ProblemDetail` do Spring (RFC 7807) ou um record próprio. Decidir junto do `@RestControllerAdvice`. Até lá, 401 e 403 voltam só com o status, sem corpo.
 - [ ] **Onde a entidade vira DTO:** com `open-in-view=false`, relacionamentos `LAZY` só carregam dentro da transação. Decidir na primeira entidade com relacionamento (Sensor → Área) se a conversão fica no BO (`@Transactional`) ou se o DAO já busca o relacionamento junto (ex.: `JOIN FETCH`).
 - [ ] **Número da equipe** para a faixa 192.168.X.0/24 de Network. Kelwin informa em 10/11.

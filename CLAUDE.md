@@ -80,7 +80,7 @@ Should (só se sobrar tempo): RF10 painel de prioridade de resgate, RF11 avisar 
 
 ## Regras de negócio
 
-- **RN01:** o nível de risco sai do nível d'água em cm, igual para todos os sensores: baixo 0 a 1; médio 1,1 a 2,9; alto 3 a 5; muito alto 5,1 a 10; muito urgente acima de 10. O nível mede a urgência de ir para um abrigo ou local mais alto. Separado dele, o serviço Python informa a probabilidade de alagamento, que avisa antes de acontecer; o limite de "alta probabilidade" ainda está em aberto em `docs/decisions.md`.
+- **RN01:** o nível de risco sai do nível d'água em cm, igual para todos os sensores: baixo 0 a 1; médio 1,1 a 2,9; alto 3 a 5; muito alto 5,1 a 10; muito urgente acima de 10. Nas bordas, o valor fica no nível cujo número inicial já alcançou (1,05 é baixo; 10,01 é muito urgente). O nível mede a urgência de ir para um abrigo ou local mais alto. Separado dele, o serviço Python informa a probabilidade de alagamento, que avisa antes de acontecer; o limite de "alta probabilidade" ainda está em aberto em `docs/decisions.md`.
 - **RN02:** só um alerta ativo por área; ele encerra quando o risco volta a baixo.
 - **RN03:** todo assistido tem ao menos um responsável e uma área vinculada.
 - **RN04:** assistido sem resposta em até 15 min após o alerta entra no painel como prioridade de resgate.
