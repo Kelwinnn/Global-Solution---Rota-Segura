@@ -17,7 +17,7 @@ Regra: o Claude Code segue o que está em **Decidido** e **pergunta antes** de q
 | 09/11 | Controller | Recebe e devolve DTOs (records) com Bean Validation; entidades não saem da API |
 | 09/11 | Segurança | Login simples com Spring Security e usuário fixo, cujas credenciais vêm de variáveis de ambiente. POST, PUT e DELETE exigem login; GET fica aberto |
 | 09/11 | Mecanismo do login | Tela de login no React; sessão com cookie no servidor (Spring Security). Mesmo com o front servido junto do Java em produção, a configuração foi mantida (em desenvolvimento o Vite roda em outra porta); o cookie usa `SameSite=None` e `Secure`, e o CORS libera credenciais só para as origens do front |
-| 09/11 | CSRF | Token mantido. O front lê o token e envia em cada POST, PUT e DELETE. Endpoints liberados (sem login) ficam fora do CSRF, porque não têm sessão |
+| 09/11 | CSRF | Token mantido. O front lê o token e envia em cada POST, PUT e DELETE. Endpoints liberados (sem login) ficam fora do CSRF, porque não têm sessão (11/11: só no POST deles) |
 | 09/11 | Sessão | Expira em 30 minutos. O logout encerra só a sessão na página; alertas e mensagens continuam sendo enviados normalmente |
 | 09/11 | Canal com o cidadão | SMS simulado: o sistema registra a mensagem e o front mostra como se fosse o celular |
 | 09/11 | Respostas do check-in | Três opções: "Estou seguro", "Estou a caminho de um local seguro" e "Ainda não saí" |
@@ -66,6 +66,8 @@ Regra: o Claude Code segue o que está em **Decidido** e **pergunta antes** de q
 | 11/11 | Swagger com CSRF | Esquema `csrf` (cabeçalho `X-CSRF-TOKEN`) no botão Authorize, aplicado só a POST, PUT e DELETE protegidos. Fluxo: login em `POST /api/auth/login` → token em `GET /api/auth/csrf` → Authorize |
 | 11/11 | HEAD | Aberto como o GET (monitores de disponibilidade). `/api/auth/me` exige login em qualquer método |
 | 11/11 | Memória da JVM | `-XX:MaxRAMPercentage=75` no Dockerfile (o plano gratuito do Render tem 512 MB) |
+| 11/11 | Leituras do sensor sem autenticação | **Risco aceito do MVP:** `POST /api/sensor-readings` fica aberto, então uma leitura falsa pode disparar alerta e SMS. Motivo (Kelwin): na emergência, nada pode depender de cadastro ou login, e os sensores do MVP são simulados. Citar no PDF como limitação conhecida; numa versão real, cada sensor teria uma chave própria |
+| 11/11 | `.gitignore` na raiz | Só `.idea/` e `*.iml` (arquivos do IntelliJ). Cada pasta mantém o próprio `.gitignore` |
 
 ### Estrutura do monorepo
 
@@ -92,7 +94,7 @@ Regra: o Claude Code segue o que está em **Decidido** e **pergunta antes** de q
 | Pacote | O que fica |
 |---|---|
 | `controller` | `@RestController`; recebe DTOs, chama o BO, devolve DTOs |
-| `bo` | `@Service` com as regras de negócio (RN01 a RN06); chama o DAO |
+| `bo` | `@Service` com as regras de negócio (RN01 a RN08); chama o DAO |
 | `dao` | Classes `@Component` de acesso a dados; usam o repository; sem regra de negócio |
 | `repository` | Interfaces `JpaRepository` |
 | `model` | Entidades JPA |
@@ -112,5 +114,4 @@ Fluxo: `controller → bo → dao → repository`. Nenhuma camada pula a seguint
 - [ ] **Probabilidade de alagamento:** a partir de qual valor é "alta", e o que o alerta antecipado diz ao morador. Depende do João Paulo.
 - [ ] **Formato do JSON de erro** (400, 401, 403, 404, 422...): ex.: `ProblemDetail` do Spring (RFC 7807) ou um record próprio. Decidir junto do `@RestControllerAdvice`. Até lá, 401 e 403 voltam só com o status, sem corpo.
 - [ ] **Onde a entidade vira DTO:** com `open-in-view=false`, relacionamentos `LAZY` só carregam dentro da transação. Decidir na primeira entidade com relacionamento (Sensor → Área) se a conversão fica no BO (`@Transactional`) ou se o DAO já busca o relacionamento junto (ex.: `JOIN FETCH`).
-- [ ] **Leituras do sensor sem autenticação:** `POST /api/sensor-readings` é aberto (decidido em 09/11), então qualquer pessoa pode enviar uma leitura falsa e disparar alerta e SMS. Opções: aceitar como risco do MVP e citar no PDF, ou exigir uma chave do sensor no cabeçalho (desenho novo).
 - [ ] **Número da equipe** para a faixa 192.168.X.0/24 de Network. Kelwin informa em 10/11.

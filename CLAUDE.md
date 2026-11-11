@@ -61,7 +61,7 @@ Nunca edite `data-science/`, `dynamic-programming/` (inclui o serviço Python), 
 - **Serviço Python:** FastAPI, construído pelo João Paulo. Ele faz a rota segura e o modelo de risco; a API Java chama esse serviço. O contrato ainda está em aberto: não invente endpoints dele.
 - **Nomes no código:** em inglês (classes, métodos, tabelas, colunas). Documentação e explicações em português.
 
-## Requisitos do MVP (os 10 "Must")
+## Requisitos do MVP (os 11 "Must")
 
 | ID | Requisito |
 |---|---|
@@ -75,8 +75,9 @@ Nunca edite `data-science/`, `dynamic-programming/` (inclui o serviço Python), 
 | RF08 | Cadastrar pessoa assistida com seu responsável |
 | RF09 | Registrar a resposta de cada assistido a um alerta: "Estou seguro", "Estou a caminho de um local seguro" ou "Ainda não saí" |
 | RF12 | Enviar o alerta e as perguntas ao cidadão por SMS simulado (o sistema registra e o front mostra como se fosse o celular) |
+| RF14 | Mapa interativo, que é a tela inicial do front (subiu de Could para Must em 10/11) |
 
-Should (só se sobrar tempo): RF10 painel de prioridade de resgate, RF11 avisar o responsável, RF13 avisar voluntários e pessoas que podem ajudar (RN08). Could: RF14 mapa interativo. Won't: RF15 integração real com Defesa Civil.
+Should (só se sobrar tempo): RF10 painel de prioridade de resgate, RF11 avisar o responsável, RF13 avisar voluntários e pessoas que podem ajudar (RN08). Could: nenhum no momento. Won't: RF15 integração real com Defesa Civil.
 
 ## Regras de negócio
 
