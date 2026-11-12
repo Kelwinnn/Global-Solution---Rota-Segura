@@ -110,11 +110,10 @@ Ele serve de **referência**: um teste com `hypothesis` gera 500 mapas aleatóri
 
 ## Como rodar
 
-Requer Python 3.11+. Na raiz do repositório:
+Requer Python 3.11+. Dentro de `dynamic-programming/`:
 
 ```bash
-pip install -r requirements.txt
-cd dynamic-programming
+pip install -e ".[dev]"
 ```
 
 Calcular uma rota:
