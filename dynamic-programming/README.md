@@ -106,7 +106,7 @@ Ele serve de **referência**: um teste com `hypothesis` gera 500 mapas aleatóri
 - Memoização por cenário.
 - Comando de terminal com saída JSON, que pode ser salva no aparelho (RNF06).
 - Script de medição de tempo em mapas sintéticos.
-- Serviço HTTP (FastAPI) com `GET /saude` e `POST /rotas`.
+- Serviço HTTP (FastAPI) do contrato v2: `GET /health`, `POST /route` e `POST /risk`.
 
 ## Como rodar
 
@@ -141,37 +141,95 @@ Com `--origem 1`, o trecho 2-3 alagado isola a pessoa:
 
 ## Serviço HTTP (FastAPI)
 
-Implementa o contrato em [`docs/contrato.md`](docs/contrato.md): `GET /saude` e `POST /rotas` (o `POST /risco` continua em aberto). O mapa vem em cada requisição; o serviço só guarda o cache de cálculo. JSON em camelCase.
+Implementa o contrato v2 em [`docs/contrato.md`](docs/contrato.md): `GET /health`, `POST /route` e `POST /risk`. JSON em camelCase. **O mapa é fixo**: fica no serviço e é carregado na subida, em vez de chegar em cada requisição.
+
+| Variável | Uso |
+| --- | --- |
+| `GRAFO_PATH` | JSON do mapa do bairro-piloto (esquinas com `id`, `lat`, `lng`; trechos com `origem`, `destino`, `distanciaM` opcional e `fatorRisco` opcional) |
+| `MODELO_PATH` | Modelo de risco (`.joblib`, gerado por `data-science/02_modelos.ipynb`) |
+| `PORT` | Porta HTTP (o Render define; no Docker o padrão é 8000) |
+
+Enquanto o grafo real do Jardim Helena (OpenStreetMap) não existe, use o mapa de teste `dados/grafo_teste_jardim_helena.json`: 25 esquinas numa grade de ~100 m com coordenadas **inventadas**, só plausíveis para o bairro. O modelo real vem do notebook. Sem `GRAFO_PATH` ou `MODELO_PATH` (ou com arquivo inválido) o serviço sobe mesmo assim: `/health` mostra `mapLoaded` ou `modelLoaded` falso e a rota ou o risco correspondente respondem `503`.
 
 ```bash
-python -m uvicorn rota_segura.api:app --port 8000   # dentro de dynamic-programming/
+# dentro de dynamic-programming/
+GRAFO_PATH=dados/grafo_teste_jardim_helena.json MODELO_PATH=modelo.joblib python -m uvicorn rota_segura.api:app --port 8000
+```
+
+### Exemplos
+
+```bash
+curl http://127.0.0.1:8000/health
+# {"status":"ok","mapLoaded":true,"modelLoaded":true,"version":"2.0.0"}
 ```
 
 ```bash
-curl -X POST http://127.0.0.1:8000/rotas -H "Content-Type: application/json" -d '{
-  "mapa": {"esquinas": [1, 2, 3, 4],
-           "trechos": [{"origem": 1, "destino": 2, "distanciaM": 120.0, "fatorRisco": 0.1},
-                       {"origem": 2, "destino": 3, "distanciaM": 80.0},
-                       {"origem": 3, "destino": 4, "distanciaM": 60.0, "fatorRisco": 0.3}]},
-  "cenario": {"trechosAlagados": [], "abrigos": [{"esquina": 4, "capacidade": 50, "ocupacao": 10}]},
-  "origens": [1, 4]}'
+curl -X POST http://127.0.0.1:8000/route -H "Content-Type: application/json" -d '{
+  "origin": {"lat": -23.4930, "lng": -46.4150},
+  "shelters": [
+    {"id": 1, "name": "Escola Estadual A", "lat": -23.4894, "lng": -46.4111, "availableSpots": 40},
+    {"id": 2, "name": "Ginasio B", "lat": -23.4912, "lng": -46.4131, "availableSpots": 0}],
+  "floodedAreas": [{"areaId": 7, "lat": -23.4921, "lng": -46.4140, "radiusM": 40}]}'
 ```
 
 ```json
-{"rotas": [
-  {"origem": 1, "status": "rota_encontrada", "caminho": [1, 2, 3, 4], "distanciaM": 260.0, "orientacao": "Siga a rota até o abrigo na esquina 4"},
-  {"origem": 4, "status": "rota_encontrada", "caminho": [4], "distanciaM": 0.0, "orientacao": "Siga a rota até o abrigo na esquina 4"}]}
+{"status": "ROUTE_FOUND",
+ "shelter": {"id": 1, "name": "Escola Estadual A", "lat": -23.4894, "lng": -46.4111},
+ "distanceMeters": 744, "durationMin": 11,
+ "path": [{"lat": -23.493, "lng": -46.415}, {"lat": -23.493, "lng": -46.41402}, "...", {"lat": -23.4894, "lng": -46.4111}],
+ "message": "Siga a rota até Escola Estadual A."}
 ```
 
-- Várias origens: uma única busca multi-origem a partir dos abrigos com vaga, uma rota por origem.
-- Entrada inválida (esquina inexistente, distância ≤ 0, `fatorRisco` fora de 0 a 1, capacidade ou ocupação negativa, origem inexistente, campo ausente ou de tipo errado): `400` com `{"erro": "entrada_invalida", "mensagem": "mapa.trechos[0].destino: esquina 9 não existe no mapa"}`. Falha inesperada: `500` com `{"erro": "erro_interno", ...}`.
-- "Sem rota segura" responde `200` com `status: sem_rota_segura`.
-- Cache (`servico.py`): a chave é um SHA-256 do mapa, dos trechos alagados e dos abrigos com vaga, então mudar qualquer um recalcula. É LRU com 128 entradas, porque o mapa chega em cada chamada e um dicionário sem limite cresceria sem parar.
+(O abrigo 2 está sem vagas e é ignorado; a rota contorna a área alagada.) Sem rota segura, a resposta é `200` com `{"status": "NO_SAFE_ROUTE", "shelter": null, "distanceMeters": null, "durationMin": null, "path": [], "message": "Não há rota segura agora. Vá para um local alto e aguarde ajuda."}`.
+
+```bash
+curl -X POST http://127.0.0.1:8000/risk -H "Content-Type: application/json" -d '{
+  "areaId": 3, "lat": -23.4890, "lng": -46.4120,
+  "readings": [
+    {"timestamp": "2026-11-19T18:00:00-03:00", "rainMm": 12.4, "waterLevelCm": 2.3},
+    {"timestamp": "2026-11-19T18:10:00-03:00", "rainMm": 8.1, "waterLevelCm": 2.8}]}'
+```
+
+```json
+{"areaId": 3, "floodProbability": 0.0037, "highProbability": false, "lowData": true, "modelVersion": "2026-11-17"}
+```
+
+(O valor de `floodProbability` do exemplo vem de um modelo de brinquedo; o do projeto sai do notebook. Com 2 leituras há só 1 dia com dados, então `lowData` é `true`.)
+
+### Regras do `/route`
+
+- **Esquina mais próxima.** A origem e cada abrigo viram a esquina mais próxima do mapa (haversine; empate: menor id da esquina). Origem a mais de **300 m** da esquina mais próxima: `400 INVALID_INPUT` (fora do bairro-piloto).
+- **Abrigo lotado (RN06).** Abrigo com `availableSpots <= 0` é ignorado. `availableSpots` negativo é entrada inválida (`400`).
+- **Trecho alagado (RN05).** O trecho sai do grafo se **qualquer ponta ou o ponto médio** (média das coordenadas das pontas) estiver a até `radiusM` metros do centro de **alguma** área alagada. O ponto médio evita que um trecho comprido atravesse um círculo pequeno sem que nenhuma ponta caia nele. `radiusM <= 0` é entrada inválida.
+- **Custo e desempate.** Custo = distância × (1 + `fatorRisco`), com o `fatorRisco` do arquivo do mapa (0 se ausente). Desempate: menor custo, depois menor distância, depois **menor id do abrigo** (o id que o Java manda, não a esquina).
+- **Resposta.** `path` começa na `origin` exata e termina na coordenada do abrigo, passando pelas esquinas. `distanceMeters` = distância no grafo + a perna da origem até a esquina + a perna da esquina até o abrigo (haversine), arredondada para metro inteiro. `durationMin` = `ceil(distanceMeters / 70)` (a pé, 70 m/min), calculado sobre esse inteiro.
+- **Memoização.** A árvore do Dijkstra multi-origem é guardada por cenário (chave = trechos alagados + abrigos com vaga, porque o mapa é fixo), com limite LRU de 128 cenários.
+
+### Regras do `/risk`
+
+- As variáveis são as da seção 1 de `data-science/02_modelos.ipynb`, calculadas por `risco.py` para o dia da **última leitura** no fuso America/Sao_Paulo: `chuva_24h`, `chuva_max_1h`, `chuva_max_3h` (soma móvel de 3 h), `chuva_dia_anterior`, `chuva_72h` (dia + 2 anteriores), `chuva_7d_anteriores` (7 dias antes do dia) e `mes_sen`/`mes_cos`. As leituras de uma mesma hora são somadas.
+- `lowData` é `true` se houver **menos de 8 dias do calendário de São Paulo com ao menos uma leitura** ou se alguma variável não puder ser calculada. **Dia (ou hora) sem leitura entra como 0 mm, o que subestima a chuva**: o Java deve tratar `lowData: true` como sinal fraco.
+- `highProbability` = `floodProbability >= limite`, com o limite gravado no joblib.
+- `modelVersion` vem da chave `versao` do joblib; se não existir, da data de modificação do arquivo.
+- O joblib precisa ter as chaves `pipeline`, `variaveis` e `limite` (e, opcionalmente, `versao` e `sklearn`). Se `sklearn` for diferente da versão instalada, o serviço só registra um aviso no log. O `pyproject.toml` fixa `scikit-learn==1.8.0`, a mesma do notebook. **Joblib é pickle: carregue só arquivos de confiança.**
+
+### Erros
+
+Entrada inválida (`EntradaInvalidaError`): `400` com `{"error": "INVALID_INPUT", "message": "origin: a 14719 m da esquina mais próxima (máximo 300 m); fora do bairro-piloto"}`. JSON fora do esquema: `422` padrão do FastAPI. Mapa ou modelo não carregado: `503` com `MAP_UNAVAILABLE` ou `MODEL_UNAVAILABLE`. Falha inesperada: `500` com `{"error": "INTERNAL_ERROR", ...}` (sem detalhes internos).
+
+### Docker
+
+`Dockerfile` em `dynamic-programming/` (`python:3.12-slim`, `uvicorn` na porta `$PORT`, padrão 8000). A imagem **não inclui** o mapa nem o modelo: aponte `GRAFO_PATH` e `MODELO_PATH` para arquivos copiados ou montados no deploy.
+
+```bash
+docker build -t rota-segura-dp .
+docker run -p 8000:8000 -v "$PWD/dados:/dados" -e GRAFO_PATH=/dados/grafo_teste_jardim_helena.json rota-segura-dp
+```
 
 ## Como testar
 
 ```bash
-python -m pytest        # 86 testes
+python -m pytest        # 103 testes
 python -m mypy --strict # configuração em pyproject.toml
 python -m rota_segura.medicao
 ```
@@ -186,7 +244,9 @@ python -m rota_segura.medicao
 | `test_sem_rota.py` | `SEM_ROTA_SEGURA`, caminho vazio e "Fique em local alto" (RN05, RN06, comando) |
 | `test_comando.py` | Saída JSON e códigos de saída do comando |
 | `test_medicao.py` | Gerador de mapas sintéticos e a tabela de tempos |
-| `test_api.py` | Serviço: rota válida, RN05, RN06, sem rota (200), 400 por campo, 500, várias origens, camelCase, cache reaproveitado/recalculado |
+| `test_mapa.py` | Haversine, esquina mais próxima, trecho alagado pela ponta ou pelo ponto médio, validação do arquivo do mapa |
+| `test_rota_endpoint.py` | `/route` e `/health`: RN05, RN06, sem rota (200), origem longe (400), desempate, 70 m/min, 422, 503, 500, memoização |
+| `test_risk_endpoint.py` | `/risk`: 503 sem modelo, `lowData`, variáveis conferidas à mão, fuso, 400, carga do joblib |
 
 ## Tempos medidos
 
@@ -215,6 +275,6 @@ Os números variam com a máquina. A proporção entre os algoritmos é o que im
 ## Limitações
 
 - Trechos são de mão dupla (rota a pé). Para rota de carro, a mão de direção mudaria o grafo.
-- A memoização vale dentro de um processo, como num serviço que atende muitas consultas. O comando de terminal roda um processo por consulta, então ali ela não ganha nada. O dicionário também não tem limite de tamanho.
+- A memoização vale dentro de um processo, como num serviço que atende muitas consultas. O comando de terminal roda um processo por consulta, então ali ela não ganha nada. O dicionário é LRU com 128 cenários.
 - Na resposta `sem_rota_segura`, `distancia_m` vale 0,0, porque não há caminho. Quem consome a saída deve olhar o `status`, não a distância.
-- O mapa do bairro real ainda não foi modelado (ver FONTE DO MAPA).
+- O grafo real do Jardim Helena (OpenStreetMap) ainda não existe: o serviço usa um mapa de teste com coordenadas inventadas (`dados/grafo_teste_jardim_helena.json`).

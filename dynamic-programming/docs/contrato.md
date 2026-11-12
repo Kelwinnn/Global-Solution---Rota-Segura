@@ -122,6 +122,7 @@ Serve só para o **alerta antecipado**: a chance de alagar antes de acontecer. �
 ```
 
 - `readings`: leituras dos sensores da área dos **últimos 8 dias** (dia atual + 7 anteriores, que o modelo usa como chuva acumulada), em ordem crescente de horário. Com menos de 8 dias, o Python devolve `floodProbability` calculada com o que houver e `lowData: true`.
+- `lowData` é `true` quando há **menos de 8 dias do calendário de São Paulo com ao menos uma leitura** ou quando alguma variável do modelo não pôde ser calculada. Dia (ou hora) sem leitura entra como **0 mm, o que subestima a chuva**: o Java deve tratar `lowData: true` como **sinal fraco** (a probabilidade pode estar baixa só por falta de dados).
 - O modelo usa a chuva acumulada; `waterLevelCm` vai junto para uso futuro e para validação.
 
 ### Resposta `200`
@@ -146,6 +147,8 @@ Serve só para o **alerta antecipado**: a chance de alagar antes de acontecer. �
 |---|---|---|
 | `400` | Entrada inválida (coordenada fora do mapa, raio ≤ 0, vagas negativas, leituras vazias ou fora de ordem) | `{ "error": "INVALID_INPUT", "message": "texto claro" }` |
 | `422` | JSON fora do esquema (validação automática do FastAPI) | formato padrão do FastAPI |
+| `503` | `/route` com o mapa não carregado | `{ "error": "MAP_UNAVAILABLE", "message": "..." }` |
+| `503` | `/risk` com o modelo não carregado | `{ "error": "MODEL_UNAVAILABLE", "message": "..." }` |
 | `500` | Falha inesperada | `{ "error": "INTERNAL_ERROR", "message": "..." }` |
 
 Internamente, a entrada inválida gera `EntradaInvalidaError`, convertida em `400`.
