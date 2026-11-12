@@ -1,11 +1,20 @@
 [project]
 name = "rota-segura-dp"
-version = "0.1.0"
+version = "2.0.0"
 requires-python = ">=3.11"
-dependencies = ["fastapi", "uvicorn", "pydantic"]
+dependencies = [
+    "fastapi",
+    "uvicorn",
+    "pydantic",
+    "pandas",
+    "numpy",
+    "scikit-learn==1.8.0",  # igual ao do notebook: o modelo (joblib) precisa da mesma versão no treino e no serviço
+    "joblib",
+    "tzdata",
+]
 
 [project.optional-dependencies]
-dev = ["pytest", "mypy", "hypothesis", "httpx"]
+dev = ["pytest", "mypy", "hypothesis", "httpx", "pandas-stubs"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -15,3 +24,7 @@ pythonpath = ["."]
 strict = true
 python_version = "3.11"
 files = ["rota_segura", "tests"]
+
+[[tool.mypy.overrides]]
+module = ["sklearn.*", "joblib", "joblib.*"]
+ignore_missing_imports = true

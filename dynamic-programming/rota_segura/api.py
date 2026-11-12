@@ -1,28 +1,38 @@
-"""Serviço FastAPI do contrato docs/contrato.md: GET /saude e POST /rotas.
+"""Serviço FastAPI do contrato v2 (docs/contrato.md): GET /health, POST /route, POST /risk.
 
-Subir: python -m uvicorn rota_segura.api:app   (de dentro de dynamic-programming/)
+Subir (de dentro de dynamic-programming/):
+    GRAFO_PATH=dados/grafo_teste_jardim_helena.json MODELO_PATH=modelo.joblib \\
+    python -m uvicorn rota_segura.api:app --port 8000
 O JSON da API é camelCase; os identificadores internos continuam em português/snake_case.
-O mapa chega em cada requisição e o serviço não guarda mapa (só o cache de cálculo).
+O mapa e o modelo são carregados na subida. Se algum faltar, o serviço sobe mesmo assim e /health avisa.
 """
 
 import logging
-import re
-from collections.abc import Sequence
-from typing import Any
+import os
+from datetime import datetime
+from pathlib import Path
 
 import uvicorn
 from fastapi import FastAPI, Request
-from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, ConfigDict
 from pydantic.alias_generators import to_camel
 
-from rota_segura.carregador import bairro_de_dados, cenario_de_dados
-from rota_segura.dijkstra import rota_ate_abrigo
-from rota_segura.modelos import EntradaInvalidaError, ResultadoRota, StatusRota
-from rota_segura.servico import CacheArvores
+from rota_segura.mapa import AreaAlagada, Mapa, Ponto, carregar_mapa, validar_ponto
+from rota_segura.modelos import EntradaInvalidaError, StatusRota
+from rota_segura.risco import Leitura, ModeloRisco, carregar_modelo, prever
+from rota_segura.roteador import AbrigoGeo, Roteador, RotaGeo
 
+VERSAO = "2.0.0"
 registro = logging.getLogger("rota_segura.api")
+
+
+class ServicoIndisponivelError(Exception):
+    """Mapa ou modelo não carregado: 503."""
+
+    def __init__(self, codigo: str, mensagem: str) -> None:
+        super().__init__(mensagem)
+        self.codigo = codigo
 
 
 class _Entrada(BaseModel):
@@ -31,135 +41,197 @@ class _Entrada(BaseModel):
     model_config = ConfigDict(alias_generator=to_camel, strict=True)
 
 
-class TrechoEntrada(_Entrada):
-    origem: int
-    destino: int
-    distancia_m: float
-    fator_risco: float = 0.0
-
-
-class MapaEntrada(_Entrada):
-    esquinas: list[int]
-    trechos: list[TrechoEntrada]
+class PontoEntrada(_Entrada):
+    lat: float
+    lng: float
 
 
 class AbrigoEntrada(_Entrada):
-    esquina: int
-    capacidade: int
-    ocupacao: int
+    id: int
+    name: str
+    lat: float
+    lng: float
+    available_spots: int
 
 
-class CenarioEntrada(_Entrada):
-    trechos_alagados: list[list[int]]
-    abrigos: list[AbrigoEntrada]
+class AreaEntrada(_Entrada):
+    area_id: int
+    lat: float
+    lng: float
+    radius_m: float
 
 
-class RequisicaoRotas(_Entrada):
-    mapa: MapaEntrada
-    cenario: CenarioEntrada
-    origens: list[int]
+class RequisicaoRota(_Entrada):
+    origin: PontoEntrada
+    shelters: list[AbrigoEntrada]
+    flooded_areas: list[AreaEntrada]
+
+
+class LeituraEntrada(_Entrada):
+    timestamp: str
+    rain_mm: float
+    water_level_cm: float
+
+
+class RequisicaoRisco(_Entrada):
+    area_id: int
+    lat: float
+    lng: float
+    readings: list[LeituraEntrada]
 
 
 class _Saida(BaseModel):
     model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
 
 
-class RotaSaida(_Saida):
-    origem: int
-    status: StatusRota
-    caminho: list[int]
-    distancia_m: float
-    orientacao: str
-
-
-class RespostaRotas(_Saida):
-    rotas: list[RotaSaida]
-
-
-class RespostaSaude(BaseModel):
+class RespostaSaude(_Saida):
     status: str
+    map_loaded: bool
+    model_loaded: bool
+    version: str
 
 
-_SNAKE = re.compile(r"_([a-z])")
+class PontoSaida(_Saida):
+    lat: float
+    lng: float
 
 
-def _campo_na_api(mensagem: str) -> str:
-    """Troca os nomes internos da mensagem do carregador pelos da API.
-
-    'bairro.trechos[0].distancia_m: ...' vira 'mapa.trechos[0].distanciaM: ...'.
-    Só mexe no trecho antes do primeiro ': ', que é onde o carregador cita o campo.
-    """
-    campo, separador, resto = mensagem.partition(": ")
-    if not separador:
-        return mensagem
-    if campo == "bairro" or campo.startswith("bairro."):
-        campo = "mapa" + campo.removeprefix("bairro")
-    return _SNAKE.sub(lambda m: m.group(1).upper(), campo) + separador + resto.replace("no bairro", "no mapa")
+class AbrigoSaida(_Saida):
+    id: int
+    name: str
+    lat: float
+    lng: float
 
 
-def _mensagem_validacao(erros: Sequence[Any]) -> str:
-    """Primeiro erro estrutural do pydantic, apontando o campo (já em camelCase, pois o loc usa o alias)."""
-    erro = erros[0]
-    if erro["type"] == "json_invalid":
-        return "corpo: a requisição não é um JSON válido"
-    campo = ""
-    for parte in erro["loc"][1:]:  # [0] é 'body'
-        campo += f"[{parte}]" if isinstance(parte, int) else f".{parte}" if campo else str(parte)
-    detalhe = "campo obrigatório ausente" if erro["type"] == "missing" else f"valor inválido ({erro['msg']})"
-    return f"{campo or 'corpo'}: {detalhe}"
+class RespostaRota(_Saida):
+    status: str
+    shelter: AbrigoSaida | None
+    distance_meters: int | None
+    duration_min: int | None
+    path: list[PontoSaida]
+    message: str
+
+
+class RespostaRisco(_Saida):
+    area_id: int
+    flood_probability: float
+    high_probability: bool
+    low_data: bool
+    model_version: str
+
+
+MENSAGEM_SEM_ROTA = "Não há rota segura agora. Vá para um local alto e aguarde ajuda."
 
 
 def _erro(status: int, erro: str, mensagem: str) -> JSONResponse:
-    return JSONResponse(status_code=status, content={"erro": erro, "mensagem": mensagem})
+    return JSONResponse(status_code=status, content={"error": erro, "message": mensagem})
 
 
-def _rota_saida(origem: int, resultado: ResultadoRota) -> RotaSaida:
-    return RotaSaida(
-        origem=origem,
-        status=resultado.status,
-        caminho=list(resultado.caminho),
-        distancia_m=resultado.distancia_m,
-        orientacao=resultado.orientacao,
+def _resposta_rota(rota: RotaGeo) -> RespostaRota:
+    if rota.status is StatusRota.SEM_ROTA_SEGURA or rota.abrigo is None:
+        return RespostaRota(
+            status="NO_SAFE_ROUTE", shelter=None, distance_meters=None, duration_min=None, path=[], message=MENSAGEM_SEM_ROTA
+        )
+    abrigo = rota.abrigo
+    return RespostaRota(
+        status="ROUTE_FOUND",
+        shelter=AbrigoSaida(id=abrigo.id, name=abrigo.nome, lat=abrigo.ponto.lat, lng=abrigo.ponto.lng),
+        distance_meters=rota.distancia_m,
+        duration_min=rota.duracao_min,
+        path=[PontoSaida(lat=p.lat, lng=p.lng) for p in rota.caminho],
+        message=f"Siga a rota até {abrigo.nome}.",
     )
 
 
-def criar_app(cache: CacheArvores | None = None) -> FastAPI:
-    """Cria o serviço. Os testes passam um cache próprio para observar acertos e cálculos."""
-    cache_rotas = cache if cache is not None else CacheArvores()
-    app = FastAPI(title="Rota Segura", version="1.0.0")
+def _leitura(entrada: LeituraEntrada, i: int) -> Leitura:
+    try:
+        instante = datetime.fromisoformat(entrada.timestamp)
+    except ValueError as erro:
+        raise EntradaInvalidaError(f"readings[{i}].timestamp: '{entrada.timestamp}' não é ISO 8601") from erro
+    return Leitura(instante, entrada.rain_mm, entrada.water_level_cm)
 
-    @app.exception_handler(RequestValidationError)
-    async def _validacao(_: Request, erro: RequestValidationError) -> JSONResponse:
-        return _erro(400, "entrada_invalida", _mensagem_validacao(erro.errors()))
+
+def criar_app(mapa: Mapa | None = None, modelo: ModeloRisco | None = None) -> FastAPI:
+    """Cria o serviço. Os testes passam o mapa e o modelo; em produção vêm de GRAFO_PATH e MODELO_PATH."""
+    roteador = Roteador(mapa) if mapa is not None else None
+    app = FastAPI(title="Rota Segura (serviço Python)", version=VERSAO)
+    app.state.roteador = roteador
 
     @app.exception_handler(EntradaInvalidaError)
     async def _entrada_invalida(_: Request, erro: EntradaInvalidaError) -> JSONResponse:
-        return _erro(400, "entrada_invalida", _campo_na_api(str(erro)))
+        return _erro(400, "INVALID_INPUT", str(erro))
+
+    @app.exception_handler(ServicoIndisponivelError)
+    async def _indisponivel(_: Request, erro: ServicoIndisponivelError) -> JSONResponse:
+        return _erro(503, erro.codigo, str(erro))
 
     @app.exception_handler(Exception)
     async def _inesperado(_: Request, erro: Exception) -> JSONResponse:
         registro.exception("falha inesperada", exc_info=erro)
-        return _erro(500, "erro_interno", "Falha inesperada ao calcular a rota.")
+        return _erro(500, "INTERNAL_ERROR", "Falha inesperada no serviço.")
 
-    @app.get("/saude")
-    def saude() -> RespostaSaude:
-        return RespostaSaude(status="ok")
+    @app.get("/health")
+    def health() -> RespostaSaude:
+        return RespostaSaude(status="ok", map_loaded=roteador is not None, model_loaded=modelo is not None, version=VERSAO)
 
-    @app.post("/rotas")
-    def rotas(requisicao: RequisicaoRotas) -> RespostaRotas:
-        """Uma busca multi-origem (ou o cache) atende todas as origens: O(1) de busca + O(L) por rota."""
-        bairro = bairro_de_dados(requisicao.mapa.model_dump())
-        cenario = cenario_de_dados(requisicao.cenario.model_dump(), bairro)
-        for i, origem in enumerate(requisicao.origens):
-            if origem not in bairro.esquinas:
-                raise EntradaInvalidaError(f"origens[{i}]: esquina {origem} não existe no mapa")
-        arvore = cache_rotas.arvore(bairro, cenario)
-        return RespostaRotas(rotas=[_rota_saida(o, rota_ate_abrigo(arvore, o)) for o in requisicao.origens])
+    @app.post("/route")
+    def route(requisicao: RequisicaoRota) -> RespostaRota:
+        """Uma busca multi-origem (ou a memoização) atende a chamada: O(V + E) para alagados, O(V) para esquinas."""
+        if roteador is None:
+            raise ServicoIndisponivelError("MAP_UNAVAILABLE", "O mapa do bairro não está carregado.")
+        origem = validar_ponto(requisicao.origin.lat, requisicao.origin.lng, "origin")
+        abrigos = [
+            AbrigoGeo(a.id, a.name, validar_ponto(a.lat, a.lng, f"shelters[{i}]"), a.available_spots)
+            for i, a in enumerate(requisicao.shelters)
+        ]
+        areas = [
+            AreaAlagada(a.area_id, validar_ponto(a.lat, a.lng, f"floodedAreas[{i}]"), a.radius_m)
+            for i, a in enumerate(requisicao.flooded_areas)
+        ]
+        return _resposta_rota(roteador.rota(origem, abrigos, areas))
+
+    @app.post("/risk")
+    def risk(requisicao: RequisicaoRisco) -> RespostaRisco:
+        if modelo is None:
+            raise ServicoIndisponivelError("MODEL_UNAVAILABLE", "O modelo de risco não está carregado.")
+        validar_ponto(requisicao.lat, requisicao.lng, "lat/lng")
+        leituras = [_leitura(l, i) for i, l in enumerate(requisicao.readings)]
+        resultado = prever(modelo, leituras)
+        return RespostaRisco(
+            area_id=requisicao.area_id,
+            flood_probability=resultado.probabilidade,
+            high_probability=resultado.alta,
+            low_data=resultado.poucos_dados,
+            model_version=modelo.versao,
+        )
 
     return app
 
 
-app = criar_app()
+def app_da_configuracao() -> FastAPI:
+    """Lê GRAFO_PATH e MODELO_PATH. Falha ao carregar não derruba o serviço: /health mostra o que faltou."""
+    mapa: Mapa | None = None
+    modelo: ModeloRisco | None = None
+    caminho_mapa = os.environ.get("GRAFO_PATH")
+    if caminho_mapa:
+        try:
+            mapa = carregar_mapa(Path(caminho_mapa))
+        except EntradaInvalidaError as erro:
+            registro.error("mapa não carregado: %s", erro)
+    else:
+        registro.error("GRAFO_PATH não definido: /route ficará indisponível")
+    caminho_modelo = os.environ.get("MODELO_PATH")
+    if caminho_modelo:
+        try:
+            modelo = carregar_modelo(Path(caminho_modelo))
+        except EntradaInvalidaError as erro:
+            registro.error("modelo não carregado: %s", erro)
+    else:
+        registro.error("MODELO_PATH não definido: /risk ficará indisponível")
+    return criar_app(mapa, modelo)
+
+
+app = app_da_configuracao()
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+    uvicorn.run(app, host="127.0.0.1", port=int(os.environ.get("PORT", "8000")))
