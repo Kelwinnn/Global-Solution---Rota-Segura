@@ -6,7 +6,7 @@ Esta pasta é do **João Paulo Santana Basta (RM 565383)**: Dynamic Programming,
 
 - Decisões do grupo: `docs/decisions.md` (siga "Decidido"; pergunte antes de qualquer item fora dele). Contrato do serviço: `dynamic-programming/docs/contrato.md` (v2, fonte da verdade).
 - Trabalhe só em `data-science/` e `dynamic-programming/`. Fora disso (incluindo `docs/decisions.md`), só com pedido explícito.
-- Git: branch `main`. Pode commitar quando eu pedir, com o meu usuário do git e **sem `Co-Authored-By` nem nenhum trailer**. **Nunca faça push.** Antes de commitar, rode pytest e mypy --strict da pasta.
+- Git: branch `main`. Pode commitar quando eu pedir, com o meu usuário do git e **sem `Co-Authored-By` nem nenhum trailer**. Push só quando eu pedir no prompt. Antes de commitar, rode pytest e mypy --strict da pasta.
 - Antes de tarefa média ou grande, mostre um plano curto (arquivos) e espere meu ok. Diga sempre o que rodou e o resultado.
 - Python 3.11+, type hints em tudo, `mypy --strict`, `pytest`. Testes nomeados pela regra de negócio. Identificadores e README em português; JSON e endpoints do serviço em inglês e camelCase.
 - Entrada inválida: `EntradaInvalidaError` com mensagem que aponta o campo.
