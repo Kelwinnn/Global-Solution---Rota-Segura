@@ -72,6 +72,13 @@ def test_fator_de_risco_negativo_e_rejeitado(tmp_path: Path) -> None:
         carregar_bairro(_salvar(tmp_path, "bairro.json", dados))
 
 
+def test_fator_de_risco_acima_de_um_e_rejeitado(tmp_path: Path) -> None:
+    dados = json.loads(json.dumps(BAIRRO_VALIDO))
+    dados["trechos"][0]["fator_risco"] = 1.5
+    with pytest.raises(EntradaInvalidaError, match="fator de risco deve ser no máximo 1"):
+        carregar_bairro(_salvar(tmp_path, "bairro.json", dados))
+
+
 def test_capacidade_negativa_e_rejeitada(tmp_path: Path) -> None:
     bairro = _bairro_valido(tmp_path)
     cenario = {"trechos_alagados": [], "abrigos": [{"esquina": 3, "capacidade": -1, "ocupacao": 0}]}

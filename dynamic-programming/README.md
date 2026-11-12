@@ -45,7 +45,7 @@ Exemplo (`tests/dados/`):
 
 O bairro (o mapa, que quase não muda) fica separado do cenário (o que muda durante o alerta). Por isso o mesmo mapa serve para qualquer cenário.
 
-**Validação na entrada** (`carregador.py`): a leitura falha com `EntradaInvalidaError` e uma mensagem que aponta o campo quando há esquina inexistente, distância ≤ 0 (o mínimo é 1 mm), fator de risco negativo, capacidade ou ocupação negativa, trecho alagado que não existe no mapa, campo ausente, tipo errado ou JSON malformado. O algoritmo nunca recebe dado inválido.
+**Validação na entrada** (`carregador.py`): a leitura falha com `EntradaInvalidaError` e uma mensagem que aponta o campo quando há esquina inexistente, distância ≤ 0 (o mínimo é 1 mm), fator de risco fora de 0 a 1, capacidade ou ocupação negativa, trecho alagado que não existe no mapa, campo ausente, tipo errado ou JSON malformado. O algoritmo nunca recebe dado inválido.
 
 **Custos em milímetros inteiros** (`grafo.py`): em ponto flutuante, `100 × 1,1 = 110,00000000000001`, e um empate real (110 m contra 110 m) seria decidido por erro de arredondamento. Com inteiros em mm, empate é empate e o desempate segue a regra.
 
@@ -106,6 +106,7 @@ Ele serve de **referência**: um teste com `hypothesis` gera 500 mapas aleatóri
 - Memoização por cenário.
 - Comando de terminal com saída JSON, que pode ser salva no aparelho (RNF06).
 - Script de medição de tempo em mapas sintéticos.
+- Serviço HTTP (FastAPI) com `GET /saude` e `POST /rotas`.
 
 ## Como rodar
 
@@ -139,10 +140,39 @@ Com `--origem 1`, o trecho 2-3 alagado isola a pessoa:
 
 (Na saída real, o JSON vem indentado.) A saída é JSON em ASCII puro: acentos aparecem como `é`, e qualquer leitor de JSON os converte de volta. Assim o arquivo salvo vale em qualquer terminal, inclusive no Windows. Dado inválido imprime `erro: ...` em stderr e sai com código 1. Sem rota não é erro e sai com código 0.
 
+## Serviço HTTP (FastAPI)
+
+Implementa o contrato em [`docs/contrato.md`](docs/contrato.md): `GET /saude` e `POST /rotas` (o `POST /risco` continua em aberto). O mapa vem em cada requisição; o serviço só guarda o cache de cálculo. JSON em camelCase.
+
+```bash
+python -m uvicorn rota_segura.api:app --port 8000   # dentro de dynamic-programming/
+```
+
+```bash
+curl -X POST http://127.0.0.1:8000/rotas -H "Content-Type: application/json" -d '{
+  "mapa": {"esquinas": [1, 2, 3, 4],
+           "trechos": [{"origem": 1, "destino": 2, "distanciaM": 120.0, "fatorRisco": 0.1},
+                       {"origem": 2, "destino": 3, "distanciaM": 80.0},
+                       {"origem": 3, "destino": 4, "distanciaM": 60.0, "fatorRisco": 0.3}]},
+  "cenario": {"trechosAlagados": [], "abrigos": [{"esquina": 4, "capacidade": 50, "ocupacao": 10}]},
+  "origens": [1, 4]}'
+```
+
+```json
+{"rotas": [
+  {"origem": 1, "status": "rota_encontrada", "caminho": [1, 2, 3, 4], "distanciaM": 260.0, "orientacao": "Siga a rota até o abrigo na esquina 4"},
+  {"origem": 4, "status": "rota_encontrada", "caminho": [4], "distanciaM": 0.0, "orientacao": "Siga a rota até o abrigo na esquina 4"}]}
+```
+
+- Várias origens: uma única busca multi-origem a partir dos abrigos com vaga, uma rota por origem.
+- Entrada inválida (esquina inexistente, distância ≤ 0, `fatorRisco` fora de 0 a 1, capacidade ou ocupação negativa, origem inexistente, campo ausente ou de tipo errado): `400` com `{"erro": "entrada_invalida", "mensagem": "mapa.trechos[0].destino: esquina 9 não existe no mapa"}`. Falha inesperada: `500` com `{"erro": "erro_interno", ...}`.
+- "Sem rota segura" responde `200` com `status: sem_rota_segura`.
+- Cache (`servico.py`): a chave é um SHA-256 do mapa, dos trechos alagados e dos abrigos com vaga, então mudar qualquer um recalcula. É LRU com 128 entradas, porque o mapa chega em cada chamada e um dicionário sem limite cresceria sem parar.
+
 ## Como testar
 
 ```bash
-python -m pytest        # 62 testes
+python -m pytest        # 86 testes
 python -m mypy --strict # configuração em pyproject.toml
 python -m rota_segura.medicao
 ```
@@ -157,6 +187,7 @@ python -m rota_segura.medicao
 | `test_sem_rota.py` | `SEM_ROTA_SEGURA`, caminho vazio e "Fique em local alto" (RN05, RN06, comando) |
 | `test_comando.py` | Saída JSON e códigos de saída do comando |
 | `test_medicao.py` | Gerador de mapas sintéticos e a tabela de tempos |
+| `test_api.py` | Serviço: rota válida, RN05, RN06, sem rota (200), 400 por campo, 500, várias origens, camelCase, cache reaproveitado/recalculado |
 
 ## Tempos medidos
 
