@@ -29,7 +29,7 @@ Regra: o Claude Code segue o que está em **Decidido** e **pergunta antes** de q
 | 09/11 | Rota e risco | Serviço Python em FastAPI, chamado pela API Java |
 | 09/11 | Idioma do código | Inglês (classes, métodos, tabelas, colunas) |
 | 09/11 | Modo de trabalho | Claude gera e explica linha a linha; o Kelwin revisa e commita |
-| 09/11 | Base do Data Science | INMET |
+| 09/11 | Base do Data Science | Cemaden (ver 11/11) |
 | 09/11 | Versão do Spring Boot | 3.4.1 |
 | 09/11 | Nome das colunas | Chave primária no padrão `ID_<ENTIDADE>` (ex.: `ID_SHELTER` na tabela `T_RS_SHELTER`) |
 | 09/11 | Front: chamadas à API | `fetch` nativo (sem axios) |
@@ -68,6 +68,13 @@ Regra: o Claude Code segue o que está em **Decidido** e **pergunta antes** de q
 | 11/11 | Memória da JVM | `-XX:MaxRAMPercentage=75` no Dockerfile (o plano gratuito do Render tem 512 MB) |
 | 11/11 | Leituras do sensor sem autenticação | **Risco aceito do MVP:** `POST /api/sensor-readings` fica aberto, então uma leitura falsa pode disparar alerta e SMS. Motivo (Kelwin): na emergência, nada pode depender de cadastro ou login, e os sensores do MVP são simulados. Citar no PDF como limitação conhecida; numa versão real, cada sensor teria uma chave própria |
 | 11/11 | `.gitignore` na raiz | Só `.idea/` e `*.iml` (arquivos do IntelliJ). Cada pasta mantém o próprio `.gitignore` |
+| 11/11 | Contrato do serviço Python | v2 em `dynamic-programming/docs/contrato.md`: `GET /health`, `POST /route`, `POST /risk`, camelCase, seguindo as decisões de 10/11 (áreas alagadas com `areaId`, `lat`, `lng`, `radiusM`; abrigos enviados pelo Java; 70 m/min). Sem rota segura = 200 com `status: NO_SAFE_ROUTE`. Desempate: custo, distância, ID do abrigo. Origem a mais de 300 m da rua mais próxima = 400 (João Paulo; validar com o Kelwin) |
+| 11/11 | `/risk` | Recebe as leituras da área dos últimos 8 dias e devolve `floodProbability`, `highProbability` e `lowData`. O nível em cm continua no Java (João Paulo; validar com o Kelwin) |
+| 11/11 | Deploy do serviço Python | Serviço separado no Render, Dockerfile em `dynamic-programming/`. Variáveis `PORT`, `GRAFO_PATH`, `MODELO_PATH`. URL em desenvolvimento: `http://localhost:8000` (João Paulo; validar com o Kelwin) |
+| 11/11 | Probabilidade alta | Regra: limite de maior precisão entre os que avisam pelo menos 70% dos dias de alagamento na validação (2023). O número sai do treino até 17/11 (João Paulo; validar com o Kelwin) |
+| 11/11 | Alerta antecipado | Quando `highProbability` for `true`, SMS: "Há alta chance de alagamento na sua área hoje. Prepare-se para ir ao abrigo." (João Paulo; validar com o Kelwin) |
+| 11/11 | Base do Data Science | Chuva do Cemaden (PED), estação Itaim Paulista (355030881A), 2016–2025. Rótulo: alagamentos do CGE (Extremo Leste e Zona Leste), 2016–2025. Alto Tietê: modelo aplicado com a chuva de Mogi das Cruzes e Itaquaquecetuba e validado contra as ocorrências do Reindesc (Cemaden). Substitui o INMET de 09/11 (João Paulo; validar com o Kelwin) |
+| 11/11 | Modelos de Data Science | Regressão logística = alagou no dia (é o `/risk`); regressão linear = número de pontos de alagamento no dia. Divisão por tempo: treino 2016–2022, validação 2023, teste 2024–2025 (João Paulo; validar com o Kelwin) |
 
 ### Estrutura do monorepo
 
@@ -108,10 +115,7 @@ Fluxo: `controller → bo → dao → repository`. Nenhuma camada pula a seguint
 
 ## Em aberto (perguntar antes de decidir)
 
-- [ ] **Contrato do serviço Python:** endpoints, formato de request e response, URL base. Rascunho de proposta no documento "Serviço Python: decisões para o João Paulo"; aguardando as respostas dele.
-- [ ] **Deploy do serviço Python** e variáveis de ambiente de cada serviço. Aguardando o João Paulo.
 - [ ] **Front: pacote do Google Maps** (ex.: `@vis.gl/react-google-maps`) e conta/chave da API. Urgente: o RF14 virou Must e depende disso.
-- [ ] **Probabilidade de alagamento:** a partir de qual valor é "alta", e o que o alerta antecipado diz ao morador. Depende do João Paulo.
 - [ ] **Formato do JSON de erro** (400, 401, 403, 404, 422...): ex.: `ProblemDetail` do Spring (RFC 7807) ou um record próprio. Decidir junto do `@RestControllerAdvice`. Até lá, 401 e 403 voltam só com o status, sem corpo.
 - [ ] **Onde a entidade vira DTO:** com `open-in-view=false`, relacionamentos `LAZY` só carregam dentro da transação. Decidir na primeira entidade com relacionamento (Sensor → Área) se a conversão fica no BO (`@Transactional`) ou se o DAO já busca o relacionamento junto (ex.: `JOIN FETCH`).
 - [ ] **Número da equipe** para a faixa 192.168.X.0/24 de Network. Kelwin informa em 10/11.
