@@ -14,7 +14,8 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["pytest", "mypy", "hypothesis", "httpx", "pandas-stubs"]
+dev = ["pytest", "mypy", "hypothesis", "httpx", "pandas-stubs", "networkx"]
+grafo = ["osmnx"]  # só para gerar o grafo e os abrigos (rota_segura.gerar_grafo / gerar_abrigos); fora do serviço
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -26,5 +27,5 @@ python_version = "3.11"
 files = ["rota_segura", "tests"]
 
 [[tool.mypy.overrides]]
-module = ["sklearn.*", "joblib", "joblib.*"]
+module = ["sklearn.*", "joblib", "joblib.*", "osmnx", "osmnx.*", "networkx", "networkx.*", "shapely", "shapely.*"]
 ignore_missing_imports = true
