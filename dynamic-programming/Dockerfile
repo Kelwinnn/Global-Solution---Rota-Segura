@@ -11,9 +11,12 @@ RUN python -c "import tomllib; print(chr(10).join(tomllib.load(open('pyproject.t
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY rota_segura ./rota_segura
+# Mapa do Jardim Helena (OpenStreetMap) e modelo de risco: são os caminhos padrão do serviço
+# (GRAFO_PATH e MODELO_PATH só são necessários para trocar de arquivo).
+COPY dados/grafo_jardim_helena.json ./dados/grafo_jardim_helena.json
+COPY modelos/risco_logistica.joblib ./modelos/risco_logistica.joblib
 
-# GRAFO_PATH e MODELO_PATH apontam para arquivos fora da imagem (copiados ou montados no deploy).
-# Sem eles o serviço sobe, e /health mostra mapLoaded/modelLoaded falsos.
+# Se algum dos dois arquivos faltar ou for inválido, o serviço sobe mesmo assim e /health mostra mapLoaded/modelLoaded falsos.
 ENV PORT=8000
 EXPOSE 8000
 

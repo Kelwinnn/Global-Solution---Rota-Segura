@@ -1,8 +1,8 @@
 """Serviço FastAPI do contrato v2 (docs/contrato.md): GET /health, POST /route, POST /risk.
 
 Subir (de dentro de dynamic-programming/):
-    GRAFO_PATH=dados/grafo_teste_jardim_helena.json MODELO_PATH=modelo.joblib \\
     python -m uvicorn rota_segura.api:app --port 8000
+(sem variáveis usa dados/grafo_jardim_helena.json e modelos/risco_logistica.joblib; GRAFO_PATH e MODELO_PATH trocam)
 O JSON da API é camelCase; os identificadores internos continuam em português/snake_case.
 O mapa e o modelo são carregados na subida. Se algum faltar, o serviço sobe mesmo assim e /health avisa.
 """
@@ -24,6 +24,9 @@ from rota_segura.risco import Leitura, ModeloRisco, carregar_modelo, prever
 from rota_segura.roteador import AbrigoGeo, Roteador, RotaGeo
 
 VERSAO = "2.0.0"
+RAIZ = Path(__file__).resolve().parent.parent  # dynamic-programming/ (ou /app na imagem)
+GRAFO_PADRAO = RAIZ / "dados" / "grafo_jardim_helena.json"
+MODELO_PADRAO = RAIZ / "modelos" / "risco_logistica.joblib"
 registro = logging.getLogger("rota_segura.api")
 
 
@@ -209,25 +212,20 @@ def criar_app(mapa: Mapa | None = None, modelo: ModeloRisco | None = None) -> Fa
 
 
 def app_da_configuracao() -> FastAPI:
-    """Lê GRAFO_PATH e MODELO_PATH. Falha ao carregar não derruba o serviço: /health mostra o que faltou."""
+    """Lê GRAFO_PATH e MODELO_PATH (padrão: dados/grafo_jardim_helena.json e modelos/risco_logistica.joblib).
+
+    Falha ao carregar não derruba o serviço: /health mostra o que faltou.
+    """
     mapa: Mapa | None = None
     modelo: ModeloRisco | None = None
-    caminho_mapa = os.environ.get("GRAFO_PATH")
-    if caminho_mapa:
-        try:
-            mapa = carregar_mapa(Path(caminho_mapa))
-        except EntradaInvalidaError as erro:
-            registro.error("mapa não carregado: %s", erro)
-    else:
-        registro.error("GRAFO_PATH não definido: /route ficará indisponível")
-    caminho_modelo = os.environ.get("MODELO_PATH")
-    if caminho_modelo:
-        try:
-            modelo = carregar_modelo(Path(caminho_modelo))
-        except EntradaInvalidaError as erro:
-            registro.error("modelo não carregado: %s", erro)
-    else:
-        registro.error("MODELO_PATH não definido: /risk ficará indisponível")
+    try:
+        mapa = carregar_mapa(Path(os.environ.get("GRAFO_PATH", GRAFO_PADRAO)))
+    except EntradaInvalidaError as erro:
+        registro.error("mapa não carregado: %s", erro)
+    try:
+        modelo = carregar_modelo(Path(os.environ.get("MODELO_PATH", MODELO_PADRAO)))
+    except EntradaInvalidaError as erro:
+        registro.error("modelo não carregado: %s", erro)
     return criar_app(mapa, modelo)
 
 

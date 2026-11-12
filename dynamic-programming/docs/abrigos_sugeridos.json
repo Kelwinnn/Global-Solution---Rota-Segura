@@ -1,0 +1,118 @@
+{
+  "fonte": "© colaboradores do OpenStreetMap (ODbL)",
+  "relacaoOsm": "R3049447",
+  "geradoEm": "2026-11-12",
+  "aviso": "Capacidade SIMULADA (escola 200, CEU 400, outros 100): o OSM não informa lotação. Endereço vem de addr:street + addr:housenumber e é null quando o OSM não tem.",
+  "abrigos": [
+    {
+      "id": 1,
+      "nome": "Centro Educacional Unificado Três Pontes",
+      "endereco": "Rua Capachos, 400",
+      "lat": -23.478226,
+      "lng": -46.381098,
+      "tipo": "CEU",
+      "capacidade": 400,
+      "capacidadeSimulada": true,
+      "osmId": "way/702284295"
+    },
+    {
+      "id": 2,
+      "nome": "Colégio Cavlac",
+      "endereco": null,
+      "lat": -23.487486,
+      "lng": -46.433338,
+      "tipo": "escola",
+      "capacidade": 200,
+      "capacidadeSimulada": true,
+      "osmId": "node/4332671892"
+    },
+    {
+      "id": 3,
+      "nome": "Escola sem nome (OSM way/622202838)",
+      "endereco": null,
+      "lat": -23.486752,
+      "lng": -46.410131,
+      "tipo": "escola",
+      "capacidade": 200,
+      "capacidadeSimulada": true,
+      "osmId": "way/622202838"
+    },
+    {
+      "id": 4,
+      "nome": "Escola Estadual Heckel Tavares",
+      "endereco": "Avenida Doutor José Artur Nova, 2737",
+      "lat": -23.474775,
+      "lng": -46.424981,
+      "tipo": "escola",
+      "capacidade": 200,
+      "capacidadeSimulada": true,
+      "osmId": "way/463768295"
+    },
+    {
+      "id": 5,
+      "nome": "EMEF José Bento de Assis",
+      "endereco": null,
+      "lat": -23.487689,
+      "lng": -46.421595,
+      "tipo": "escola",
+      "capacidade": 200,
+      "capacidadeSimulada": true,
+      "osmId": "node/4288313827"
+    },
+    {
+      "id": 6,
+      "nome": "Escola Municipal de Educação Infantil Professora Célia Ribeiro Landim",
+      "endereco": "Praça Craveiro do Campo",
+      "lat": -23.479068,
+      "lng": -46.419903,
+      "tipo": "escola",
+      "capacidade": 200,
+      "capacidadeSimulada": true,
+      "osmId": "way/622225711"
+    },
+    {
+      "id": 7,
+      "nome": "Escola Estadual Doutor Diogo de Faria",
+      "endereco": "Rua Santa Rosa de Lima, 591",
+      "lat": -23.48663,
+      "lng": -46.428978,
+      "tipo": "escola",
+      "capacidade": 200,
+      "capacidadeSimulada": true,
+      "osmId": "way/527689463"
+    },
+    {
+      "id": 8,
+      "nome": "Escola Estadual Professor José Bonifácio Andrada e Silva Jardim",
+      "endereco": "Rua André Furtado de Mendonça, 473",
+      "lat": -23.479673,
+      "lng": -46.384704,
+      "tipo": "escola",
+      "capacidade": 200,
+      "capacidadeSimulada": true,
+      "osmId": "way/335102143"
+    },
+    {
+      "id": 9,
+      "nome": "Escola Municipal de Educação Fundamental Murures",
+      "endereco": "Rua dos Murures",
+      "lat": -23.476716,
+      "lng": -46.418575,
+      "tipo": "escola",
+      "capacidade": 200,
+      "capacidadeSimulada": true,
+      "osmId": "way/529552257"
+    },
+    {
+      "id": 10,
+      "nome": "EE Maria de Loudes Vieira",
+      "endereco": null,
+      "lat": -23.489949,
+      "lng": -46.432494,
+      "tipo": "escola",
+      "capacidade": 200,
+      "capacidadeSimulada": true,
+      "osmId": "node/4332646214"
+    }
+  ]
+}
