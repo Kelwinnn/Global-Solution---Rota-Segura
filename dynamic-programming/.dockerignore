@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.hypothesis/
+tests/
+docs/
+README.md
+.gitignore
+Dockerfile
+.dockerignore
+*.joblib
