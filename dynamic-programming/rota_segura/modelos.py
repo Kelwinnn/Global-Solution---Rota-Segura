@@ -24,6 +24,11 @@ class Abrigo:
     esquina: int
     capacidade: int
     ocupacao: int
+    id_abrigo: int | None = None  # id do abrigo (desempate); sem ele vale a própria esquina
+
+    @property
+    def identificador(self) -> int:
+        return self.esquina if self.id_abrigo is None else self.id_abrigo
 
     @property
     def tem_vaga(self) -> bool:
