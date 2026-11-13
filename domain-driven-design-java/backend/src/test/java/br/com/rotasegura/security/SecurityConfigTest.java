@@ -29,6 +29,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -123,6 +124,59 @@ class SecurityConfigTest {
         mockMvc.perform(head("/api/auth/me")).andExpect(status().isUnauthorized());
     }
 
+    // ---- Corpo do 401 e do 403: ProblemDetail, como os outros erros da API ----
+
+    @Test
+    void unauthorizedBodyIsProblemDetail() throws Exception {
+        mockMvc.perform(post("/api/areas").with(csrf()))
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_PROBLEM_JSON))
+                .andExpect(jsonPath("$.status").value(401))
+                .andExpect(jsonPath("$.title").value("Login necessário"))
+                .andExpect(jsonPath("$.detail").value("Faça login para continuar."))
+                .andExpect(jsonPath("$.instance").value("/api/areas"))
+                .andExpect(jsonPath("$.properties").doesNotExist());
+    }
+
+    @Test
+    void expiredSessionBodyAsksForLogin() throws Exception {
+        // Sem login e sem token: quem recusa é o filtro de CSRF, mas a resposta é a mesma do 401
+        mockMvc.perform(post("/api/areas"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.title").value("Login necessário"));
+    }
+
+    @Test
+    @WithMockUser
+    void forbiddenByCsrfBodyExplainsTheToken() throws Exception {
+        mockMvc.perform(post("/api/areas"))
+                .andExpect(status().isForbidden())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_PROBLEM_JSON))
+                .andExpect(jsonPath("$.status").value(403))
+                .andExpect(jsonPath("$.title").value("Token CSRF inválido"))
+                .andExpect(jsonPath("$.instance").value("/api/areas"));
+    }
+
+    @Test
+    void forgedForwardedPrefixStillGets401() throws Exception {
+        // Um prefixo com espaço entra no caminho da requisição; a resposta não pode virar 500
+        mockMvc.perform(post("/api/areas").with(csrf()).header("X-Forwarded-Prefix", "/a b"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.title").value("Login necessário"))
+                .andExpect(jsonPath("$.instance").value("/a%20b/api/areas"));
+
+        // Prefixo que nem codificado vira URI: o instance cai em "/", mas o 401 se mantém
+        mockMvc.perform(post("/api/areas").with(csrf()).header("X-Forwarded-Prefix", ":x"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.title").value("Login necessário"));
+
+        mockMvc.perform(post("/api/auth/login").header("X-Forwarded-Prefix", "/[x]")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(loginJson(USERNAME, "wrong-" + UUID.randomUUID())))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.title").value("Login não realizado"));
+    }
+
     // ---- Com login, sem CSRF: 403 ----
 
     @Test
@@ -158,7 +212,19 @@ class SecurityConfigTest {
         mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(loginJson(USERNAME, "wrong-" + UUID.randomUUID())))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.title").value("Login não realizado"))
+                .andExpect(jsonPath("$.detail").value("Usuário ou senha incorretos."));
+    }
+
+    @Test
+    void loginWithUnknownUserGivesTheSameAnswer() throws Exception {
+        // Mesmo texto para usuário inexistente e senha errada: não revela quais usuários existem
+        mockMvc.perform(post("/api/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(loginJson("nobody-" + UUID.randomUUID(), PASSWORD)))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.detail").value("Usuário ou senha incorretos."));
     }
 
     @Test

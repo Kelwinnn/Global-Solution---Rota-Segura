@@ -16,16 +16,21 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
+import org.springframework.http.converter.HttpMessageNotWritableException;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.context.request.async.AsyncRequestTimeoutException;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.hasItem;
@@ -133,7 +138,8 @@ class RiskAreaControllerTest {
         mockMvc.perform(post("/api/areas").with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(VALID_BODY))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.title").value("Login necessário"));
         verifyNoInteractions(riskAreaBO);
     }
 
@@ -341,6 +347,100 @@ class RiskAreaControllerTest {
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.title").value("Não encontrado"))
                 .andExpect(jsonPath("$.detail").value("Esta rota não existe."));
+    }
+
+    @Test
+    @WithMockUser
+    void forgedForwardedPrefixKeepsErrorsInOurFormat() throws Exception {
+        when(riskAreaBO.findById(99L)).thenThrow(new ResourceNotFoundException("Área de risco 99 não encontrada."));
+        mockMvc.perform(get("/api/areas/99").header("X-Forwarded-Prefix", "/a b"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.title").value("Não encontrado"))
+                .andExpect(jsonPath("$.instance").value("/a%20b/api/areas/99"));
+
+        mockMvc.perform(post("/api/areas").with(csrf()).header("X-Forwarded-Prefix", "/a{b}")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(VALID_BODY.replace("\"radiusM\": 500", "\"radiusM\": 0")))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.title").value("Dados inválidos"))
+                .andExpect(jsonPath("$.errors[*].field", hasItem("radiusM")));
+
+        mockMvc.perform(patch("/api/areas/1").with(csrf()).header("X-Forwarded-Prefix", "/a b"))
+                .andExpect(status().isMethodNotAllowed())
+                .andExpect(jsonPath("$.title").value("Método não permitido"));
+    }
+
+    @Test
+    @WithMockUser
+    void createWithBracesInForgedPrefixStillReturns201() throws Exception {
+        when(riskAreaBO.create(any(RiskAreaRequest.class))).thenReturn(AREA);
+
+        mockMvc.perform(post("/api/areas").with(csrf()).header("X-Forwarded-Prefix", "/a{b}")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(VALID_BODY))
+                .andExpect(status().isCreated())
+                .andExpect(header().string("Location", endsWith("/api/areas/1")));
+    }
+
+    @Test
+    @WithMockUser
+    void validationErrorsComeSortedByField() throws Exception {
+        String invalid = """
+                {"name": "", "city": "", "riskType": "FLOOD",
+                 "latitude": -95, "longitude": 200, "radiusM": 0}
+                """;
+
+        mockMvc.perform(post("/api/areas").with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(invalid))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[*].field",
+                        contains("city", "latitude", "longitude", "name", "radiusM")));
+    }
+
+    @Test
+    void otherSpringErrorsAreInPortuguese() throws Exception {
+        when(riskAreaBO.findAll()).thenThrow(new AsyncRequestTimeoutException());
+        mockMvc.perform(get("/api/areas"))
+                .andExpect(status().isServiceUnavailable())
+                .andExpect(jsonPath("$.title").value("Serviço indisponível"));
+
+        when(riskAreaBO.findById(1L)).thenThrow(new HttpMessageNotWritableException("falha ao escrever"));
+        mockMvc.perform(get("/api/areas/1"))
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$.title").value("Erro interno"))
+                .andExpect(jsonPath("$.detail").value(not(containsString("escrever"))));
+    }
+
+    // ---- Erro de segurança lançado dentro do controller: quem responde é o Spring Security ----
+
+    @Test
+    void accessDeniedInsideControllerWithoutLoginReturns401() throws Exception {
+        when(riskAreaBO.findAll()).thenThrow(new AccessDeniedException("sem permissão"));
+
+        mockMvc.perform(get("/api/areas"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.title").value("Login necessário"));
+    }
+
+    @Test
+    @WithMockUser
+    void accessDeniedInsideControllerWithLoginReturns403() throws Exception {
+        when(riskAreaBO.findAll()).thenThrow(new AccessDeniedException("sem permissão"));
+
+        mockMvc.perform(get("/api/areas"))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.title").value("Acesso negado"))
+                .andExpect(jsonPath("$.detail").value("Você não tem permissão para esta ação."));
+    }
+
+    @Test
+    void authenticationErrorInsideControllerReturns401() throws Exception {
+        when(riskAreaBO.findAll()).thenThrow(new BadCredentialsException("credencial recusada"));
+
+        mockMvc.perform(get("/api/areas"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.title").value("Login necessário"));
     }
 
     @Test

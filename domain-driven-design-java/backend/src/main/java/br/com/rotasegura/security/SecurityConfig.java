@@ -1,5 +1,6 @@
 package br.com.rotasegura.security;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.DispatcherType;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -19,7 +20,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
@@ -48,7 +48,11 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
                                                    SecurityContextRepository securityContextRepository,
-                                                   CsrfTokenRepository csrfTokenRepository) throws Exception {
+                                                   CsrfTokenRepository csrfTokenRepository,
+                                                   ObjectMapper objectMapper) throws Exception {
+        // 401 e 403 saem em ProblemDetail, escritos com o mesmo conversor de JSON do resto da API
+        SecurityProblemWriter problemWriter = new SecurityProblemWriter(objectMapper);
+
         // CSRF desligado só no POST dessas rotas; um PUT ou DELETE nelas continua exigindo token
         RequestMatcher[] publicPosts = PUBLIC_POST_ENDPOINTS.stream()
                 .map(path -> antMatcher(HttpMethod.POST, path))
@@ -68,8 +72,8 @@ public class SecurityConfig {
                         .anyRequest().authenticated())
                 .securityContext(context -> context.securityContextRepository(securityContextRepository))
                 .exceptionHandling(exception -> exception
-                        .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
-                        .accessDeniedHandler(new RestAccessDeniedHandler()))
+                        .authenticationEntryPoint(new RestAuthenticationEntryPoint(problemWriter))
+                        .accessDeniedHandler(new RestAccessDeniedHandler(problemWriter)))
                 .requestCache(cache -> cache.disable())
                 .logout(logout -> logout
                         .logoutUrl("/api/auth/logout")

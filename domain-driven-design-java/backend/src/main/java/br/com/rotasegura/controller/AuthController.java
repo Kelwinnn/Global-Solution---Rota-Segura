@@ -3,15 +3,19 @@ package br.com.rotasegura.controller;
 import br.com.rotasegura.dto.CsrfTokenResponse;
 import br.com.rotasegura.dto.CurrentUserResponse;
 import br.com.rotasegura.dto.LoginRequest;
+import br.com.rotasegura.exception.InvalidCredentialsException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -36,6 +40,8 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Autenticação", description = "Login, sessão e token CSRF do painel")
 public class AuthController {
 
+    private static final Logger log = LoggerFactory.getLogger(AuthController.class);
+
     private final AuthenticationManager authenticationManager;
     private final SecurityContextRepository securityContextRepository;
     private final CsrfTokenRepository csrfTokenRepository;
@@ -52,7 +58,10 @@ public class AuthController {
 
     @PostMapping("/login")
     @Operation(summary = "Entrar no painel",
-            description = "Confere usuário e senha e abre a sessão (cookie). Responde 401 se estiverem errados.")
+            description = "Confere usuário e senha e abre a sessão (cookie). Depois do login, busque o token em GET /api/auth/csrf.")
+    @ApiResponse(responseCode = "200", description = "Login feito")
+    @ApiResponse(responseCode = "400", description = "Usuário ou senha em branco")
+    @ApiResponse(responseCode = "401", description = "Usuário ou senha incorretos")
     public ResponseEntity<CurrentUserResponse> login(@Valid @RequestBody LoginRequest login,
                                                      HttpServletRequest request,
                                                      HttpServletResponse response) {
@@ -61,7 +70,11 @@ public class AuthController {
             authentication = authenticationManager.authenticate(
                     UsernamePasswordAuthenticationToken.unauthenticated(login.username(), login.password()));
         } catch (AuthenticationException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            // Senha errada é esperado; qualquer outro motivo (ex.: falha interna) vai para o log
+            if (!(e instanceof BadCredentialsException)) {
+                log.warn("Login recusado por motivo inesperado: {}", e.getClass().getSimpleName());
+            }
+            throw new InvalidCredentialsException();
         }
 
         // Troca o id da sessão no login (proteção contra fixação de sessão)
@@ -83,6 +96,8 @@ public class AuthController {
     @GetMapping("/me")
     @Operation(summary = "Usuário logado",
             description = "Devolve o usuário da sessão atual ou 401 se não houver login.")
+    @ApiResponse(responseCode = "200", description = "Usuário logado")
+    @ApiResponse(responseCode = "401", description = "Sem login")
     public CurrentUserResponse me(Authentication authentication) {
         return new CurrentUserResponse(authentication.getName());
     }

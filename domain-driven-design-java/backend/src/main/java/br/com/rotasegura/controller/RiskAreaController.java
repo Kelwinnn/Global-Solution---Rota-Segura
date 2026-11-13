@@ -55,9 +55,10 @@ public class RiskAreaController {
     @ApiResponse(responseCode = "409", description = "Já existe área com esse nome na cidade")
     public ResponseEntity<RiskAreaResponse> create(@Valid @RequestBody RiskAreaRequest request) {
         RiskAreaResponse created = riskAreaBO.create(request);
+        // pathSegment (e não "/{id}"): chaves vindas de fora no caminho não são tratadas como variável
         URI location = ServletUriComponentsBuilder.fromCurrentRequestUri()
-                .path("/{id}")
-                .buildAndExpand(created.id())
+                .pathSegment(String.valueOf(created.id()))
+                .build()
                 .toUri();
         return ResponseEntity.created(location).body(created);
     }
