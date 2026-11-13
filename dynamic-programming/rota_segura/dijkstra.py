@@ -8,14 +8,14 @@ dá, para cada esquina, o abrigo com vaga mais próximo e o caminho até ele.
 
 import heapq
 
-from rota_segura.grafo import ArvoreRotas, Grafo, Rotulo
+from rota_segura.grafo import Abrigos, ArvoreRotas, Grafo, Rotulo, ids_dos_abrigos
 from rota_segura.modelos import ResultadoRota, StatusRota
 
 ORIENTACAO_SEM_ROTA = "Fique em local alto"
 
 
-def dijkstra_multi_origem(grafo: Grafo, abrigos: frozenset[int]) -> ArvoreRotas:
-    """Melhor rótulo (custo, distância, abrigo) e próxima esquina para cada esquina alcançável.
+def dijkstra_multi_origem(grafo: Grafo, abrigos: Abrigos) -> ArvoreRotas:
+    """Melhor rótulo (custo, distância, id do abrigo) e próxima esquina para cada esquina alcançável.
 
     Empate de rótulo entre dois vizinhos: fica o de menor ID como próxima esquina.
     Tempo O((V + E) log V) com heapq; memória O(V + E).
@@ -23,9 +23,9 @@ def dijkstra_multi_origem(grafo: Grafo, abrigos: frozenset[int]) -> ArvoreRotas:
     rotulos: dict[int, Rotulo] = {}
     proximo: dict[int, int] = {}
     fila: list[tuple[Rotulo, int]] = []
-    for abrigo in abrigos:
-        rotulos[abrigo] = (0, 0, abrigo)
-        heapq.heappush(fila, (rotulos[abrigo], abrigo))
+    for esquina, id_abrigo in ids_dos_abrigos(abrigos).items():
+        rotulos[esquina] = (0, 0, id_abrigo)
+        heapq.heappush(fila, (rotulos[esquina], esquina))
 
     finalizadas: set[int] = set()
     while fila:

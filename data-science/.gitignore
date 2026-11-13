@@ -1,0 +1,7 @@
+# Dados brutos do PED (Cemaden): não versionar
+dados/ped/
+# Dados brutos do CGE (raspagem): nao versionar
+dados/cge/
+__pycache__/
+.mypy_cache/
+.pytest_cache/

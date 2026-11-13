@@ -21,6 +21,7 @@ from rota_segura.modelos import (
 # Os custos são comparados em milímetros inteiros (ver grafo.py), então 1 mm é
 # a menor distância representável.
 DISTANCIA_MINIMA_M = 0.001
+FATOR_RISCO_MAXIMO = 1.0
 
 
 def _ler_json(caminho: Path) -> Any:
@@ -72,7 +73,12 @@ def _esquina(valor: Any, esquinas: frozenset[int], onde: str) -> int:
 
 def carregar_bairro(caminho: str | Path) -> Bairro:
     """Lê e valida o mapa: esquinas e trechos (distância em metros e fator de risco)."""
-    dados = _objeto(_ler_json(Path(caminho)), "bairro")
+    return bairro_de_dados(_ler_json(Path(caminho)))
+
+
+def bairro_de_dados(bruto: Any) -> Bairro:
+    """Valida o mapa já lido (dicionário com 'esquinas' e 'trechos'). Usado pelo arquivo e pela API."""
+    dados = _objeto(bruto, "bairro")
     esquinas = frozenset(
         _inteiro(e, "bairro.esquinas") for e in _lista(_campo(dados, "esquinas", "bairro"), "bairro.esquinas")
     )
@@ -90,13 +96,20 @@ def carregar_bairro(caminho: str | Path) -> Bairro:
         fator = _numero(item.get("fator_risco", 0.0), f"{onde}.fator_risco")
         if fator < 0:
             raise EntradaInvalidaError(f"{onde}.fator_risco: o fator de risco não pode ser negativo, recebido {fator}")
+        if fator > FATOR_RISCO_MAXIMO:
+            raise EntradaInvalidaError(f"{onde}.fator_risco: o fator de risco deve ser no máximo 1, recebido {fator}")
         trechos.append(Trecho(origem, destino, distancia, fator))
     return Bairro(esquinas, tuple(trechos))
 
 
 def carregar_cenario(caminho: str | Path, bairro: Bairro) -> Cenario:
     """Lê e valida o cenário (trechos alagados e abrigos) contra o bairro já carregado."""
-    dados = _objeto(_ler_json(Path(caminho)), "cenario")
+    return cenario_de_dados(_ler_json(Path(caminho)), bairro)
+
+
+def cenario_de_dados(bruto: Any, bairro: Bairro) -> Cenario:
+    """Valida o cenário já lido contra o bairro. Usado pelo arquivo e pela API."""
+    dados = _objeto(bruto, "cenario")
     trechos_existentes = {chave_trecho(t.origem, t.destino) for t in bairro.trechos}
 
     alagados: set[tuple[int, int]] = set()

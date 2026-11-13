@@ -1,0 +1,304 @@
+{
+ "esquinas": [
+  {
+   "id": 1,
+   "lat": -23.493,
+   "lng": -46.415
+  },
+  {
+   "id": 2,
+   "lat": -23.493,
+   "lng": -46.41402
+  },
+  {
+   "id": 3,
+   "lat": -23.493,
+   "lng": -46.41304
+  },
+  {
+   "id": 4,
+   "lat": -23.493,
+   "lng": -46.41206
+  },
+  {
+   "id": 5,
+   "lat": -23.493,
+   "lng": -46.41108
+  },
+  {
+   "id": 6,
+   "lat": -23.4921,
+   "lng": -46.415
+  },
+  {
+   "id": 7,
+   "lat": -23.4921,
+   "lng": -46.41402
+  },
+  {
+   "id": 8,
+   "lat": -23.4921,
+   "lng": -46.41304
+  },
+  {
+   "id": 9,
+   "lat": -23.4921,
+   "lng": -46.41206
+  },
+  {
+   "id": 10,
+   "lat": -23.4921,
+   "lng": -46.41108
+  },
+  {
+   "id": 11,
+   "lat": -23.4912,
+   "lng": -46.415
+  },
+  {
+   "id": 12,
+   "lat": -23.4912,
+   "lng": -46.41402
+  },
+  {
+   "id": 13,
+   "lat": -23.4912,
+   "lng": -46.41304
+  },
+  {
+   "id": 14,
+   "lat": -23.4912,
+   "lng": -46.41206
+  },
+  {
+   "id": 15,
+   "lat": -23.4912,
+   "lng": -46.41108
+  },
+  {
+   "id": 16,
+   "lat": -23.4903,
+   "lng": -46.415
+  },
+  {
+   "id": 17,
+   "lat": -23.4903,
+   "lng": -46.41402
+  },
+  {
+   "id": 18,
+   "lat": -23.4903,
+   "lng": -46.41304
+  },
+  {
+   "id": 19,
+   "lat": -23.4903,
+   "lng": -46.41206
+  },
+  {
+   "id": 20,
+   "lat": -23.4903,
+   "lng": -46.41108
+  },
+  {
+   "id": 21,
+   "lat": -23.4894,
+   "lng": -46.415
+  },
+  {
+   "id": 22,
+   "lat": -23.4894,
+   "lng": -46.41402
+  },
+  {
+   "id": 23,
+   "lat": -23.4894,
+   "lng": -46.41304
+  },
+  {
+   "id": 24,
+   "lat": -23.4894,
+   "lng": -46.41206
+  },
+  {
+   "id": 25,
+   "lat": -23.4894,
+   "lng": -46.41108
+  }
+ ],
+ "trechos": [
+  {
+   "origem": 1,
+   "destino": 2
+  },
+  {
+   "origem": 1,
+   "destino": 6
+  },
+  {
+   "origem": 2,
+   "destino": 3
+  },
+  {
+   "origem": 2,
+   "destino": 7
+  },
+  {
+   "origem": 3,
+   "destino": 4
+  },
+  {
+   "origem": 3,
+   "destino": 8
+  },
+  {
+   "origem": 4,
+   "destino": 5
+  },
+  {
+   "origem": 4,
+   "destino": 9
+  },
+  {
+   "origem": 5,
+   "destino": 10
+  },
+  {
+   "origem": 6,
+   "destino": 7
+  },
+  {
+   "origem": 6,
+   "destino": 11
+  },
+  {
+   "origem": 7,
+   "destino": 8
+  },
+  {
+   "origem": 7,
+   "destino": 12
+  },
+  {
+   "origem": 8,
+   "destino": 9
+  },
+  {
+   "origem": 8,
+   "destino": 13
+  },
+  {
+   "origem": 9,
+   "destino": 10
+  },
+  {
+   "origem": 9,
+   "destino": 14
+  },
+  {
+   "origem": 10,
+   "destino": 15
+  },
+  {
+   "origem": 11,
+   "destino": 12,
+   "fatorRisco": 0.3
+  },
+  {
+   "origem": 11,
+   "destino": 16
+  },
+  {
+   "origem": 12,
+   "destino": 13,
+   "fatorRisco": 0.3
+  },
+  {
+   "origem": 12,
+   "destino": 17
+  },
+  {
+   "origem": 13,
+   "destino": 14,
+   "fatorRisco": 0.3
+  },
+  {
+   "origem": 13,
+   "destino": 18
+  },
+  {
+   "origem": 14,
+   "destino": 15,
+   "fatorRisco": 0.3
+  },
+  {
+   "origem": 14,
+   "destino": 19
+  },
+  {
+   "origem": 15,
+   "destino": 20
+  },
+  {
+   "origem": 16,
+   "destino": 17
+  },
+  {
+   "origem": 16,
+   "destino": 21
+  },
+  {
+   "origem": 17,
+   "destino": 18
+  },
+  {
+   "origem": 17,
+   "destino": 22
+  },
+  {
+   "origem": 18,
+   "destino": 19
+  },
+  {
+   "origem": 18,
+   "destino": 23
+  },
+  {
+   "origem": 19,
+   "destino": 20
+  },
+  {
+   "origem": 19,
+   "destino": 24
+  },
+  {
+   "origem": 20,
+   "destino": 25
+  },
+  {
+   "origem": 21,
+   "destino": 22
+  },
+  {
+   "origem": 22,
+   "destino": 23
+  },
+  {
+   "origem": 23,
+   "destino": 24
+  },
+  {
+   "origem": 24,
+   "destino": 25
+  },
+  {
+   "origem": 1,
+   "destino": 7
+  },
+  {
+   "origem": 19,
+   "destino": 25,
+   "fatorRisco": 0.1
+  }
+ ]
+}

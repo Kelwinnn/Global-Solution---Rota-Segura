@@ -92,3 +92,11 @@ def test_desempate_por_menor_id_da_proxima_esquina() -> None:
     bairro = _bairro(Trecho(1, 3, 70), Trecho(3, 4, 30), Trecho(1, 2, 50), Trecho(2, 4, 50))
     resultado = _rota(bairro, _cenario(Abrigo(4, 10, 0)), origem=1)
     assert resultado.caminho == (1, 2, 4)
+
+
+def test_desempate_usa_o_id_do_abrigo_e_nao_a_esquina() -> None:
+    bairro = _bairro(Trecho(1, 2, 100), Trecho(1, 3, 100))
+    cenario = _cenario(Abrigo(2, 10, 0, id_abrigo=9), Abrigo(3, 10, 0, id_abrigo=4))
+    arvore = dijkstra_multi_origem(montar_grafo(bairro, cenario.trechos_alagados), abrigos_com_vaga(cenario))
+    assert arvore.rotulos[1][2] == 4  # empata em custo e distância; vence o abrigo de menor id (esquina 3)
+    assert rota_ate_abrigo(arvore, 1).caminho == (1, 3)

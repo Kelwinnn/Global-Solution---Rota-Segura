@@ -9,6 +9,8 @@ custa exatamente 110 000, e não 110,00000000000001 como em float: empates
 reais continuam empates e o desempate é sempre o mesmo.
 """
 
+from collections.abc import Mapping
+from collections.abc import Set as ConjuntoAbstrato
 from dataclasses import dataclass
 
 from rota_segura.modelos import Bairro, Cenario, Trecho, chave_trecho
@@ -17,8 +19,8 @@ from rota_segura.modelos import Bairro, Cenario, Trecho, chave_trecho
 Aresta = tuple[int, int, int]
 Grafo = dict[int, list[Aresta]]
 
-# (custo_mm, distancia_mm, esquina do abrigo). A comparação de tuplas do Python
-# já aplica o desempate: menor custo, depois menor distância, depois menor ID.
+# (custo_mm, distancia_mm, id do abrigo). A comparação de tuplas do Python
+# já aplica o desempate: menor custo, depois menor distância, depois menor ID do abrigo.
 Rotulo = tuple[int, int, int]
 
 
@@ -54,6 +56,20 @@ def montar_grafo(bairro: Bairro, trechos_alagados: frozenset[tuple[int, int]]) -
     return grafo
 
 
-def abrigos_com_vaga(cenario: Cenario) -> frozenset[int]:
-    """Esquinas com pelo menos um abrigo com vaga; os lotados são ignorados (RN06)."""
-    return frozenset(abrigo.esquina for abrigo in cenario.abrigos if abrigo.tem_vaga)
+# Abrigos com vaga: esquina -> id do abrigo. Aceita também só o conjunto de esquinas (id = esquina).
+Abrigos = Mapping[int, int] | ConjuntoAbstrato[int]
+
+
+def ids_dos_abrigos(abrigos: Abrigos) -> dict[int, int]:
+    if isinstance(abrigos, Mapping):
+        return dict(abrigos)
+    return {esquina: esquina for esquina in abrigos}
+
+
+def abrigos_com_vaga(cenario: Cenario) -> dict[int, int]:
+    """Esquina -> menor id de abrigo com vaga naquela esquina; os lotados são ignorados (RN06)."""
+    ids: dict[int, int] = {}
+    for abrigo in cenario.abrigos:
+        if abrigo.tem_vaga and (abrigo.esquina not in ids or abrigo.identificador < ids[abrigo.esquina]):
+            ids[abrigo.esquina] = abrigo.identificador
+    return ids

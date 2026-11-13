@@ -5,7 +5,7 @@ O(V·E) de propósito, para comparar com o Dijkstra.
 
 Recorrência, com "⊕" = somar custo e distância do trecho e manter o abrigo:
 
-    dp[0][v] = (0, 0, v)  se v é abrigo com vaga, senão ∞
+    dp[0][v] = (0, 0, id do abrigo em v)  se v é abrigo com vaga, senão ∞
     dp[k][v] = min( dp[k-1][v],  min sobre trechos (v,u) de dp[k-1][u] ⊕ trecho(v,u) )
 
 dp[k][v] é o melhor rótulo de v usando no máximo k trechos. Como todo custo é
@@ -13,18 +13,19 @@ positivo, a melhor rota não repete esquina e tem no máximo V-1 trechos, então
 dp[V-1] é a resposta.
 """
 
-from rota_segura.grafo import ArvoreRotas, Grafo, Rotulo
+from rota_segura.grafo import Abrigos, ArvoreRotas, Grafo, Rotulo, ids_dos_abrigos
 
 LinhaTabela = dict[int, Rotulo | None]  # None = ∞ (ainda sem rota)
 
 
-def tabela_bellman_ford(grafo: Grafo, abrigos: frozenset[int]) -> list[LinhaTabela]:
+def tabela_bellman_ford(grafo: Grafo, abrigos: Abrigos) -> list[LinhaTabela]:
     """Monta a tabela inteira dp[0..V-1][v].
 
     Tempo O(V·E): V-1 rodadas, cada uma relaxa todas as arestas.
     Memória O(V²): a tabela guarda as V linhas, com V colunas cada.
     """
-    dp: list[LinhaTabela] = [{v: ((0, 0, v) if v in abrigos else None) for v in grafo}]
+    ids = ids_dos_abrigos(abrigos)
+    dp: list[LinhaTabela] = [{v: ((0, 0, ids[v]) if v in ids else None) for v in grafo}]
     for _ in range(1, len(grafo)):
         anterior = dp[-1]
         linha: LinhaTabela = {}
@@ -42,17 +43,18 @@ def tabela_bellman_ford(grafo: Grafo, abrigos: frozenset[int]) -> list[LinhaTabe
     return dp
 
 
-def bellman_ford_multi_origem(grafo: Grafo, abrigos: frozenset[int]) -> ArvoreRotas:
+def bellman_ford_multi_origem(grafo: Grafo, abrigos: Abrigos) -> ArvoreRotas:
     """Árvore de rotas a partir da última linha da tabela.
 
     A próxima esquina de v é o vizinho de menor ID que gera exatamente o rótulo de v.
     Tempo O(V·E), memória O(V²) (dominados pela tabela).
     """
-    final = tabela_bellman_ford(grafo, abrigos)[-1]
+    ids = ids_dos_abrigos(abrigos)
+    final = tabela_bellman_ford(grafo, ids)[-1]
     rotulos = {v: rotulo for v, rotulo in final.items() if rotulo is not None}
     proximo: dict[int, int] = {}
     for v, rotulo in rotulos.items():
-        if v in abrigos:
+        if v in ids:
             continue
         proximo[v] = min(
             u
