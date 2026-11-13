@@ -1,6 +1,7 @@
 package br.com.rotasegura.bo;
 
 import br.com.rotasegura.dao.RiskAreaDAO;
+import br.com.rotasegura.dao.SensorDAO;
 import br.com.rotasegura.dto.RiskAreaRequest;
 import br.com.rotasegura.dto.RiskAreaResponse;
 import br.com.rotasegura.exception.BusinessRuleException;
@@ -16,9 +17,11 @@ import java.util.List;
 public class RiskAreaBO {
 
     private final RiskAreaDAO riskAreaDAO;
+    private final SensorDAO sensorDAO;
 
-    public RiskAreaBO(RiskAreaDAO riskAreaDAO) {
+    public RiskAreaBO(RiskAreaDAO riskAreaDAO, SensorDAO sensorDAO) {
         this.riskAreaDAO = riskAreaDAO;
+        this.sensorDAO = sensorDAO;
     }
 
     @Transactional(readOnly = true)
@@ -68,7 +71,13 @@ public class RiskAreaBO {
 
     @Transactional
     public void delete(Long id) {
-        riskAreaDAO.delete(findEntity(id));
+        RiskArea area = findEntity(id);
+        // Sem cascata: ninguém apaga sensores sem querer ao excluir uma área
+        if (sensorDAO.existsByAreaId(id)) {
+            throw new BusinessRuleException(
+                    "A área '%s' tem sensores vinculados. Exclua ou mova os sensores antes.".formatted(area.getName()));
+        }
+        riskAreaDAO.delete(area);
     }
 
     private RiskArea findEntity(Long id) {

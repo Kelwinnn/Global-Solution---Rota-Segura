@@ -190,6 +190,30 @@ class RiskAreaControllerTest {
 
     @Test
     @WithMockUser
+    void createWithNumberInsteadOfRiskTypeTextReturns400() throws Exception {
+        // Sem fail-on-numbers-for-enums, "riskType": 1 viraria LANDSLIDE (a posição no enum)
+        mockMvc.perform(post("/api/areas").with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(VALID_BODY.replace("\"FLOOD\"", "1")))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.title").value("Corpo da requisição inválido"));
+        verifyNoInteractions(riskAreaBO);
+    }
+
+    @Test
+    @WithMockUser
+    void createWithRadiusAboveIntegerLimitReturns400() throws Exception {
+        // 2147483647 é o teto do Integer do Java e do CHECK do banco
+        mockMvc.perform(post("/api/areas").with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(VALID_BODY.replace("\"radiusM\": 500", "\"radiusM\": 2147483648")))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.title").value("Corpo da requisição inválido"));
+        verifyNoInteractions(riskAreaBO);
+    }
+
+    @Test
+    @WithMockUser
     void createWithDecimalRadiusReturns400() throws Exception {
         // Sem accept-float-as-int=false, o Jackson cortaria 500.9 para 500 sem avisar
         mockMvc.perform(post("/api/areas").with(csrf())

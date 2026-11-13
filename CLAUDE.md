@@ -58,7 +58,7 @@ Nunca edite `data-science/`, `dynamic-programming/` (inclui o serviço Python), 
 - **Segurança:** login simples com Spring Security; usuário fixo com credenciais em variáveis de ambiente. POST, PUT e DELETE exigem login; GET, HEAD e Swagger ficam abertos. Todo endpoint em que o cidadão responde durante a emergência fica sem login: hoje, o check-in "Estou seguro" (RF09) e as leituras do sensor (RF03). O login usa sessão com cookie: tela de login no React, cookie com `SameSite=None` e `Secure`, e CORS com credenciais só para as origens do front. CSRF ligado: o front lê o token e envia em cada POST, PUT e DELETE; só o POST das rotas liberadas fica fora do CSRF. Sessão de 30 minutos; o logout encerra só a sessão na página, e alertas e mensagens continuam sendo enviados.
 - **Testes:** JUnit 5 + Mockito nos BOs; MockMvc nos controllers.
 - **Frontend:** React + Vite + TypeScript + Tailwind.
-- **Serviço Python:** FastAPI, construído pelo João Paulo. Ele faz a rota segura e o modelo de risco; a API Java chama esse serviço. O contrato ainda está em aberto: não invente endpoints dele.
+- **Serviço Python:** FastAPI, construído pelo João Paulo. Ele faz a rota segura e o modelo de risco; a API Java chama esse serviço. O contrato é o v2 em `dynamic-programming/docs/contrato.md` (`GET /health`, `POST /route`, `POST /risk`): siga esse arquivo e não invente endpoints nem campos fora dele.
 - **Nomes no código:** em inglês (classes, métodos, tabelas, colunas). Documentação e explicações em português.
 
 ## Requisitos do MVP (os 11 "Must")
@@ -81,7 +81,7 @@ Should (só se sobrar tempo): RF10 painel de prioridade de resgate, RF11 avisar 
 
 ## Regras de negócio
 
-- **RN01:** o nível de risco sai do nível d'água em cm, igual para todos os sensores: baixo 0 a 1; médio 1,1 a 2,9; alto 3 a 5; muito alto 5,1 a 10; muito urgente acima de 10. Nas bordas, o valor fica no nível cujo número inicial já alcançou (1,05 é baixo; 10,01 é muito urgente). O nível mede a urgência de ir para um abrigo ou local mais alto. Separado dele, o serviço Python informa a probabilidade de alagamento, que avisa antes de acontecer; o limite de "alta probabilidade" ainda está em aberto em `docs/decisions.md`.
+- **RN01:** o nível de risco sai do nível d'água em cm, igual para todos os sensores: baixo 0 a 1; médio 1,1 a 2,9; alto 3 a 5; muito alto 5,1 a 10; muito urgente acima de 10. Nas bordas, o valor fica no nível cujo número inicial já alcançou (1,05 é baixo; 10,01 é muito urgente). O nível mede a urgência de ir para um abrigo ou local mais alto. Separado dele, o serviço Python informa a probabilidade de alagamento, que avisa antes de acontecer: o Java lê `highProbability` na resposta do `/risk`. A regra do limite está em `docs/decisions.md` (11/11), e o número sai do treino do modelo, previsto para 17/11.
 - **RN02:** só um alerta ativo por área; ele encerra quando o risco volta a baixo.
 - **RN03:** todo assistido tem ao menos um responsável e uma área vinculada.
 - **RN04:** assistido sem resposta em até 15 min após o alerta entra no painel como prioridade de resgate.

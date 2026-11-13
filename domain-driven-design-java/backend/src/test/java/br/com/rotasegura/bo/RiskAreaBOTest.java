@@ -1,6 +1,7 @@
 package br.com.rotasegura.bo;
 
 import br.com.rotasegura.dao.RiskAreaDAO;
+import br.com.rotasegura.dao.SensorDAO;
 import br.com.rotasegura.dto.RiskAreaRequest;
 import br.com.rotasegura.dto.RiskAreaResponse;
 import br.com.rotasegura.exception.BusinessRuleException;
@@ -32,6 +33,9 @@ class RiskAreaBOTest {
 
     @Mock
     private RiskAreaDAO riskAreaDAO;
+
+    @Mock
+    private SensorDAO sensorDAO;
 
     @InjectMocks
     private RiskAreaBO riskAreaBO;
@@ -184,6 +188,17 @@ class RiskAreaBOTest {
         riskAreaBO.delete(1L);
 
         verify(riskAreaDAO).delete(existing);
+    }
+
+    @Test
+    void deleteAreaWithSensorsThrowsAndKeepsTheArea() {
+        when(riskAreaDAO.findById(1L)).thenReturn(Optional.of(savedArea(1L, "Área A", "Guarulhos")));
+        when(sensorDAO.existsByAreaId(1L)).thenReturn(true);
+
+        assertThatThrownBy(() -> riskAreaBO.delete(1L))
+                .isInstanceOf(BusinessRuleException.class)
+                .hasMessageContaining("sensores vinculados");
+        verify(riskAreaDAO, never()).delete(any());
     }
 
     @Test
