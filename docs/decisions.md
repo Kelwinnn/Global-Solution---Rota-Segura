@@ -36,7 +36,7 @@ Regra: o Claude Code segue o que está em **Decidido** e **pergunta antes** de q
 | 09/11 | Front: mapa | Google Maps (a chave da API fica em variável de ambiente do Vite, nunca no código) |
 | 09/11 | Front: pastas | Estrutura por componentes |
 | 09/11 | Deploy do front | Junto do Java: a API Spring serve o front já compilado (mesmo serviço no Render) |
-| 09/11 | Chamada Java → Python | `RestClient` (Spring). Timeout e comportamento se o serviço cair seguem em aberto |
+| 09/11 | Chamada Java → Python | `RestClient` (Spring). Timeout e comportamento se o serviço cair: ver as linhas de 10/11 |
 | 09/11 | Front: roteador | React Router |
 | 09/11 | CORS, cookie e CSRF | Mantidos como decidido (cookie `SameSite=None` + `Secure`, CORS com credenciais, CSRF ligado), mesmo com o front junto do Java. Origem permitida no desenvolvimento: `http://localhost:5173` (Vite); API em `http://localhost:8080`. Origens ficam em variável de ambiente |
 | 09/11 | Nome das FKs | Repetem o nome da PK referenciada (ex.: `ID_AREA` em `T_RS_SENSOR`) |
@@ -70,7 +70,7 @@ Regra: o Claude Code segue o que está em **Decidido** e **pergunta antes** de q
 | 11/11 | Formato do JSON de erro | `ProblemDetail` do Spring (RFC 7807), com `title` e `detail` em português. Erros de validação vão num campo extra `errors`: lista de `{field, message}`. O `GlobalExceptionHandler` estende `ResponseEntityExceptionHandler`. Erros do próprio Spring MVC (405, 415, 406, rota inexistente) têm título e texto em português em `messages.properties`. Erro inesperado vira 500 "Erro interno", sem detalhes na resposta (só no log) |
 | 11/11 | Status de erro | 400 dados inválidos; 404 não encontrado (`ResourceNotFoundException`); 409 regra de negócio violada (`BusinessRuleException`) ou conflito no banco (`DataIntegrityViolationException`) |
 | 11/11 | Onde a entidade vira DTO | No BO, dentro da transação (`@Transactional`): o BO recebe e devolve DTOs (`Response.from(entity)`), e o controller nunca toca em entidade. Resolve o `LAZY` com `open-in-view=false` |
-| 11/11 | Área de risco (RF01) | Classe `RiskArea` na tabela `T_RS_AREA` (`ID_AREA`). Campos: `NAME` (100, obrigatório), `CITY` (60, obrigatório), `DISTRICT` (60, opcional), `RISK_TYPE` (`FLOOD` ou `LANDSLIDE`, `VARCHAR2(20 CHAR)`, obrigatório), `LATITUDE` e `LONGITUDE` (`NUMBER(9,6)`, obrigatórios), `RADIUS_M` (inteiro > 0, sem limite superior, `NUMBER(10)` no DDL, obrigatório; número com casas decimais no JSON dá 400, por `spring.jackson.deserialization.accept-float-as-int=false`). O nível de risco atual não fica na área: sai das leituras (RF03/RF04). Rotas em `/api/areas` |
+| 11/11 | Área de risco (RF01) | Classe `RiskArea` na tabela `T_RS_AREA` (`ID_AREA`). Campos: `NAME` (100, obrigatório), `CITY` (60, obrigatório), `DISTRICT` (60, opcional), `RISK_TYPE` (`FLOOD` ou `LANDSLIDE`, `VARCHAR2(20 CHAR)`, obrigatório), `LATITUDE` e `LONGITUDE` (`NUMBER(9,6)`, obrigatórios), `RADIUS_M` (inteiro > 0, sem limite de negócio, `NUMBER(10)` no DDL, obrigatório; 13/11: o `CHECK` do banco vai de 1 a 2147483647, o maior valor que o `Integer` do Java lê; número com casas decimais no JSON dá 400, por `spring.jackson.deserialization.accept-float-as-int=false`). O nível de risco atual não fica na área: sai das leituras (RF03/RF04). Rotas em `/api/areas` |
 | 11/11 | Regra da área | Nome único por cidade, sem diferenciar maiúsculas (409 se repetir) |
 | 12/11 | Nome das constraints e índices | Prefixo do tipo + `RS` + tabela (+ colunas): `PK_RS_AREA`, `FK_RS_SENSOR_AREA`, `CK_RS_AREA_RISK_TYPE`, `UX_RS_AREA_NAME_CITY` (índice único). Nada de nome gerado pelo Oracle |
 | 12/11 | Texto no DDL | `VARCHAR2(n CHAR)`: o tamanho conta caracteres, não bytes (acentos ocupam 2 bytes) |
@@ -132,9 +132,6 @@ Fluxo: `controller → bo → dao → repository`. Nenhuma camada pula a seguint
 ## Em aberto (perguntar antes de decidir)
 
 - [ ] **Front: pacote do Google Maps** (ex.: `@vis.gl/react-google-maps`) e conta/chave da API. Urgente: o RF14 virou Must e depende disso.
-- [ ] **Probabilidade de alagamento:** a partir de qual valor é "alta", e o que o alerta antecipado diz ao morador. Depende do João Paulo.
-- [ ] **Formato do JSON de erro** (400, 401, 403, 404, 422...): ex.: `ProblemDetail` do Spring (RFC 7807) ou um record próprio. Decidir junto do `@RestControllerAdvice`. Até lá, 401 e 403 voltam só com o status, sem corpo.
-- [ ] **Onde a entidade vira DTO:** com `open-in-view=false`, relacionamentos `LAZY` só carregam dentro da transação. Decidir na primeira entidade com relacionamento (Sensor → Área) se a conversão fica no BO (`@Transactional`) ou se o DAO já busca o relacionamento junto (ex.: `JOIN FETCH`).
 - [ ] **Número da equipe** para a faixa 192.168.X.0/24 de Network. Kelwin informa em 10/11.
 - [ ] **Abrigos do piloto (Jardim Helena):** dynamic-programming/docs/abrigos_sugeridos.json tem 10 abrigos do OSM (1 CEU e 9 escolas, capacidade simulada); 4 sem endereço no OSM. Kelwin: usar como base no banco, completar endereços e decidir se cadastra outros. (João Paulo, 12/11)
 - [ ] **Cenário da demonstração:** perto da várzea o mapa é esparso e uma área alagada de 150 m pode isolar a origem (NO_SAFE_ROUTE). Definir juntos uma origem e uma área alagada que mostrem a rota desviando, e outra que mostre o NO_SAFE_ROUTE. (João Paulo, 12/11)
