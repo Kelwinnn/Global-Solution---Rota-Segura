@@ -67,6 +67,15 @@ Regra: o Claude Code segue o que está em **Decidido** e **pergunta antes** de q
 | 11/11 | HEAD | Aberto como o GET (monitores de disponibilidade). `/api/auth/me` exige login em qualquer método |
 | 11/11 | Memória da JVM | `-XX:MaxRAMPercentage=75` no Dockerfile (o plano gratuito do Render tem 512 MB) |
 | 11/11 | Leituras do sensor sem autenticação | **Risco aceito do MVP:** `POST /api/sensor-readings` fica aberto, então uma leitura falsa pode disparar alerta e SMS. Motivo (Kelwin): na emergência, nada pode depender de cadastro ou login, e os sensores do MVP são simulados. Citar no PDF como limitação conhecida; numa versão real, cada sensor teria uma chave própria |
+| 11/11 | Formato do JSON de erro | `ProblemDetail` do Spring (RFC 7807), com `title` e `detail` em português. Erros de validação vão num campo extra `errors`: lista de `{field, message}`. O `GlobalExceptionHandler` estende `ResponseEntityExceptionHandler`. 401 e 403 da segurança seguem só com o status (por ora). Erros do próprio Spring MVC (405, 415, 406, rota inexistente) têm título e texto em português em `messages.properties`. Erro inesperado vira 500 "Erro interno", sem detalhes na resposta (só no log) |
+| 11/11 | Status de erro | 400 dados inválidos; 404 não encontrado (`ResourceNotFoundException`); 409 regra de negócio violada (`BusinessRuleException`) ou conflito no banco (`DataIntegrityViolationException`) |
+| 11/11 | Onde a entidade vira DTO | No BO, dentro da transação (`@Transactional`): o BO recebe e devolve DTOs (`Response.from(entity)`), e o controller nunca toca em entidade. Resolve o `LAZY` com `open-in-view=false` |
+| 11/11 | Área de risco (RF01) | Classe `RiskArea` na tabela `T_RS_AREA` (`ID_AREA`). Campos: `NAME` (100, obrigatório), `CITY` (60, obrigatório), `DISTRICT` (60, opcional), `RISK_TYPE` (`FLOOD` ou `LANDSLIDE`, obrigatório), `LATITUDE` e `LONGITUDE` (`NUMBER(9,6)`, obrigatórios), `RADIUS_M` (inteiro > 0, sem limite superior, `NUMBER(10)` no DDL, obrigatório; número com casas decimais no JSON dá 400, por `spring.jackson.deserialization.accept-float-as-int=false`). O nível de risco atual não fica na área: sai das leituras (RF03/RF04). Rotas em `/api/areas` |
+| 11/11 | Regra da área | Nome único por cidade, sem diferenciar maiúsculas (409 se repetir) |
+| 12/11 | Nome das constraints e índices | Prefixo do tipo + `RS` + tabela (+ colunas): `PK_RS_AREA`, `FK_RS_SENSOR_AREA`, `CK_RS_AREA_RISK_TYPE`, `UX_RS_AREA_NAME_CITY` (índice único). Nada de nome gerado pelo Oracle |
+| 12/11 | Texto no DDL | `VARCHAR2(n CHAR)`: o tamanho conta caracteres, não bytes (acentos ocupam 2 bytes) |
+| 12/11 | Nome único da área no banco | Índice único `UX_RS_AREA_NAME_CITY` em `UPPER(NAME), UPPER(CITY)`, além da checagem no BO (protege contra duas requisições ao mesmo tempo; o erro do banco vira 409) |
+| 12/11 | 401 e 403 em ProblemDetail | Decidido: a segurança também vai responder em `ProblemDetail`, para o front tratar todo erro igual. Implementar num passo próprio, depois do commit do RF01 |
 | 11/11 | `.gitignore` na raiz | Só `.idea/` e `*.iml` (arquivos do IntelliJ). Cada pasta mantém o próprio `.gitignore` |
 
 ### Estrutura do monorepo
@@ -112,6 +121,4 @@ Fluxo: `controller → bo → dao → repository`. Nenhuma camada pula a seguint
 - [ ] **Deploy do serviço Python** e variáveis de ambiente de cada serviço. Aguardando o João Paulo.
 - [ ] **Front: pacote do Google Maps** (ex.: `@vis.gl/react-google-maps`) e conta/chave da API. Urgente: o RF14 virou Must e depende disso.
 - [ ] **Probabilidade de alagamento:** a partir de qual valor é "alta", e o que o alerta antecipado diz ao morador. Depende do João Paulo.
-- [ ] **Formato do JSON de erro** (400, 401, 403, 404, 422...): ex.: `ProblemDetail` do Spring (RFC 7807) ou um record próprio. Decidir junto do `@RestControllerAdvice`. Até lá, 401 e 403 voltam só com o status, sem corpo.
-- [ ] **Onde a entidade vira DTO:** com `open-in-view=false`, relacionamentos `LAZY` só carregam dentro da transação. Decidir na primeira entidade com relacionamento (Sensor → Área) se a conversão fica no BO (`@Transactional`) ou se o DAO já busca o relacionamento junto (ex.: `JOIN FETCH`).
 - [ ] **Número da equipe** para a faixa 192.168.X.0/24 de Network. Kelwin informa em 10/11.
