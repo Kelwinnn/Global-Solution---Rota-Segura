@@ -98,6 +98,8 @@ Regra: o Claude Code segue o que está em **Decidido** e **pergunta antes** de q
 | 16/11 | Leitura repetida | O mesmo sensor não pode ter duas leituras no mesmo instante: 409. O BO confere antes de gravar, e o índice único `UX_RS_READING_SENSOR_TIME` em `(ID_SENSOR, SYS_EXTRACT_UTC(MEASURED_AT))` garante no banco (o Oracle não aceita constraint `UNIQUE` em `TIMESTAMP WITH TIME ZONE`, ORA-02329, por isso a regra é um índice único sobre o instante em UTC). Esse índice começa pelo `ID_SENSOR`, então também cumpre a regra de toda FK ter índice e serve à busca das leituras de cada sensor: não há outro índice na tabela |
 | 16/11 | Hora da leitura | O sensor envia com o fuso dele (ex.: `-03:00`); a API converte para UTC antes de gravar e responde em UTC (`...Z`). O instante é o mesmo; o front mostra no horário de Brasília. A hora é cortada em microssegundos (o que o banco guarda) e os valores ficam com 2 casas decimais |
 | 16/11 | Relógio da aplicação | Bean `Clock` (UTC) em `config/ClockConfig`: o código pede o `Clock` em vez de ler a hora do sistema direto, e os testes usam um relógio fixo |
+| 16/11 | Folga para relógio adiantado | Leitura com data até 5 minutos no futuro é aceita (relógio do aparelho um pouco adiantado); além disso, 400. A folga vale para toda validação de data da API e usa o bean `Clock` (`config/ValidationConfig`). Atenção: num `@Future` ela inverte, e aceita até 5 minutos no passado |
+| 16/11 | Zeros à direita nos números da leitura | `rainMm` e `waterLevelCm` aceitam zeros à direita (`12.400`, `2.300000`): eles são retirados antes da validação (`util/StripTrailingZerosDeserializer`). Casa decimal de verdade além da segunda (`12.345`) continua dando 400 |
 | 11/11 | `.gitignore` na raiz | Só `.idea/` e `*.iml` (arquivos do IntelliJ). Cada pasta mantém o próprio `.gitignore` |
 | 11/11 | Contrato do serviço Python | v2 em `dynamic-programming/docs/contrato.md`: `GET /health`, `POST /route`, `POST /risk`, camelCase, seguindo as decisões de 10/11 (áreas alagadas com `areaId`, `lat`, `lng`, `radiusM`; abrigos enviados pelo Java; 70 m/min). Sem rota segura = 200 com `status: NO_SAFE_ROUTE`. Desempate: custo, distância, ID do abrigo. Origem a mais de 300 m da rua mais próxima = 400 (João Paulo; validar com o Kelwin) |
 | 11/11 | `/risk` | Recebe as leituras da área dos últimos 8 dias e devolve `floodProbability`, `highProbability` e `lowData`. O nível em cm continua no Java (João Paulo; validar com o Kelwin) |
@@ -139,7 +141,7 @@ Regra: o Claude Code segue o que está em **Decidido** e **pergunta antes** de q
 | `dto` | Records de request e response com Bean Validation |
 | `exception` | Exceções de domínio e o `@RestControllerAdvice` |
 | `security` | Configuração do Spring Security (login simples) |
-| `config` | Configurações gerais (CORS, springdoc, cliente do serviço Python) |
+| `config` | Configurações gerais (CORS, springdoc, relógio da aplicação (`Clock`), validação, cliente do serviço Python) |
 | `util` | Funções auxiliares sem estado |
 
 Fluxo: `controller → bo → dao → repository`. Nenhuma camada pula a seguinte.

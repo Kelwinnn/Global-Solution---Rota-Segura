@@ -52,7 +52,9 @@ public class SensorReadingBO {
                     .formatted(sensor.getCode(), DateTimeFormatter.ISO_INSTANT.format(measuredAt)));
         }
 
-        // Sempre 2 casas decimais, como no banco (12.4 vira 12.40); o @Digits já garante que não há arredondamento
+        // Sempre 2 casas decimais, como no banco (12.4 vira 12.40). Não arredonda nada: os zeros à direita já saíram
+        // na leitura do JSON, o @Digits recusou casa decimal com valor além da segunda e o @DecimalMax recusou
+        // número fora da faixa (inclusive expoentes enormes, como 1e2147483647)
         SensorReading reading = new SensorReading(sensor,
                 request.rainMm().setScale(2),
                 request.waterLevelCm().setScale(2),

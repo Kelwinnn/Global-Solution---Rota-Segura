@@ -115,6 +115,21 @@ class SensorReadingBOTest {
     }
 
     @Test
+    void createWithNegativeScaleKeepsTwoDecimals() {
+        // 100 sem zeros à direita vira 1E+2 (escala negativa): precisa ser gravado como 100.00
+        when(sensorDAO.findByCode("SEN-JH-001")).thenReturn(Optional.of(sensor(10L, "SEN-JH-001", SensorStatus.ACTIVE)));
+        when(sensorReadingDAO.existsBySensorAt(10L, MEASURED_AT)).thenReturn(false);
+        when(sensorReadingDAO.save(any(SensorReading.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        sensorReadingBO.create(new SensorReadingRequest("SEN-JH-001", new BigDecimal("1E+2"), new BigDecimal("0"), MEASURED_AT));
+
+        ArgumentCaptor<SensorReading> saved = ArgumentCaptor.forClass(SensorReading.class);
+        verify(sensorReadingDAO).save(saved.capture());
+        assertThat(saved.getValue().getRainMm()).hasToString("100.00");
+        assertThat(saved.getValue().getWaterLevelCm()).hasToString("0.00");
+    }
+
+    @Test
     void createRepeatedReadingThrowsAndDoesNotSave() {
         when(sensorDAO.findByCode("SEN-JH-001")).thenReturn(Optional.of(sensor(10L, "SEN-JH-001", SensorStatus.ACTIVE)));
         when(sensorReadingDAO.existsBySensorAt(10L, MEASURED_AT)).thenReturn(true);

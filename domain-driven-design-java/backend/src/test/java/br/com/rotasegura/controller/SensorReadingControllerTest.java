@@ -2,6 +2,7 @@ package br.com.rotasegura.controller;
 
 import br.com.rotasegura.bo.SensorReadingBO;
 import br.com.rotasegura.config.CorsConfig;
+import br.com.rotasegura.config.ValidationConfig;
 import br.com.rotasegura.dto.SensorReadingRequest;
 import br.com.rotasegura.dto.SensorReadingResponse;
 import br.com.rotasegura.exception.BusinessRuleException;
@@ -11,6 +12,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -20,8 +23,11 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
+import java.time.Clock;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.UUID;
 
@@ -45,8 +51,23 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 // Dados de exemplo simulados (nenhum dado real)
 @WebMvcTest(SensorReadingController.class)
-@Import({SecurityConfig.class, CorsConfig.class})
+@Import({SecurityConfig.class, CorsConfig.class, ValidationConfig.class, SensorReadingControllerTest.FixedClock.class})
 class SensorReadingControllerTest {
+
+    /** "Agora" fixo: 15/11/2026 21:30 em UTC (18:30 em Brasília). */
+    static final Instant NOW = Instant.parse("2026-11-15T21:30:00Z");
+
+    @TestConfiguration
+    static class FixedClock {
+        @Bean
+        Clock clock() {
+            return Clock.fixed(NOW, ZoneOffset.UTC);
+        }
+    }
+
+    private static String bodyMeasuredAt(Instant measuredAt) {
+        return VALID_BODY.replace("2026-11-15T18:00:00-03:00", measuredAt.toString());
+    }
 
     @DynamicPropertySource
     static void credentials(DynamicPropertyRegistry registry) {
@@ -119,6 +140,92 @@ class SensorReadingControllerTest {
                         contains("measuredAt", "rainMm", "sensorCode", "waterLevelCm")))
                 .andExpect(jsonPath("$.errors[0].message")
                         .value("A data e a hora da medição não podem estar no futuro"));
+        verifyNoInteractions(sensorReadingBO);
+    }
+
+    // ---- Folga de 5 minutos para relógio adiantado ----
+
+    @Test
+    void readingUpToFiveMinutesAheadIsAccepted() throws Exception {
+        when(sensorReadingBO.create(any(SensorReadingRequest.class))).thenReturn(READING);
+
+        mockMvc.perform(post("/api/sensor-readings")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(bodyMeasuredAt(NOW.plusSeconds(4 * 60 + 59))))
+                .andExpect(status().isCreated());
+    }
+
+    @Test
+    void readingExactlyFiveMinutesAheadIsAccepted() throws Exception {
+        when(sensorReadingBO.create(any(SensorReadingRequest.class))).thenReturn(READING);
+
+        mockMvc.perform(post("/api/sensor-readings")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(bodyMeasuredAt(NOW.plus(Duration.ofMinutes(5)))))
+                .andExpect(status().isCreated());
+    }
+
+    @Test
+    void readingMoreThanFiveMinutesAheadReturns400() throws Exception {
+        mockMvc.perform(post("/api/sensor-readings")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(bodyMeasuredAt(NOW.plusSeconds(5 * 60 + 1))))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].field").value("measuredAt"))
+                .andExpect(jsonPath("$.errors[0].message")
+                        .value("A data e a hora da medição não podem estar no futuro"));
+        verifyNoInteractions(sensorReadingBO);
+    }
+
+    // ---- Zeros à direita ----
+
+    @Test
+    void trailingZerosAreAcceptedAndRemoved() throws Exception {
+        when(sensorReadingBO.create(any(SensorReadingRequest.class))).thenReturn(READING);
+
+        mockMvc.perform(post("/api/sensor-readings")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(VALID_BODY.replace("12.4", "12.400").replace("2.3,", "2.300000,")))
+                .andExpect(status().isCreated());
+
+        ArgumentCaptor<SensorReadingRequest> sent = ArgumentCaptor.forClass(SensorReadingRequest.class);
+        verify(sensorReadingBO).create(sent.capture());
+        // isEqualTo compara também a escala: prova que os zeros saíram (12.400 virou 12.4)
+        assertThat(sent.getValue().rainMm()).isEqualTo(new BigDecimal("12.4"));
+        assertThat(sent.getValue().waterLevelCm()).isEqualTo(new BigDecimal("2.3"));
+    }
+
+    @Test
+    void wholeNumberIsAccepted() throws Exception {
+        when(sensorReadingBO.create(any(SensorReadingRequest.class))).thenReturn(READING);
+
+        mockMvc.perform(post("/api/sensor-readings")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(VALID_BODY.replace("12.4", "100")))
+                .andExpect(status().isCreated());
+
+        ArgumentCaptor<SensorReadingRequest> sent = ArgumentCaptor.forClass(SensorReadingRequest.class);
+        verify(sensorReadingBO).create(sent.capture());
+        assertThat(sent.getValue().rainMm()).isEqualByComparingTo("100");
+    }
+
+    @Test
+    void hugeExponentReturns400InsteadOf500() throws Exception {
+        mockMvc.perform(post("/api/sensor-readings")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(VALID_BODY.replace("12.4", "1e2147483647")))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].field").value("rainMm"));
+        verifyNoInteractions(sensorReadingBO);
+    }
+
+    @Test
+    void realThirdDecimalIsStillRejected() throws Exception {
+        mockMvc.perform(post("/api/sensor-readings")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(VALID_BODY.replace("12.4", "12.345")))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].field").value("rainMm"));
         verifyNoInteractions(sensorReadingBO);
     }
 

@@ -37,7 +37,8 @@ public class SensorReadingController {
 
     @PostMapping
     @Operation(summary = "Enviar leitura",
-            description = "Usado pelo aparelho do sensor. Aberto, sem login e sem token CSRF (decidido em 09/11).")
+            description = "Usado pelo aparelho do sensor. Aberto, sem login e sem token CSRF (decidido em 09/11). "
+                    + "Aceita data até 5 minutos no futuro (relógio adiantado) e zeros à direita nos números.")
     @ApiResponse(responseCode = "201", description = "Leitura registrada; o endereço dela vem no cabeçalho Location")
     @ApiResponse(responseCode = "400", description = "Dados inválidos (inclusive data no futuro)")
     @ApiResponse(responseCode = "404", description = "Nenhum sensor com esse código")
