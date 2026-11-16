@@ -21,14 +21,14 @@ Leia `CLAUDE.md` e `docs/decisions.md`. Revise contra o que está decidido. Se o
 - `controller`: GET, POST, PUT e DELETE; recebe e devolve só DTOs; usa `@Valid`; status corretos (201 no POST, 204 no DELETE, 404 quando não existe).
 - `dto`: records com Bean Validation.
 - `exception`: `@RestControllerAdvice` cobrindo não encontrado, validação e regra de negócio, com resposta de erro consistente.
-- `security`: POST, PUT e DELETE exigem login; GET e Swagger abertos; check-in (RF09) e leituras do sensor (RF03) liberados; usuário e senha vêm de variáveis de ambiente. Login por sessão com cookie (`SameSite=None`, `Secure`) e CORS com `allowCredentials` só para as origens do front; nunca `*` com credenciais. CSRF ligado para os endpoints com login; endpoints liberados fora do CSRF; sessão de 30 minutos; logout não interrompe alertas nem mensagens.
+- `security`: POST, PUT e DELETE exigem login; GET e Swagger abertos; check-in (RF09) e leituras do sensor (RF03) liberados; usuário e senha vêm de variáveis de ambiente. Login por sessão com cookie (`SameSite=None`, `Secure`) e CORS com `allowCredentials` só para as origens do front; nunca `*` com credenciais. CSRF ligado para os endpoints com login; só o POST das rotas liberadas fica fora do CSRF; sessão de 30 minutos; logout não interrompe alertas nem mensagens.
 - `config` e `util`: sem regra de negócio; `util` sem estado.
 
-**Regras de negócio:** confira se cada RN implementada segue o texto de `CLAUDE.md`, sem valores inventados (os limites de risco estão em aberto).
+**Regras de negócio:** confira se cada RN implementada segue o texto de `CLAUDE.md`, sem valores inventados (os limites de risco e a regra das bordas estão em `docs/decisions.md`).
 
 **Segurança e dados:** nenhuma credencial em código ou properties versionado; nada de dados pessoais reais nos seeds e testes.
 
-**Testes:** BOs com JUnit 5 + Mockito (DAO mockado) cobrindo caminho feliz e cada regra; controllers com MockMvc cobrindo status, validação e 401 sem login nos verbos protegidos.
+**Testes:** BOs com JUnit 5 + Mockito (DAO mockado) cobrindo caminho feliz e cada regra; controllers com MockMvc cobrindo status, validação e 401 sem login nos verbos protegidos; repositories com `@DataJpaTest` + H2 (escopo de teste) executando cada consulta derivada ou `@Query`. Lembre que o H2 não é o Oracle: o DDL real é conferido pelo `validate` na subida da API.
 
 **Coerência:** mudanças em entidades exigem atualizar `database-design/`, o diagrama de classes e o DER. Liste o que ficou desatualizado.
 

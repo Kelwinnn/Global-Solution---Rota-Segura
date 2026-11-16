@@ -30,6 +30,7 @@ Fluxo obrigatório: `controller → bo → dao → repository`.
    - Nos testes de controller com login, envie o token CSRF (ex.: `with(csrf())`).
    - `bo/<Entity>BOTest.java` com JUnit 5 + Mockito, mockando o DAO: caminho feliz, não encontrado e cada regra de negócio.
    - `controller/<Entity>ControllerTest.java` com `@WebMvcTest` + MockMvc: status de cada verbo, erro de validação (400) e 401 sem login nos verbos protegidos.
+   - `repository/<Entity>RepositoryTest.java` com `@DataJpaTest(properties = "spring.jpa.hibernate.ddl-auto=create-drop")` + H2: executa cada consulta derivada ou `@Query` do repository. Use `TestEntityManager` para gravar os dados e `entityManager.clear()` antes de consultar; se houver `@EntityGraph`, confira com `Hibernate.isInitialized` que o relacionamento já veio carregado.
 
 ## 3. Verificar
 
