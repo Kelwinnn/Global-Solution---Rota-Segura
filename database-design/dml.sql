@@ -8,22 +8,25 @@
 -- um mapeamento oficial de áreas de risco. Nenhum dado pessoal.
 --
 -- Os INSERTs não informam o ID: a coluna é GENERATED ALWAYS AS
--- IDENTITY, então quem numera é o Oracle.
+-- IDENTITY, então quem numera é o Oracle. Por isso cada sensor
+-- acha o ID da sua área por uma subconsulta (nome + cidade).
 --
 -- Arquivo em UTF-8 (os textos têm acentos). No SQL Developer:
 -- Ferramentas > Preferências > Ambiente > Codificação = UTF-8,
 -- e rodar com "Executar Script" (F5).
 --
--- Rodar uma vez, com a tabela vazia: o nome de cada área é único
--- por cidade, então uma segunda execução falha com ORA-00001.
--- Para rodar de novo, descomente e rode antes:
+-- Rodar uma vez, com as tabelas vazias: o nome de cada área é único
+-- por cidade e o código de cada sensor é único, então uma segunda
+-- execução falha com ORA-00001. Para rodar de novo, descomente e
+-- rode antes (primeiro a tabela filha, depois a tabela pai):
+-- DELETE FROM T_RS_SENSOR;
 -- DELETE FROM T_RS_AREA;
 -- ============================================================
 
--- ------------------------------------------------------------
+-- ============================================================
 -- T_RS_AREA: 10 áreas em 10 localidades do território do MVP
 -- (5 da Zona Leste de São Paulo, Guarulhos e 4 cidades do Alto Tietê).
--- ------------------------------------------------------------
+-- ============================================================
 
 -- Zona Leste de São Paulo
 INSERT INTO T_RS_AREA (NAME, CITY, DISTRICT, RISK_TYPE, LATITUDE, LONGITUDE, RADIUS_M)
@@ -59,7 +62,47 @@ VALUES ('Baixada de Itaquaquecetuba', 'Itaquaquecetuba', 'Centro', 'FLOOD', -23.
 INSERT INTO T_RS_AREA (NAME, CITY, DISTRICT, RISK_TYPE, LATITUDE, LONGITUDE, RADIUS_M)
 VALUES ('Morro de Poá', 'Poá', NULL, 'LANDSLIDE', -23.528000, -46.345000, 300);
 
+
+-- ============================================================
+-- T_RS_SENSOR: 8 sensores em 6 das 10 áreas (códigos fictícios).
+-- Quatro áreas ficam sem sensor de propósito, e dois sensores estão
+-- INACTIVE, para as consultas do dql.sql terem o que mostrar.
+-- ============================================================
+
+INSERT INTO T_RS_SENSOR (ID_AREA, CODE, LATITUDE, LONGITUDE, STATUS)
+VALUES ((SELECT ID_AREA FROM T_RS_AREA WHERE NAME = 'Várzea do Jardim Helena' AND CITY = 'São Paulo'),
+        'SEN-JH-001', -23.481500, -46.414200, 'ACTIVE');
+
+INSERT INTO T_RS_SENSOR (ID_AREA, CODE, LATITUDE, LONGITUDE, STATUS)
+VALUES ((SELECT ID_AREA FROM T_RS_AREA WHERE NAME = 'Várzea do Jardim Helena' AND CITY = 'São Paulo'),
+        'SEN-JH-002', -23.483100, -46.416300, 'ACTIVE');
+
+INSERT INTO T_RS_SENSOR (ID_AREA, CODE, LATITUDE, LONGITUDE, STATUS)
+VALUES ((SELECT ID_AREA FROM T_RS_AREA WHERE NAME = 'Beira-Rio do Jardim Pantanal' AND CITY = 'São Paulo'),
+        'SEN-JP-001', -23.476400, -46.397100, 'ACTIVE');
+
+INSERT INTO T_RS_SENSOR (ID_AREA, CODE, LATITUDE, LONGITUDE, STATUS)
+VALUES ((SELECT ID_AREA FROM T_RS_AREA WHERE NAME = 'Beira-Rio do Jardim Pantanal' AND CITY = 'São Paulo'),
+        'SEN-JP-002', -23.478200, -46.399500, 'INACTIVE');
+
+INSERT INTO T_RS_SENSOR (ID_AREA, CODE, LATITUDE, LONGITUDE, STATUS)
+VALUES ((SELECT ID_AREA FROM T_RS_AREA WHERE NAME = 'Baixada de São Miguel' AND CITY = 'São Paulo'),
+        'SEN-SM-001', -23.492600, -46.443500, 'ACTIVE');
+
+INSERT INTO T_RS_SENSOR (ID_AREA, CODE, LATITUDE, LONGITUDE, STATUS)
+VALUES ((SELECT ID_AREA FROM T_RS_AREA WHERE NAME = 'Córrego do Itaim Paulista' AND CITY = 'São Paulo'),
+        'SEN-IP-001', -23.501700, -46.400400, 'ACTIVE');
+
+INSERT INTO T_RS_SENSOR (ID_AREA, CODE, LATITUDE, LONGITUDE, STATUS)
+VALUES ((SELECT ID_AREA FROM T_RS_AREA WHERE NAME = 'Baixada Leste de Guarulhos' AND CITY = 'Guarulhos'),
+        'SEN-GRU-001', -23.455300, -46.419600, 'ACTIVE');
+
+INSERT INTO T_RS_SENSOR (ID_AREA, CODE, LATITUDE, LONGITUDE, STATUS)
+VALUES ((SELECT ID_AREA FROM T_RS_AREA WHERE NAME = 'Várzea do Tietê em Suzano' AND CITY = 'Suzano'),
+        'SEN-SUZ-001', -23.534600, -46.311400, 'INACTIVE');
+
 COMMIT;
 
--- Conferência: devem vir 10 linhas, com os acentos corretos.
+-- Conferência: devem vir 10 áreas e 8 sensores, com os acentos corretos.
 -- SELECT ID_AREA, NAME, CITY, DISTRICT, RISK_TYPE FROM T_RS_AREA ORDER BY ID_AREA;
+-- SELECT ID_SENSOR, ID_AREA, CODE, STATUS FROM T_RS_SENSOR ORDER BY CODE;

@@ -11,20 +11,23 @@
 --   chave        ID_<ENTIDADE>, gerada pelo banco (IDENTITY)
 --   constraints  PK_RS_, FK_RS_, NN_RS_, CK_RS_ + tabela (+ coluna)
 --   índice único UX_RS_ + tabela + colunas
+--   índice comum IX_RS_ + tabela + tabela referenciada (um para cada chave estrangeira)
 --   texto        VARCHAR2(n CHAR): o tamanho conta caracteres, não bytes
 --
 -- Arquivo em UTF-8. No SQL Developer, rodar com "Executar Script" (F5).
 -- ============================================================
 
--- Para recriar do zero, descomente e rode antes do CREATE:
+-- Para recriar do zero, descomente e rode antes dos CREATE
+-- (primeiro a tabela filha, depois a tabela pai):
+-- DROP TABLE T_RS_SENSOR CASCADE CONSTRAINTS;
 -- DROP TABLE T_RS_AREA CASCADE CONSTRAINTS;
 
 
--- ------------------------------------------------------------
+-- ============================================================
 -- T_RS_AREA: áreas de risco de alagamento ou deslizamento (RF01).
 -- Cada área é um círculo no mapa: ponto central (latitude e
 -- longitude) e raio em metros.
--- ------------------------------------------------------------
+-- ============================================================
 CREATE TABLE T_RS_AREA (
     ID_AREA    NUMBER(19)         GENERATED ALWAYS AS IDENTITY,
     NAME       VARCHAR2(100 CHAR) CONSTRAINT NN_RS_AREA_NAME      NOT NULL,
@@ -47,3 +50,33 @@ CREATE TABLE T_RS_AREA (
 -- por isso a regra é um índice único sobre UPPER(...).
 CREATE UNIQUE INDEX UX_RS_AREA_NAME_CITY
     ON T_RS_AREA (UPPER(NAME), UPPER(CITY));
+
+
+-- ============================================================
+-- T_RS_SENSOR: sensores de rua, que medem chuva e nível d'água (RF02).
+-- Cada sensor pertence a uma área de risco. Criada depois de
+-- T_RS_AREA, porque a chave estrangeira aponta para ela.
+-- ============================================================
+CREATE TABLE T_RS_SENSOR (
+    ID_SENSOR  NUMBER(19)         GENERATED ALWAYS AS IDENTITY,
+    ID_AREA    NUMBER(19)         CONSTRAINT NN_RS_SENSOR_ID_AREA   NOT NULL,
+    CODE       VARCHAR2(30 CHAR)  CONSTRAINT NN_RS_SENSOR_CODE      NOT NULL,
+    LATITUDE   NUMBER(9,6)        CONSTRAINT NN_RS_SENSOR_LATITUDE  NOT NULL,
+    LONGITUDE  NUMBER(9,6)        CONSTRAINT NN_RS_SENSOR_LONGITUDE NOT NULL,
+    STATUS     VARCHAR2(20 CHAR)  CONSTRAINT NN_RS_SENSOR_STATUS    NOT NULL,
+    CONSTRAINT PK_RS_SENSOR           PRIMARY KEY (ID_SENSOR),
+    -- Sem ON DELETE CASCADE: o banco recusa excluir uma área que ainda tem sensores
+    CONSTRAINT FK_RS_SENSOR_AREA      FOREIGN KEY (ID_AREA) REFERENCES T_RS_AREA (ID_AREA),
+    CONSTRAINT CK_RS_SENSOR_STATUS    CHECK (STATUS IN ('ACTIVE', 'INACTIVE')),
+    CONSTRAINT CK_RS_SENSOR_LATITUDE  CHECK (LATITUDE BETWEEN -90 AND 90),
+    CONSTRAINT CK_RS_SENSOR_LONGITUDE CHECK (LONGITUDE BETWEEN -180 AND 180)
+);
+
+-- Código único, sem diferenciar maiúsculas de minúsculas.
+CREATE UNIQUE INDEX UX_RS_SENSOR_CODE
+    ON T_RS_SENSOR (UPPER(CODE));
+
+-- Índice da chave estrangeira: acelera listar os sensores de uma área
+-- e a checagem que o banco faz ao excluir uma área.
+CREATE INDEX IX_RS_SENSOR_AREA
+    ON T_RS_SENSOR (ID_AREA);
