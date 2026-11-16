@@ -69,6 +69,8 @@ class SensorReadingBOTest {
     }
 
     private static final OffsetDateTime NOW_UTC = OffsetDateTime.ofInstant(NOW, ZoneOffset.UTC);
+    /** Fim padrão do histórico: agora mais a folga de 5 minutos. */
+    private static final OffsetDateTime DEFAULT_END = NOW_UTC.plusMinutes(5);
 
     // ---- create ----
 
@@ -163,22 +165,22 @@ class SensorReadingBOTest {
     // ---- consultas ----
 
     @Test
-    void findBySensorWithoutPeriodHasNoStartAndEndsNow() {
-        when(sensorReadingDAO.findBySensorUntil(10L, NOW_UTC)).thenReturn(List.of());
+    void findBySensorWithoutPeriodHasNoStartAndEndsFiveMinutesAfterNow() {
+        when(sensorReadingDAO.findBySensorUntil(10L, DEFAULT_END)).thenReturn(List.of());
 
         assertThat(sensorReadingBO.findBySensor(10L, null, null)).isEmpty();
-        verify(sensorReadingDAO).findBySensorUntil(10L, NOW_UTC);
+        verify(sensorReadingDAO).findBySensorUntil(10L, DEFAULT_END);
         verify(sensorReadingDAO, never()).findBySensorBetween(any(), any(), any());
     }
 
     @Test
-    void findBySensorWithOnlyFromEndsNow() {
+    void findBySensorWithOnlyFromEndsFiveMinutesAfterNow() {
         OffsetDateTime from = OffsetDateTime.parse("2026-11-19T00:00:00-03:00");
-        when(sensorReadingDAO.findBySensorBetween(10L, from, NOW_UTC)).thenReturn(List.of());
+        when(sensorReadingDAO.findBySensorBetween(10L, from, DEFAULT_END)).thenReturn(List.of());
 
         sensorReadingBO.findBySensor(10L, from, null);
 
-        verify(sensorReadingDAO).findBySensorBetween(10L, from, NOW_UTC);
+        verify(sensorReadingDAO).findBySensorBetween(10L, from, DEFAULT_END);
     }
 
     @Test

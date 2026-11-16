@@ -16,7 +16,8 @@ import java.time.Duration;
 @Configuration
 public class ValidationConfig {
 
-    static final Duration FUTURE_TOLERANCE = Duration.ofMinutes(5);
+    /** Também usada pelo SensorReadingBO: o histórico mostra tudo o que a validação aceita. */
+    public static final Duration FUTURE_TOLERANCE = Duration.ofMinutes(5);
 
     @Bean
     public ValidationConfigurationCustomizer clockAndTemporalTolerance(Clock clock) {

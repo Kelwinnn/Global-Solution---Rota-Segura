@@ -1,5 +1,6 @@
 package br.com.rotasegura.bo;
 
+import br.com.rotasegura.config.ValidationConfig;
 import br.com.rotasegura.dao.SensorDAO;
 import br.com.rotasegura.dao.SensorReadingDAO;
 import br.com.rotasegura.dto.SensorReadingRequest;
@@ -62,10 +63,13 @@ public class SensorReadingBO {
         return SensorReadingResponse.from(sensorReadingDAO.save(reading));
     }
 
-    /** Leituras de um sensor, mais recentes primeiro. Sem "from", desde o começo; sem "to", até agora. */
+    /**
+     * Leituras de um sensor, mais recentes primeiro. Sem "from", desde o começo; sem "to", até agora mais a folga
+     * de relógio adiantado, para aparecer tudo o que a API aceitou (uma leitura 4 minutos no futuro, por exemplo).
+     */
     @Transactional(readOnly = true)
     public List<SensorReadingResponse> findBySensor(Long sensorId, OffsetDateTime from, OffsetDateTime to) {
-        OffsetDateTime end = to != null ? to : OffsetDateTime.now(clock);
+        OffsetDateTime end = to != null ? to : OffsetDateTime.now(clock).plus(ValidationConfig.FUTURE_TOLERANCE);
         List<SensorReading> readings = from != null
                 ? sensorReadingDAO.findBySensorBetween(sensorId, from, end)
                 : sensorReadingDAO.findBySensorUntil(sensorId, end);

@@ -62,7 +62,7 @@ public class SensorReadingController {
             @Parameter(description = "Id do sensor") @RequestParam Long sensorId,
             @Parameter(description = "Início do período (inclusive). Sem ele, desde a primeira leitura")
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime from,
-            @Parameter(description = "Fim do período (inclusive). Sem ele, até agora")
+            @Parameter(description = "Fim do período (inclusive). Sem ele, até agora mais 5 minutos (folga de relógio adiantado)")
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime to) {
         return sensorReadingBO.findBySensor(sensorId, from, to);
     }
