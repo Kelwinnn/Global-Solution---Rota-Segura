@@ -11,7 +11,9 @@
 --   chave        ID_<ENTIDADE>, gerada pelo banco (IDENTITY)
 --   constraints  PK_RS_, FK_RS_, NN_RS_, CK_RS_ + tabela (+ coluna)
 --   índice único UX_RS_ + tabela + colunas
---   índice comum IX_RS_ + tabela + tabela referenciada (um para cada chave estrangeira)
+--   índice comum IX_RS_ + tabela + tabela referenciada; toda chave estrangeira tem
+--   um índice que começa por ela (na READING, é o próprio UX_RS_READING_SENSOR_TIME)
+--   T_RS_SENSOR_READING aparece como READING nesses nomes, para caber em 30 caracteres
 --   texto        VARCHAR2(n CHAR): o tamanho conta caracteres, não bytes
 --
 -- Arquivo em UTF-8. No SQL Developer, rodar com "Executar Script" (F5).
@@ -19,6 +21,7 @@
 
 -- Para recriar do zero, descomente e rode antes dos CREATE
 -- (primeiro a tabela filha, depois a tabela pai):
+-- DROP TABLE T_RS_SENSOR_READING CASCADE CONSTRAINTS;
 -- DROP TABLE T_RS_SENSOR CASCADE CONSTRAINTS;
 -- DROP TABLE T_RS_AREA CASCADE CONSTRAINTS;
 
@@ -80,3 +83,33 @@ CREATE UNIQUE INDEX UX_RS_SENSOR_CODE
 -- e a checagem que o banco faz ao excluir uma área.
 CREATE INDEX IX_RS_SENSOR_AREA
     ON T_RS_SENSOR (ID_AREA);
+
+
+-- ============================================================
+-- T_RS_SENSOR_READING: leituras dos sensores (RF03), isto é, a
+-- chuva em mm e o nível d'água em cm medidos num instante.
+-- É histórico: a API só grava e consulta, nunca altera.
+-- Criada depois de T_RS_SENSOR, porque a chave estrangeira aponta
+-- para ela.
+-- ============================================================
+CREATE TABLE T_RS_SENSOR_READING (
+    ID_SENSOR_READING NUMBER(19)                  GENERATED ALWAYS AS IDENTITY,
+    ID_SENSOR         NUMBER(19)                  CONSTRAINT NN_RS_READING_ID_SENSOR      NOT NULL,
+    RAIN_MM           NUMBER(6,2)                 CONSTRAINT NN_RS_READING_RAIN_MM        NOT NULL,
+    WATER_LEVEL_CM    NUMBER(7,2)                 CONSTRAINT NN_RS_READING_WATER_LEVEL_CM NOT NULL,
+    MEASURED_AT       TIMESTAMP(6) WITH TIME ZONE CONSTRAINT NN_RS_READING_MEASURED_AT    NOT NULL,
+    CONSTRAINT PK_RS_READING                PRIMARY KEY (ID_SENSOR_READING),
+    -- Sem ON DELETE CASCADE: o banco recusa excluir um sensor que já tem leituras
+    CONSTRAINT FK_RS_READING_SENSOR         FOREIGN KEY (ID_SENSOR) REFERENCES T_RS_SENSOR (ID_SENSOR),
+    CONSTRAINT CK_RS_READING_RAIN_MM        CHECK (RAIN_MM >= 0),
+    CONSTRAINT CK_RS_READING_WATER_LEVEL_CM CHECK (WATER_LEVEL_CM >= 0)
+);
+
+-- Um sensor não tem duas leituras no mesmo instante.
+-- O Oracle não aceita constraint UNIQUE numa coluna TIMESTAMP WITH TIME
+-- ZONE (ORA-02329); por isso a regra é um índice único, sobre o instante
+-- convertido para UTC (assim 18:00 -03:00 e 21:00 +00:00 contam igual).
+-- Como começa por ID_SENSOR, este índice também serve à chave
+-- estrangeira e à busca das leituras de cada sensor.
+CREATE UNIQUE INDEX UX_RS_READING_SENSOR_TIME
+    ON T_RS_SENSOR_READING (ID_SENSOR, SYS_EXTRACT_UTC(MEASURED_AT));

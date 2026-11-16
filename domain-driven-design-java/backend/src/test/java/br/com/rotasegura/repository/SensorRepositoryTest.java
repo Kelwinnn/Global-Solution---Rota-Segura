@@ -96,6 +96,13 @@ class SensorRepositoryTest {
     }
 
     @Test
+    void findByCodeIgnoresCase() {
+        assertThat(repository.findByCodeIgnoreCase("sen-jh-001"))
+                .get().extracting(Sensor::getId).isEqualTo(firstSensor.getId());
+        assertThat(repository.findByCodeIgnoreCase("SEN-XX-999")).isEmpty();
+    }
+
+    @Test
     void existsByCodeIgnoresCase() {
         assertThat(repository.existsByCodeIgnoreCase("sen-jh-001")).isTrue();
         assertThat(repository.existsByCodeIgnoreCase("SEN-XX-999")).isFalse();

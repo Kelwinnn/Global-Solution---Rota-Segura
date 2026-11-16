@@ -2,6 +2,7 @@ package br.com.rotasegura.bo;
 
 import br.com.rotasegura.dao.RiskAreaDAO;
 import br.com.rotasegura.dao.SensorDAO;
+import br.com.rotasegura.dao.SensorReadingDAO;
 import br.com.rotasegura.dto.SensorRequest;
 import br.com.rotasegura.dto.SensorResponse;
 import br.com.rotasegura.exception.BusinessRuleException;
@@ -42,6 +43,9 @@ class SensorBOTest {
 
     @Mock
     private RiskAreaDAO riskAreaDAO;
+
+    @Mock
+    private SensorReadingDAO sensorReadingDAO;
 
     @InjectMocks
     private SensorBO sensorBO;
@@ -227,6 +231,18 @@ class SensorBOTest {
         sensorBO.delete(10L);
 
         verify(sensorDAO).delete(existing);
+    }
+
+    @Test
+    void deleteSensorWithReadingsThrowsAndKeepsTheSensor() {
+        when(sensorDAO.findById(10L)).thenReturn(Optional.of(sensor(10L, area(1L, "Área A"), "SEN-001")));
+        when(sensorReadingDAO.existsBySensorId(10L)).thenReturn(true);
+
+        assertThatThrownBy(() -> sensorBO.delete(10L))
+                .isInstanceOf(BusinessRuleException.class)
+                .hasMessageContaining("SEN-001")
+                .hasMessageContaining("INACTIVE");
+        verify(sensorDAO, never()).delete(any());
     }
 
     @Test

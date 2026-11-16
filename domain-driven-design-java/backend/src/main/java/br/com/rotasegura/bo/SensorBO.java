@@ -2,6 +2,7 @@ package br.com.rotasegura.bo;
 
 import br.com.rotasegura.dao.RiskAreaDAO;
 import br.com.rotasegura.dao.SensorDAO;
+import br.com.rotasegura.dao.SensorReadingDAO;
 import br.com.rotasegura.dto.SensorRequest;
 import br.com.rotasegura.dto.SensorResponse;
 import br.com.rotasegura.exception.BusinessRuleException;
@@ -19,10 +20,12 @@ public class SensorBO {
 
     private final SensorDAO sensorDAO;
     private final RiskAreaDAO riskAreaDAO;
+    private final SensorReadingDAO sensorReadingDAO;
 
-    public SensorBO(SensorDAO sensorDAO, RiskAreaDAO riskAreaDAO) {
+    public SensorBO(SensorDAO sensorDAO, RiskAreaDAO riskAreaDAO, SensorReadingDAO sensorReadingDAO) {
         this.sensorDAO = sensorDAO;
         this.riskAreaDAO = riskAreaDAO;
+        this.sensorReadingDAO = sensorReadingDAO;
     }
 
     /** Todos os sensores ou, com areaId, só os daquela área. Área inexistente devolve lista vazia. */
@@ -72,7 +75,13 @@ public class SensorBO {
 
     @Transactional
     public void delete(Long id) {
-        sensorDAO.delete(findEntity(id));
+        Sensor sensor = findEntity(id);
+        // Sensor com leituras guarda histórico: não se exclui, só se inativa
+        if (sensorReadingDAO.existsBySensorId(id)) {
+            throw new BusinessRuleException(("O sensor '%s' tem leituras registradas e não pode ser excluído. "
+                    + "Para tirá-lo de uso, mude a situação para INACTIVE.").formatted(sensor.getCode()));
+        }
+        sensorDAO.delete(sensor);
     }
 
     private Sensor findEntity(Long id) {

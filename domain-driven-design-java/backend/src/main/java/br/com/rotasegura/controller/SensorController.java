@@ -80,9 +80,11 @@ public class SensorController {
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Excluir sensor", description = "Exige login e token CSRF.")
+    @Operation(summary = "Excluir sensor",
+            description = "Só para sensor sem leituras; com leituras, mude a situação para INACTIVE. Exige login e token CSRF.")
     @ApiResponse(responseCode = "204", description = "Sensor excluído")
     @ApiResponse(responseCode = "404", description = "Sensor não encontrado")
+    @ApiResponse(responseCode = "409", description = "Sensor com leituras: só pode ser inativado")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         sensorBO.delete(id);
         return ResponseEntity.noContent().build();

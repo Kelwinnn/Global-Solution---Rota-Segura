@@ -328,4 +328,15 @@ class SensorControllerTest {
         mockMvc.perform(delete("/api/sensors/99").with(csrf()))
                 .andExpect(status().isNotFound());
     }
+
+    @Test
+    @WithMockUser
+    void deleteSensorWithReadingsReturns409() throws Exception {
+        doThrow(new BusinessRuleException("O sensor 'SEN-JH-001' tem leituras registradas e não pode ser excluído."))
+                .when(sensorBO).delete(10L);
+
+        mockMvc.perform(delete("/api/sensors/10").with(csrf()))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.title").value("Regra de negócio violada"));
+    }
 }

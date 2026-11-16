@@ -25,6 +25,10 @@ public class SensorDAO {
         return repository.findById(id);
     }
 
+    public Optional<Sensor> findByCode(String code) {
+        return repository.findByCodeIgnoreCase(code);
+    }
+
     public List<Sensor> findAllOrderByCode() {
         return repository.findAllByOrderByCodeAsc();
     }
