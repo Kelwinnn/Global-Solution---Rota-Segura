@@ -77,6 +77,7 @@ class AssistedPersonControllerTest {
                 .andExpect(jsonPath("$.title").value("Login necessário"));
         mockMvc.perform(get("/api/assisted-people/1")).andExpect(status().isUnauthorized());
         mockMvc.perform(head("/api/assisted-people")).andExpect(status().isUnauthorized());
+        mockMvc.perform(head("/api/assisted-people/1")).andExpect(status().isUnauthorized());
         verifyNoInteractions(assistedPersonBO);
     }
 

@@ -17,8 +17,8 @@ Instruções para rodar a API Java localmente e no Render (seção "Instruções
 ## Links
 
 - **Repositório:** https://github.com/Kelwinnn/Global-Solution---Rota-Segura (API em `domain-driven-design-java/backend/`)
-- **API publicada:** _preencher depois do deploy_ (ex.: `https://<nome-do-servico>.onrender.com`)
-- **Swagger UI:** `<endereço da API>/swagger-ui.html`
+- **API publicada:** https://global-solution-rota-segura.onrender.com
+- **Swagger UI:** https://global-solution-rota-segura.onrender.com/swagger-ui.html
 
 ## Variáveis de ambiente
 
@@ -133,6 +133,6 @@ Pode rodar mais de uma vez: cada execução usa a hora do momento. Antes, o banc
 3. Em todo `POST`, `PUT` e `DELETE` protegido, enviar o cabeçalho `X-CSRF-TOKEN` com o token.
 4. `POST /api/auth/logout` encerra a sessão (depois dele, buscar um token novo).
 
-Exceção: as rotas de pessoas assistidas (`/api/assisted-people`) exigem login em todos os verbos, **inclusive no `GET`**, porque mostram dados pessoais de gente vulnerável.
+Exceção: as rotas de pessoas assistidas (`/api/assisted-people`) exigem login em todos os verbos, **inclusive no `GET` e no `HEAD`**, porque mostram dados pessoais de gente vulnerável.
 
 O envio de leituras do sensor (`POST /api/sensor-readings`) fica aberto, sem login e sem token. O check-in do morador (RF09) seguirá a mesma regra quando for implementado.
