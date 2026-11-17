@@ -1,0 +1,86 @@
+@startuml casos-de-uso
+' Rota Segura — diagrama de casos de uso (escopo total: Must, Should e Won't)
+' Cada caso de uso numerado corresponde a uma história do backlog (H01 a H14); o UC15 é Won't.
+' "Fazer login" é um caso de uso de apoio, incluído pelos casos do operador.
+left to right direction
+skinparam packageStyle rectangle
+skinparam actorStyle awesome
+skinparam usecase {
+  BackgroundColor<<Should>> #FFF4D6
+  BackgroundColor<<Wont>> #EEEEEE
+  FontColor<<Wont>> #666666
+}
+
+actor "Morador" as Morador
+actor "Pessoa assistida" as Assistida
+actor "Responsável" as Responsavel
+actor "Voluntário" as Voluntario
+actor "Operador do painel" as Operador
+actor "Sensor de rua" as Sensor <<sistema>>
+actor "Serviço de rota\ne risco (Python)" as ServicoRota <<sistema>>
+actor "Defesa Civil" as DefesaCivil
+
+Assistida -|> Morador
+
+rectangle "Rota Segura" {
+  usecase "UC01 Gerenciar áreas de risco" as UC01
+  usecase "UC02 Cadastrar sensor numa área" as UC02
+  usecase "UC03 Enviar leitura do sensor" as UC03
+  usecase "UC04 Consultar nível de risco da área" as UC04
+  usecase "UC05 Receber alerta e atualizações" as UC05
+  usecase "UC06 Cadastrar abrigo" as UC06
+  usecase "UC07 Receber rota segura até o abrigo" as UC07
+  usecase "UC08 Cadastrar pessoa assistida\ne responsáveis" as UC08
+  usecase "UC09 Responder ao check-in" as UC09
+  usecase "UC10 Receber mensagens por SMS" as UC10
+  usecase "UC11 Ver mapa interativo" as UC11
+  usecase "UC12 Acompanhar painel de\nprioridade de resgate" as UC12 <<Should>>
+  usecase "UC13 Receber aviso sobre\no assistido" as UC13 <<Should>>
+  usecase "UC14 Receber pedido de ajuda" as UC14 <<Should>>
+  usecase "UC15 Integrar com a Defesa Civil" as UC15 <<Wont>>
+  usecase "Fazer login" as Login
+}
+
+' Operador do painel
+Operador --> UC01
+Operador --> UC02
+Operador --> UC04
+Operador --> UC06
+Operador --> UC08
+Operador --> UC12
+UC01 ..> Login : <<include>>
+UC02 ..> Login : <<include>>
+UC06 ..> Login : <<include>>
+UC08 ..> Login : <<include>>
+UC12 ..> Login : <<include>>
+
+' Sensor
+Sensor --> UC03
+
+' Morador e pessoa assistida
+Morador --> UC05
+Morador --> UC07
+Morador --> UC10
+Morador --> UC11
+Assistida --> UC09
+UC11 ..> UC04 : <<include>>
+UC05 ..> UC04 : <<include>>
+UC05 ..> UC10 : <<include>>
+UC05 ..> UC07 : <<include>>
+UC07 --> ServicoRota
+UC05 --> ServicoRota : chance de\nalagamento
+UC09 ..> UC05 : <<extend>>\n(quem ainda não está seguro)
+
+' Should: avisos e painel
+UC12 ..> UC05 : <<extend>>\n(sem resposta em 15 min)
+UC12 ..> UC07 : <<extend>>\n(sem rota segura)
+UC13 ..> UC05 : <<extend>>
+UC14 ..> UC09 : <<extend>>\n("a caminho" ou\n"ainda não saí")
+UC14 ..> UC05 : <<extend>>\n(sem resposta em 15 min)
+Responsavel --> UC13
+Voluntario --> UC14
+
+' Won't
+UC15 -- DefesaCivil
+
+@enduml
