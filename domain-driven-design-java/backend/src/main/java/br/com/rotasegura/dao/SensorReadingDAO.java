@@ -1,6 +1,7 @@
 package br.com.rotasegura.dao;
 
 import br.com.rotasegura.model.SensorReading;
+import br.com.rotasegura.model.SensorStatus;
 import br.com.rotasegura.repository.SensorReadingRepository;
 import org.springframework.stereotype.Component;
 
@@ -32,6 +33,15 @@ public class SensorReadingDAO {
 
     public List<SensorReading> findBySensorUntil(Long sensorId, OffsetDateTime to) {
         return repository.findAllBySensorIdAndMeasuredAtLessThanEqualOrderByMeasuredAtDesc(sensorId, to);
+    }
+
+    public List<SensorReading> findBySensorStatusBetween(SensorStatus status, OffsetDateTime from, OffsetDateTime to) {
+        return repository.findAllBySensorStatusAndMeasuredAtBetween(status, from, to);
+    }
+
+    public List<SensorReading> findByAreaAndSensorStatusBetween(Long areaId, SensorStatus status,
+                                                                OffsetDateTime from, OffsetDateTime to) {
+        return repository.findAllBySensorAreaIdAndSensorStatusAndMeasuredAtBetween(areaId, status, from, to);
     }
 
     public boolean existsBySensorId(Long sensorId) {

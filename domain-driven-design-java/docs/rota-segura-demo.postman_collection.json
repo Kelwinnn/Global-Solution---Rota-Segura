@@ -1,0 +1,754 @@
+{
+  "info": {
+    "_postman_id": "6c3a9479-736f-484c-9ed9-3fa3d2aa4df0",
+    "name": "Rota Segura - demonstração",
+    "description": "Roteiro da demonstração da API Rota Segura. Dados simulados (nenhum dado real).\n\nAntes: rode database-design/ddl.sql e dml.sql no Oracle (precisa das áreas e dos sensores).\n\n1. Leituras dos sensores (RF03): envia leituras com a hora do momento. A janela do nível de risco é de 1 hora, por isso as leituras do dml.sql (de 15/11) não contam na demonstração.\n2. Sensor inativo: mostra a recusa (409).\n3. Mapa de risco (RF04): confere o nível de cada área.\n\nEndereço da API: variável baseUrl (padrão http://localhost:8080; para o Render, troque pelo endereço publicado). Pode rodar mais de uma vez: cada execução usa a hora do momento.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "sensorIdJH001",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Leituras dos sensores (RF03)",
+      "description": "POST /api/sensor-readings: aberto, sem login e sem token CSRF (o aparelho do sensor envia).",
+      "item": [
+        {
+          "name": "SEN-JH-001: 0.80 cm (agora - 30 min)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Hora da medição: agora menos 30 minutos, em UTC",
+                  "pm.variables.set('measuredAt', new Date(Date.now() - 30 * 60 * 1000).toISOString());"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "if (pm.response.code === 201) { pm.collectionVariables.set('sensorIdJH001', pm.response.json().sensorId); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/sensor-readings",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "sensor-readings"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sensorCode\": \"SEN-JH-001\",\n  \"rainMm\": 5.2,\n  \"waterLevelCm\": 0.8,\n  \"measuredAt\": \"{{measuredAt}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Jardim Helena: a água começa a subir. Leitura simulada: chuva 5.20 mm, nível d'água 0.80 cm."
+          }
+        },
+        {
+          "name": "SEN-JH-001: 2.40 cm (agora - 15 min)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Hora da medição: agora menos 15 minutos, em UTC",
+                  "pm.variables.set('measuredAt', new Date(Date.now() - 15 * 60 * 1000).toISOString());"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/sensor-readings",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "sensor-readings"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sensorCode\": \"SEN-JH-001\",\n  \"rainMm\": 12.8,\n  \"waterLevelCm\": 2.4,\n  \"measuredAt\": \"{{measuredAt}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Leitura simulada: chuva 12.80 mm, nível d'água 2.40 cm."
+          }
+        },
+        {
+          "name": "SEN-JH-001: 4.60 cm (agora - 0 min)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Hora da medição: agora menos 0 minutos, em UTC",
+                  "pm.variables.set('measuredAt', new Date(Date.now() - 0 * 60 * 1000).toISOString());"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/sensor-readings",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "sensor-readings"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sensorCode\": \"SEN-JH-001\",\n  \"rainMm\": 21.4,\n  \"waterLevelCm\": 4.6,\n  \"measuredAt\": \"{{measuredAt}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Leitura simulada: chuva 21.40 mm, nível d'água 4.60 cm."
+          }
+        },
+        {
+          "name": "SEN-JH-002: 0.60 cm (agora - 15 min)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Hora da medição: agora menos 15 minutos, em UTC",
+                  "pm.variables.set('measuredAt', new Date(Date.now() - 15 * 60 * 1000).toISOString());"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/sensor-readings",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "sensor-readings"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sensorCode\": \"SEN-JH-002\",\n  \"rainMm\": 4.9,\n  \"waterLevelCm\": 0.6,\n  \"measuredAt\": \"{{measuredAt}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Leitura simulada: chuva 4.90 mm, nível d'água 0.60 cm."
+          }
+        },
+        {
+          "name": "SEN-JH-002: 1.90 cm (agora - 0 min)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Hora da medição: agora menos 0 minutos, em UTC",
+                  "pm.variables.set('measuredAt', new Date(Date.now() - 0 * 60 * 1000).toISOString());"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/sensor-readings",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "sensor-readings"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sensorCode\": \"SEN-JH-002\",\n  \"rainMm\": 11.7,\n  \"waterLevelCm\": 1.9,\n  \"measuredAt\": \"{{measuredAt}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Leitura simulada: chuva 11.70 mm, nível d'água 1.90 cm."
+          }
+        },
+        {
+          "name": "SEN-JP-001: 3.20 cm (agora - 15 min)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Hora da medição: agora menos 15 minutos, em UTC",
+                  "pm.variables.set('measuredAt', new Date(Date.now() - 15 * 60 * 1000).toISOString());"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/sensor-readings",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "sensor-readings"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sensorCode\": \"SEN-JP-001\",\n  \"rainMm\": 8.3,\n  \"waterLevelCm\": 3.2,\n  \"measuredAt\": \"{{measuredAt}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Jardim Pantanal. Leitura simulada: chuva 8.30 mm, nível d'água 3.20 cm."
+          }
+        },
+        {
+          "name": "SEN-JP-001: 5.80 cm (agora - 0 min)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Hora da medição: agora menos 0 minutos, em UTC",
+                  "pm.variables.set('measuredAt', new Date(Date.now() - 0 * 60 * 1000).toISOString());"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/sensor-readings",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "sensor-readings"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sensorCode\": \"SEN-JP-001\",\n  \"rainMm\": 15.6,\n  \"waterLevelCm\": 5.8,\n  \"measuredAt\": \"{{measuredAt}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Leitura simulada: chuva 15.60 mm, nível d'água 5.80 cm."
+          }
+        },
+        {
+          "name": "SEN-SM-001: 0.20 cm (agora - 0 min)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Hora da medição: agora menos 0 minutos, em UTC",
+                  "pm.variables.set('measuredAt', new Date(Date.now() - 0 * 60 * 1000).toISOString());"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/sensor-readings",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "sensor-readings"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sensorCode\": \"SEN-SM-001\",\n  \"rainMm\": 3.4,\n  \"waterLevelCm\": 0.2,\n  \"measuredAt\": \"{{measuredAt}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "São Miguel. Leitura simulada: chuva 3.40 mm, nível d'água 0.20 cm."
+          }
+        },
+        {
+          "name": "SEN-IP-001: 1.50 cm (agora - 0 min)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Hora da medição: agora menos 0 minutos, em UTC",
+                  "pm.variables.set('measuredAt', new Date(Date.now() - 0 * 60 * 1000).toISOString());"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/sensor-readings",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "sensor-readings"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sensorCode\": \"SEN-IP-001\",\n  \"rainMm\": 6.8,\n  \"waterLevelCm\": 1.5,\n  \"measuredAt\": \"{{measuredAt}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Itaim Paulista. Leitura simulada: chuva 6.80 mm, nível d'água 1.50 cm."
+          }
+        },
+        {
+          "name": "SEN-GRU-001: 9.40 cm (agora - 15 min)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Hora da medição: agora menos 15 minutos, em UTC",
+                  "pm.variables.set('measuredAt', new Date(Date.now() - 15 * 60 * 1000).toISOString());"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/sensor-readings",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "sensor-readings"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sensorCode\": \"SEN-GRU-001\",\n  \"rainMm\": 18.9,\n  \"waterLevelCm\": 9.4,\n  \"measuredAt\": \"{{measuredAt}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Guarulhos. Leitura simulada: chuva 18.90 mm, nível d'água 9.40 cm."
+          }
+        },
+        {
+          "name": "SEN-GRU-001: 11.30 cm (agora - 0 min)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Hora da medição: agora menos 0 minutos, em UTC",
+                  "pm.variables.set('measuredAt', new Date(Date.now() - 0 * 60 * 1000).toISOString());"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/sensor-readings",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "sensor-readings"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sensorCode\": \"SEN-GRU-001\",\n  \"rainMm\": 27.5,\n  \"waterLevelCm\": 11.3,\n  \"measuredAt\": \"{{measuredAt}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Leitura simulada: chuva 27.50 mm, nível d'água 11.30 cm."
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Sensor inativo",
+      "item": [
+        {
+          "name": "SEN-JP-002 (inativo): leitura recusada com 409",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Hora da medição: agora menos 0 minutos, em UTC",
+                  "pm.variables.set('measuredAt', new Date(Date.now() - 0 * 60 * 1000).toISOString());"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 409', () => pm.response.to.have.status(409));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/sensor-readings",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "sensor-readings"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sensorCode\": \"SEN-JP-002\",\n  \"rainMm\": 2.1,\n  \"waterLevelCm\": 0.4,\n  \"measuredAt\": \"{{measuredAt}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "SEN-JP-002 está INACTIVE: a API recusa a leitura nova (409) e o histórico dele continua guardado. Leitura simulada: chuva 2.10 mm, nível d'água 0.40 cm."
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Mapa de risco (RF04)",
+      "item": [
+        {
+          "name": "Nível de risco de todas as áreas",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const areas = pm.response.json();",
+                  "const byName = Object.fromEntries(areas.map(a => [a.areaName, a]));",
+                  "const expected = [{\"area\": \"Várzea do Jardim Helena\", \"level\": \"HIGH\", \"water\": 4.6, \"sensor\": \"SEN-JH-001\"}, {\"area\": \"Beira-Rio do Jardim Pantanal\", \"level\": \"VERY_HIGH\", \"water\": 5.8, \"sensor\": \"SEN-JP-001\"}, {\"area\": \"Baixada de São Miguel\", \"level\": \"LOW\", \"water\": 0.2, \"sensor\": \"SEN-SM-001\"}, {\"area\": \"Córrego do Itaim Paulista\", \"level\": \"MEDIUM\", \"water\": 1.5, \"sensor\": \"SEN-IP-001\"}, {\"area\": \"Baixada Leste de Guarulhos\", \"level\": \"VERY_URGENT\", \"water\": 11.3, \"sensor\": \"SEN-GRU-001\"}];",
+                  "expected.forEach(e => pm.test(`${e.area}: ${e.level} (${e.water} cm, ${e.sensor})`, () => {",
+                  "    const area = byName[e.area];",
+                  "    pm.expect(area, 'área não encontrada: rode o dml.sql antes').to.exist;",
+                  "    pm.expect(area.hasData).to.be.true;",
+                  "    pm.expect(area.riskLevel).to.eql(e.level);",
+                  "    pm.expect(area.waterLevelCm).to.eql(e.water);",
+                  "    pm.expect(area.sensorCode).to.eql(e.sensor);",
+                  "}));",
+                  "pm.test('Áreas sem leitura recente aparecem com hasData false', () => {",
+                  "    const withoutData = areas.filter(a => !a.hasData);",
+                  "    withoutData.forEach(a => pm.expect(a.riskLevel).to.be.null);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/areas/risk",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "areas",
+                "risk"
+              ]
+            },
+            "description": "Em cada área vale a pior entre as leituras mais recentes (última 1 hora) dos sensores ativos."
+          }
+        },
+        {
+          "name": "Histórico do SEN-JH-001",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('A mais recente vem primeiro', () => pm.expect(pm.response.json()[0].waterLevelCm).to.eql(4.6));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/sensor-readings?sensorId={{sensorIdJH001}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "sensor-readings"
+              ],
+              "query": [
+                {
+                  "key": "sensorId",
+                  "value": "{{sensorIdJH001}}"
+                }
+              ]
+            },
+            "description": "Histórico do sensor (mais recentes primeiro). O id vem da resposta da primeira leitura."
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -122,6 +122,50 @@ class SensorReadingRepositoryTest {
     }
 
     @Test
+    void recentReadingsOfActiveSensorsComeWithSensorAndAreaLoaded() {
+        Sensor off = entityManager.persist(new Sensor(entityManager.find(RiskArea.class, helena.getArea().getId()),
+                "SEN-OFF-001", new BigDecimal("-23.481500"), new BigDecimal("-46.414200"), SensorStatus.INACTIVE));
+        reading(off, "8.00", T18.plusMinutes(10));
+        entityManager.flush();
+        entityManager.clear();
+
+        List<SensorReading> readings = repository.findAllBySensorStatusAndMeasuredAtBetween(
+                SensorStatus.ACTIVE, T18.plusMinutes(5), T18.plusMinutes(20));
+
+        // Só as de SEN-JH-001 (18:10 e 18:20): fica de fora a das 18:00, a do dia anterior e a do sensor inativo
+        assertThat(readings).extracting(reading -> reading.getSensor().getCode())
+                .containsOnly("SEN-JH-001")
+                .hasSize(2);
+        assertThat(readings).allSatisfy(reading -> {
+            assertThat(Hibernate.isInitialized(reading.getSensor())).isTrue();
+            assertThat(Hibernate.isInitialized(reading.getSensor().getArea())).isTrue();
+        });
+    }
+
+    @Test
+    void recentReadingsOfOneAreaIgnoreOtherAreas() {
+        RiskArea other = entityManager.persist(new RiskArea("Baixada Leste de Guarulhos", "Guarulhos", null,
+                RiskType.FLOOD, new BigDecimal("-23.455000"), new BigDecimal("-46.420000"), 650));
+        Sensor gru = sensor(other, "SEN-GRU-001");
+        Sensor gruOff = entityManager.persist(new Sensor(other, "SEN-GRU-OFF",
+                new BigDecimal("-23.455000"), new BigDecimal("-46.420000"), SensorStatus.INACTIVE));
+        reading(gru, "11.30", T18);
+        reading(gruOff, "20.00", T18);
+        entityManager.flush();
+        entityManager.clear();
+
+        // A janela começa exatamente na hora da leitura: a ponta inicial também conta
+        List<SensorReading> readings = repository.findAllBySensorAreaIdAndSensorStatusAndMeasuredAtBetween(
+                other.getId(), SensorStatus.ACTIVE, T18, T18.plusMinutes(1));
+
+        assertThat(readings).singleElement().satisfies(reading -> {
+            assertThat(reading.getSensor().getCode()).isEqualTo("SEN-GRU-001");
+            assertThat(Hibernate.isInitialized(reading.getSensor())).isTrue();
+            assertThat(Hibernate.isInitialized(reading.getSensor().getArea())).isTrue();
+        });
+    }
+
+    @Test
     void existsBySensorTellsWhetherTheSensorHasReadings() {
         assertThat(repository.existsBySensorId(helena.getId())).isTrue();
         assertThat(repository.existsBySensorId(withoutReadings.getId())).isFalse();

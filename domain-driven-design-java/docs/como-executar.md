@@ -107,6 +107,25 @@ Observações:
 3. Um `POST /api/areas` autenticado devolve 201.
 4. O cookie de sessão chega com `SameSite=None` e `Secure` (ferramentas do navegador > Aplicação > Cookies).
 
+## 6. Demonstração com o Postman
+
+O nível de risco (RF04) só considera leituras da última 1 hora, e as leituras do `dml.sql` são de 15/11. Por isso, na demonstração, as leituras são enviadas na hora pela coleção `domain-driven-design-java/docs/rota-segura-demo.postman_collection.json` (dados simulados):
+
+1. **Leituras dos sensores (RF03):** 11 leituras, com a hora do momento (agora, há 15 e há 30 minutos).
+2. **Sensor inativo:** a leitura do `SEN-JP-002` é recusada com 409.
+3. **Mapa de risco (RF04):** `GET /api/areas/risk` confere o nível de cada área (Jardim Helena alto, Jardim Pantanal muito alto, São Miguel baixo, Itaim Paulista médio, Guarulhos muito urgente) e o histórico do `SEN-JH-001`.
+
+Para rodar:
+
+- **No Postman:** File > Import, escolher o arquivo, ajustar a variável `baseUrl` da coleção (padrão `http://localhost:8080`; para o Render, o endereço publicado) e usar **Run collection**.
+- **No terminal (Postman CLI):**
+
+  ```bash
+  postman collection run domain-driven-design-java/docs/rota-segura-demo.postman_collection.json --env-var "baseUrl=http://localhost:8080"
+  ```
+
+Pode rodar mais de uma vez: cada execução usa a hora do momento. Antes, o banco precisa ter as áreas e os sensores do `dml.sql`.
+
 ## Como usar a API autenticada (resumo)
 
 1. `POST /api/auth/login` com `{"username": "...", "password": "..."}` (abre a sessão por cookie).
