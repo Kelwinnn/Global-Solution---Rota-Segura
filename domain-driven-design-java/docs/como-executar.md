@@ -1,0 +1,117 @@
+# Rota Segura API — como executar
+
+Instruções para rodar a API Java localmente e no Render (seção "Instruções de execução" do PDF de Domain Driven Design Java).
+
+## Ferramentas e versões
+
+| Ferramenta | Versão |
+|---|---|
+| Java (JDK) | 21 |
+| Maven | 3.9.12 (via Maven Wrapper `./mvnw`, já no projeto; não precisa instalar) |
+| Spring Boot | 3.4.1 |
+| Banco de dados | Oracle da FIAP (driver `ojdbc11`) |
+| Documentação da API | springdoc (Swagger UI) 2.7.0 |
+| Container | Docker (imagem `eclipse-temurin:21-jre`) |
+| Hospedagem | Render (Web Service com Docker) |
+
+## Links
+
+- **Repositório:** https://github.com/Kelwinnn/Global-Solution---Rota-Segura (API em `domain-driven-design-java/backend/`)
+- **API publicada:** _preencher depois do deploy_ (ex.: `https://<nome-do-servico>.onrender.com`)
+- **Swagger UI:** `<endereço da API>/swagger-ui.html`
+
+## Variáveis de ambiente
+
+Nenhuma credencial fica no código. A API lê estas variáveis (só os nomes; os valores ficam no `.env` local e no painel do Render):
+
+| Variável | Para quê | Obrigatória |
+|---|---|---|
+| `DB_URL` | URL JDBC do Oracle da FIAP | sim |
+| `DB_USERNAME` | Usuário do Oracle | sim |
+| `DB_PASSWORD` | Senha do Oracle | sim |
+| `ADMIN_USERNAME` | Usuário do login do painel | sim |
+| `ADMIN_PASSWORD` | Senha do login do painel | sim |
+| `CORS_ALLOWED_ORIGINS` | Origens do front com permissão de CORS, separadas por vírgula | não (padrão `http://localhost:5173`) |
+| `PORT` | Porta HTTP | não (padrão `8080`; o Render define sozinho) |
+
+O modelo está em `domain-driven-design-java/backend/.env.example`.
+
+## 1. Criar as tabelas no Oracle
+
+A API **não cria tabelas**: ela sobe com `spring.jpa.hibernate.ddl-auto=validate` e só confere se as tabelas batem com as entidades. Por isso, antes da primeira execução:
+
+1. Abra o SQL Developer conectado ao Oracle da FIAP.
+2. Abra `database-design/ddl.sql` e rode com **Executar Script (F5)**.
+3. Abra `database-design/dml.sql` e rode com **Executar Script (F5)** (dados de exemplo simulados).
+4. Opcional: `database-design/dql.sql` traz as três consultas de exemplo.
+
+Os arquivos estão em UTF-8 (Ferramentas > Preferências > Ambiente > Codificação = UTF-8).
+
+## 2. Rodar localmente (sem Docker)
+
+Dentro de `domain-driven-design-java/backend/`:
+
+```bash
+# 1. Criar o .env a partir do modelo e preencher os valores
+cp .env.example .env
+
+# 2. Carregar as variáveis no terminal e subir a API
+set -a; source .env; set +a
+./mvnw spring-boot:run
+```
+
+No Windows, use `mvnw.cmd spring-boot:run` e defina as variáveis no terminal (ou na configuração de execução da IDE).
+
+A API sobe em `http://localhost:8080`. Testes rápidos:
+
+- `http://localhost:8080/swagger-ui.html` — documentação interativa
+- `http://localhost:8080/api/areas` — lista as áreas de risco (aberto, sem login)
+
+Para rodar os testes automatizados (não precisam do Oracle):
+
+```bash
+./mvnw test
+```
+
+## 3. Rodar localmente com Docker
+
+Dentro de `domain-driven-design-java/` (a pasta acima de `backend/`, porque é o contexto do build):
+
+```bash
+docker build -f backend/Dockerfile -t rota-segura-api .
+docker run --rm -p 8080:8080 --env-file backend/.env rota-segura-api
+```
+
+## 4. Publicar no Render
+
+1. No Render, crie um **Web Service** ligado ao repositório do GitHub.
+2. Configure:
+   - **Language / Runtime:** Docker
+   - **Root Directory:** `domain-driven-design-java`
+   - **Dockerfile Path:** `backend/Dockerfile` (relativo ao Root Directory; confira na tela do Render)
+   - **Docker Build Context Directory:** `.` (o próprio Root Directory)
+   - **Health Check Path:** `/v3/api-docs` (responde sem depender do banco)
+3. Em **Environment**, cadastre as variáveis da tabela acima (`DB_URL`, `DB_USERNAME`, `DB_PASSWORD`, `ADMIN_USERNAME`, `ADMIN_PASSWORD`). Não cadastre `PORT`: o Render define sozinho.
+4. Crie o serviço e acompanhe o log do build. A API está no ar quando aparecer `Started RotaSeguraApplication`.
+5. Abra `<endereço do Render>/swagger-ui.html`.
+
+Observações:
+
+- No plano gratuito, o serviço "dorme" depois de um tempo sem uso; a primeira chamada depois disso demora alguns segundos.
+- Se o log mostrar erro de conexão com o Oracle, o Render pode não estar conseguindo acessar o banco da FIAP: veja a seção "Verificações depois do deploy".
+
+## 5. Verificações depois do deploy
+
+1. `GET /api/areas` devolve as áreas do `dml.sql` (prova que a API acessa o Oracle).
+2. No Swagger: `POST /api/auth/login` com o usuário e a senha do `.env`, depois `GET /api/auth/csrf`, copiar o `token` e colar em **Authorize**.
+3. Um `POST /api/areas` autenticado devolve 201.
+4. O cookie de sessão chega com `SameSite=None` e `Secure` (ferramentas do navegador > Aplicação > Cookies).
+
+## Como usar a API autenticada (resumo)
+
+1. `POST /api/auth/login` com `{"username": "...", "password": "..."}` (abre a sessão por cookie).
+2. `GET /api/auth/csrf` devolve `{"headerName": "X-CSRF-TOKEN", "token": "..."}`.
+3. Em todo `POST`, `PUT` e `DELETE` protegido, enviar o cabeçalho `X-CSRF-TOKEN` com o token.
+4. `POST /api/auth/logout` encerra a sessão (depois dele, buscar um token novo).
+
+O envio de leituras do sensor (`POST /api/sensor-readings`) fica aberto, sem login e sem token. O check-in do morador (RF09) seguirá a mesma regra quando for implementado.
