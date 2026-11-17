@@ -133,4 +133,6 @@ Pode rodar mais de uma vez: cada execução usa a hora do momento. Antes, o banc
 3. Em todo `POST`, `PUT` e `DELETE` protegido, enviar o cabeçalho `X-CSRF-TOKEN` com o token.
 4. `POST /api/auth/logout` encerra a sessão (depois dele, buscar um token novo).
 
+Exceção: as rotas de pessoas assistidas (`/api/assisted-people`) exigem login em todos os verbos, **inclusive no `GET`**, porque mostram dados pessoais de gente vulnerável.
+
 O envio de leituras do sensor (`POST /api/sensor-readings`) fica aberto, sem login e sem token. O check-in do morador (RF09) seguirá a mesma regra quando for implementado.

@@ -1,5 +1,6 @@
 package br.com.rotasegura.bo;
 
+import br.com.rotasegura.dao.AssistedPersonDAO;
 import br.com.rotasegura.dao.RiskAreaDAO;
 import br.com.rotasegura.dao.SensorDAO;
 import br.com.rotasegura.dto.RiskAreaRequest;
@@ -18,10 +19,12 @@ public class RiskAreaBO {
 
     private final RiskAreaDAO riskAreaDAO;
     private final SensorDAO sensorDAO;
+    private final AssistedPersonDAO assistedPersonDAO;
 
-    public RiskAreaBO(RiskAreaDAO riskAreaDAO, SensorDAO sensorDAO) {
+    public RiskAreaBO(RiskAreaDAO riskAreaDAO, SensorDAO sensorDAO, AssistedPersonDAO assistedPersonDAO) {
         this.riskAreaDAO = riskAreaDAO;
         this.sensorDAO = sensorDAO;
+        this.assistedPersonDAO = assistedPersonDAO;
     }
 
     @Transactional(readOnly = true)
@@ -76,6 +79,11 @@ public class RiskAreaBO {
         if (sensorDAO.existsByAreaId(id)) {
             throw new BusinessRuleException(
                     "A área '%s' tem sensores vinculados. Exclua ou mova os sensores antes.".formatted(area.getName()));
+        }
+        // RN03: todo assistido tem uma área; excluir a área deixaria pessoas sem área
+        if (assistedPersonDAO.existsByAreaId(id)) {
+            throw new BusinessRuleException(
+                    "A área '%s' tem pessoas assistidas vinculadas. Mude-as de área antes.".formatted(area.getName()));
         }
         riskAreaDAO.delete(area);
     }

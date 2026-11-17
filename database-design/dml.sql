@@ -5,7 +5,8 @@
 -- DADOS SIMULADOS. Os nomes das áreas são fictícios e as
 -- coordenadas e os raios são aproximados e ilustrativos: indicam
 -- a região de cada localidade do território do MVP, mas NÃO são
--- um mapeamento oficial de áreas de risco. Nenhum dado pessoal.
+-- um mapeamento oficial de áreas de risco. Nenhum dado pessoal real:
+-- pessoas assistidas e responsáveis são fictícios.
 -- Exceção: nome, endereço e coordenadas dos abrigos são dados
 -- públicos do OpenStreetMap (ver a seção T_RS_SHELTER); a capacidade
 -- e a ocupação deles são simuladas.
@@ -23,8 +24,13 @@
 -- por cidade, o código de cada sensor é único e cada sensor tem só
 -- uma leitura por instante, então uma segunda execução falha com
 -- ORA-00001 nessas tabelas. Os abrigos não têm nome único: numa segunda
--- execução eles seriam gravados de novo, duplicados. Para rodar de
+-- execução eles seriam gravados de novo, duplicados. As pessoas assistidas
+-- também não: elas seriam duplicadas, e os INSERTs dos responsáveis
+-- falhariam com ORA-01427 (a subconsulta pelo nome devolveria 2 linhas),
+-- deixando cópias sem responsável. Para rodar de
 -- novo, descomente e rode antes (das tabelas filhas para as tabelas pai):
+-- DELETE FROM T_RS_GUARDIAN;
+-- DELETE FROM T_RS_ASSISTED_PERSON;
 -- DELETE FROM T_RS_SHELTER;
 -- DELETE FROM T_RS_SENSOR_READING;
 -- DELETE FROM T_RS_SENSOR;
@@ -202,10 +208,80 @@ VALUES ('Escola Estadual Professor José Bonifácio Andrada e Silva Jardim', 'Ru
 INSERT INTO T_RS_SHELTER (NAME, ADDRESS, LATITUDE, LONGITUDE, CAPACITY, OCCUPIED_SPOTS)
 VALUES ('Escola Municipal de Educação Fundamental Murures', 'Rua dos Murures', -23.476716, -46.418575, 200, 0);
 
+-- ============================================================
+-- T_RS_ASSISTED_PERSON: 6 pessoas assistidas (RF08).
+-- DADOS FICTÍCIOS: nomes inventados e telefones com DDD 00, que não
+-- existe, para nenhum número ser de uma pessoa real. As posições são
+-- ilustrativas (não são casas reais) e ficam dentro do raio da área de
+-- cada pessoa. Cada pessoa acha a área pela subconsulta nome + cidade.
+-- ============================================================
+
+INSERT INTO T_RS_ASSISTED_PERSON (ID_AREA, NAME, PHONE, LATITUDE, LONGITUDE, SPECIAL_NEED, NOTES)
+VALUES ((SELECT ID_AREA FROM T_RS_AREA WHERE NAME = 'Várzea do Jardim Helena' AND CITY = 'São Paulo'),
+        'Benedita Moraes Lima', '(00) 00000-0101', -23.480500, -46.413800, 'BEDRIDDEN', 'Acamada; precisa de maca para sair de casa');
+
+INSERT INTO T_RS_ASSISTED_PERSON (ID_AREA, NAME, PHONE, LATITUDE, LONGITUDE, SPECIAL_NEED, NOTES)
+VALUES ((SELECT ID_AREA FROM T_RS_AREA WHERE NAME = 'Várzea do Jardim Helena' AND CITY = 'São Paulo'),
+        'Joaquim Pereira Santos', '(00) 00000-0102', -23.483500, -46.416200, 'ELDERLY', '92 anos; anda devagar, com bengala');
+
+INSERT INTO T_RS_ASSISTED_PERSON (ID_AREA, NAME, PHONE, LATITUDE, LONGITUDE, SPECIAL_NEED, NOTES)
+VALUES ((SELECT ID_AREA FROM T_RS_AREA WHERE NAME = 'Várzea do Jardim Helena' AND CITY = 'São Paulo'),
+        'Lúcia Ferreira Rocha', '(00) 00000-0103', -23.481200, -46.417100, 'WHEELCHAIR', NULL);
+
+INSERT INTO T_RS_ASSISTED_PERSON (ID_AREA, NAME, PHONE, LATITUDE, LONGITUDE, SPECIAL_NEED, NOTES)
+VALUES ((SELECT ID_AREA FROM T_RS_AREA WHERE NAME = 'Beira-Rio do Jardim Pantanal' AND CITY = 'São Paulo'),
+        'Severino Alves Costa', '(00) 00000-0104', -23.476200, -46.399100, 'ELDERLY', 'Mora sozinho');
+
+INSERT INTO T_RS_ASSISTED_PERSON (ID_AREA, NAME, PHONE, LATITUDE, LONGITUDE, SPECIAL_NEED, NOTES)
+VALUES ((SELECT ID_AREA FROM T_RS_AREA WHERE NAME = 'Baixada Leste de Guarulhos' AND CITY = 'Guarulhos'),
+        'Marta Ribeiro Dias', '(00) 00000-0105', -23.455800, -46.418900, 'OTHER', 'Deficiência visual');
+
+INSERT INTO T_RS_ASSISTED_PERSON (ID_AREA, NAME, PHONE, LATITUDE, LONGITUDE, SPECIAL_NEED, NOTES)
+VALUES ((SELECT ID_AREA FROM T_RS_AREA WHERE NAME = 'Morro de Poá' AND CITY = 'Poá'),
+        'Antônio Carvalho Nunes', '(00) 00000-0106', -23.527600, -46.344600, 'WHEELCHAIR', NULL);
+
+-- ============================================================
+-- T_RS_GUARDIAN: 8 responsáveis (RN03: toda pessoa assistida tem ao
+-- menos um). Também fictícios. Cada um acha a pessoa pelo nome.
+-- ============================================================
+
+INSERT INTO T_RS_GUARDIAN (ID_ASSISTED_PERSON, NAME, PHONE, RELATIONSHIP)
+VALUES ((SELECT ID_ASSISTED_PERSON FROM T_RS_ASSISTED_PERSON WHERE NAME = 'Benedita Moraes Lima'),
+        'Ana Moraes Lima', '(00) 00000-0201', 'filha');
+
+INSERT INTO T_RS_GUARDIAN (ID_ASSISTED_PERSON, NAME, PHONE, RELATIONSHIP)
+VALUES ((SELECT ID_ASSISTED_PERSON FROM T_RS_ASSISTED_PERSON WHERE NAME = 'Benedita Moraes Lima'),
+        'Carlos Lima Souza', '(00) 00000-0202', 'genro');
+
+INSERT INTO T_RS_GUARDIAN (ID_ASSISTED_PERSON, NAME, PHONE, RELATIONSHIP)
+VALUES ((SELECT ID_ASSISTED_PERSON FROM T_RS_ASSISTED_PERSON WHERE NAME = 'Joaquim Pereira Santos'),
+        'Rita Santos Oliveira', '(00) 00000-0203', 'neta');
+
+INSERT INTO T_RS_GUARDIAN (ID_ASSISTED_PERSON, NAME, PHONE, RELATIONSHIP)
+VALUES ((SELECT ID_ASSISTED_PERSON FROM T_RS_ASSISTED_PERSON WHERE NAME = 'Lúcia Ferreira Rocha'),
+        'Paulo Rocha Teixeira', '(00) 00000-0204', 'irmão');
+
+INSERT INTO T_RS_GUARDIAN (ID_ASSISTED_PERSON, NAME, PHONE, RELATIONSHIP)
+VALUES ((SELECT ID_ASSISTED_PERSON FROM T_RS_ASSISTED_PERSON WHERE NAME = 'Severino Alves Costa'),
+        'Dona Cida Mendes', '(00) 00000-0205', 'vizinha');
+
+INSERT INTO T_RS_GUARDIAN (ID_ASSISTED_PERSON, NAME, PHONE, RELATIONSHIP)
+VALUES ((SELECT ID_ASSISTED_PERSON FROM T_RS_ASSISTED_PERSON WHERE NAME = 'Marta Ribeiro Dias'),
+        'Juliana Dias Prado', '(00) 00000-0206', 'filha');
+
+INSERT INTO T_RS_GUARDIAN (ID_ASSISTED_PERSON, NAME, PHONE, RELATIONSHIP)
+VALUES ((SELECT ID_ASSISTED_PERSON FROM T_RS_ASSISTED_PERSON WHERE NAME = 'Antônio Carvalho Nunes'),
+        'Roberto Nunes Barros', '(00) 00000-0207', 'filho');
+
+INSERT INTO T_RS_GUARDIAN (ID_ASSISTED_PERSON, NAME, PHONE, RELATIONSHIP)
+VALUES ((SELECT ID_ASSISTED_PERSON FROM T_RS_ASSISTED_PERSON WHERE NAME = 'Antônio Carvalho Nunes'),
+        'Agente comunitário da UBS', '(00) 00000-0208', 'agente de saúde');
+
 COMMIT;
 
--- Conferência: devem vir 10 áreas, 8 sensores, 12 leituras e 6 abrigos, com os acentos corretos.
+-- Conferência: devem vir 10 áreas, 8 sensores, 12 leituras, 6 abrigos, 6 pessoas assistidas e 8 responsáveis, com os acentos corretos.
 -- SELECT ID_AREA, NAME, CITY, DISTRICT, RISK_TYPE FROM T_RS_AREA ORDER BY ID_AREA;
 -- SELECT ID_SENSOR, ID_AREA, CODE, STATUS FROM T_RS_SENSOR ORDER BY CODE;
 -- SELECT ID_SENSOR, RAIN_MM, WATER_LEVEL_CM, MEASURED_AT FROM T_RS_SENSOR_READING ORDER BY ID_SENSOR, MEASURED_AT;
 -- SELECT ID_SHELTER, NAME, CAPACITY, OCCUPIED_SPOTS FROM T_RS_SHELTER ORDER BY NAME;
+-- SELECT p.NAME, p.SPECIAL_NEED, g.NAME AS GUARDIAN, g.RELATIONSHIP FROM T_RS_ASSISTED_PERSON p JOIN T_RS_GUARDIAN g ON g.ID_ASSISTED_PERSON = p.ID_ASSISTED_PERSON ORDER BY p.NAME, g.NAME;

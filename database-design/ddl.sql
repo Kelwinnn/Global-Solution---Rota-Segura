@@ -13,7 +13,9 @@
 --   índice único UX_RS_ + tabela + colunas
 --   índice comum IX_RS_ + tabela + tabela referenciada; toda chave estrangeira tem
 --   um índice que começa por ela (na READING, é o próprio UX_RS_READING_SENSOR_TIME)
---   T_RS_SENSOR_READING aparece como READING nesses nomes, para caber em 30 caracteres
+--   T_RS_SENSOR_READING aparece como READING e T_RS_ASSISTED_PERSON como ASSISTED
+--   nesses nomes, para caber em 30 caracteres (o NOT NULL de T_RS_GUARDIAN.ID_ASSISTED_PERSON
+--   vira NN_RS_GUARDIAN_ASSISTED pelo mesmo motivo)
 --   texto        VARCHAR2(n CHAR): o tamanho conta caracteres, não bytes
 --
 -- Arquivo em UTF-8. No SQL Developer, rodar com "Executar Script" (F5).
@@ -21,6 +23,8 @@
 
 -- Para recriar do zero, descomente e rode antes dos CREATE
 -- (T_RS_SHELTER é independente; as demais, da tabela filha para a pai):
+-- DROP TABLE T_RS_GUARDIAN CASCADE CONSTRAINTS;
+-- DROP TABLE T_RS_ASSISTED_PERSON CASCADE CONSTRAINTS;
 -- DROP TABLE T_RS_SHELTER CASCADE CONSTRAINTS;
 -- DROP TABLE T_RS_SENSOR_READING CASCADE CONSTRAINTS;
 -- DROP TABLE T_RS_SENSOR CASCADE CONSTRAINTS;
@@ -138,3 +142,57 @@ CREATE TABLE T_RS_SHELTER (
     -- Ninguém a mais do que cabe: de 0 até a capacidade
     CONSTRAINT CK_RS_SHELTER_OCCUPIED_SPOTS CHECK (OCCUPIED_SPOTS BETWEEN 0 AND CAPACITY)
 );
+
+
+-- ============================================================
+-- T_RS_ASSISTED_PERSON: pessoas assistidas (RF08), quem não consegue
+-- sair sozinha numa emergência (idosas, acamadas, cadeirantes).
+-- Toda pessoa assistida mora numa área de risco (RN03). A latitude e
+-- a longitude são de onde ela mora: a origem da rota (RF07).
+-- Criada depois de T_RS_AREA, porque a chave estrangeira aponta para ela.
+-- ============================================================
+CREATE TABLE T_RS_ASSISTED_PERSON (
+    ID_ASSISTED_PERSON NUMBER(19)         GENERATED ALWAYS AS IDENTITY,
+    ID_AREA            NUMBER(19)         CONSTRAINT NN_RS_ASSISTED_ID_AREA      NOT NULL,
+    NAME               VARCHAR2(150 CHAR) CONSTRAINT NN_RS_ASSISTED_NAME         NOT NULL,
+    PHONE              VARCHAR2(20 CHAR)  CONSTRAINT NN_RS_ASSISTED_PHONE        NOT NULL,
+    LATITUDE           NUMBER(9,6)        CONSTRAINT NN_RS_ASSISTED_LATITUDE     NOT NULL,
+    LONGITUDE          NUMBER(9,6)        CONSTRAINT NN_RS_ASSISTED_LONGITUDE    NOT NULL,
+    SPECIAL_NEED       VARCHAR2(20 CHAR)  CONSTRAINT NN_RS_ASSISTED_SPECIAL_NEED NOT NULL,
+    NOTES              VARCHAR2(500 CHAR),
+    CONSTRAINT PK_RS_ASSISTED              PRIMARY KEY (ID_ASSISTED_PERSON),
+    -- Sem ON DELETE CASCADE: o banco recusa excluir uma área que ainda tem pessoas assistidas
+    CONSTRAINT FK_RS_ASSISTED_AREA         FOREIGN KEY (ID_AREA) REFERENCES T_RS_AREA (ID_AREA),
+    CONSTRAINT CK_RS_ASSISTED_LATITUDE     CHECK (LATITUDE BETWEEN -90 AND 90),
+    CONSTRAINT CK_RS_ASSISTED_LONGITUDE    CHECK (LONGITUDE BETWEEN -180 AND 180),
+    CONSTRAINT CK_RS_ASSISTED_SPECIAL_NEED CHECK (SPECIAL_NEED IN ('ELDERLY', 'BEDRIDDEN', 'WHEELCHAIR', 'OTHER'))
+);
+
+-- Índice da chave estrangeira: acelera listar as pessoas de uma área
+-- (o alerta do RF05 vai precisar) e a checagem ao excluir uma área.
+CREATE INDEX IX_RS_ASSISTED_AREA
+    ON T_RS_ASSISTED_PERSON (ID_AREA);
+
+
+-- ============================================================
+-- T_RS_GUARDIAN: responsáveis pelas pessoas assistidas (RF08, RN03).
+-- Cada responsável pertence a uma pessoa assistida (1:N).
+-- Criada depois de T_RS_ASSISTED_PERSON, porque a chave estrangeira
+-- aponta para ela.
+-- ============================================================
+CREATE TABLE T_RS_GUARDIAN (
+    ID_GUARDIAN        NUMBER(19)         GENERATED ALWAYS AS IDENTITY,
+    ID_ASSISTED_PERSON NUMBER(19)         CONSTRAINT NN_RS_GUARDIAN_ASSISTED     NOT NULL,
+    NAME               VARCHAR2(150 CHAR) CONSTRAINT NN_RS_GUARDIAN_NAME         NOT NULL,
+    PHONE              VARCHAR2(20 CHAR)  CONSTRAINT NN_RS_GUARDIAN_PHONE        NOT NULL,
+    RELATIONSHIP       VARCHAR2(50 CHAR)  CONSTRAINT NN_RS_GUARDIAN_RELATIONSHIP NOT NULL,
+    CONSTRAINT PK_RS_GUARDIAN          PRIMARY KEY (ID_GUARDIAN),
+    -- ON DELETE CASCADE: o responsável só existe junto da pessoa assistida dele;
+    -- excluir a pessoa exclui os responsáveis (a API faz o mesmo pelo JPA)
+    CONSTRAINT FK_RS_GUARDIAN_ASSISTED FOREIGN KEY (ID_ASSISTED_PERSON)
+        REFERENCES T_RS_ASSISTED_PERSON (ID_ASSISTED_PERSON) ON DELETE CASCADE
+);
+
+-- Índice da chave estrangeira: acelera buscar os responsáveis de uma pessoa.
+CREATE INDEX IX_RS_GUARDIAN_ASSISTED
+    ON T_RS_GUARDIAN (ID_ASSISTED_PERSON);

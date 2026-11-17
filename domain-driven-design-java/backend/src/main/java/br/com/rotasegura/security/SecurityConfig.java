@@ -67,6 +67,8 @@ public class SecurityConfig {
                         .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
                         .requestMatchers(publicPosts).permitAll()
                         .requestMatchers("/api/auth/me").authenticated()
+                        // Dados pessoais de gente vulnerável: login até para ler (exceção ao GET aberto, 16/11)
+                        .requestMatchers("/api/assisted-people", "/api/assisted-people/**").authenticated()
                         .requestMatchers(HttpMethod.GET, "/**").permitAll()
                         .requestMatchers(HttpMethod.HEAD, "/**").permitAll()
                         .anyRequest().authenticated())

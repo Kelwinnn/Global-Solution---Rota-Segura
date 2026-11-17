@@ -1,5 +1,6 @@
 package br.com.rotasegura.bo;
 
+import br.com.rotasegura.dao.AssistedPersonDAO;
 import br.com.rotasegura.dao.RiskAreaDAO;
 import br.com.rotasegura.dao.SensorDAO;
 import br.com.rotasegura.dto.RiskAreaRequest;
@@ -36,6 +37,9 @@ class RiskAreaBOTest {
 
     @Mock
     private SensorDAO sensorDAO;
+
+    @Mock
+    private AssistedPersonDAO assistedPersonDAO;
 
     @InjectMocks
     private RiskAreaBO riskAreaBO;
@@ -188,6 +192,18 @@ class RiskAreaBOTest {
         riskAreaBO.delete(1L);
 
         verify(riskAreaDAO).delete(existing);
+    }
+
+    @Test
+    void deleteAreaWithAssistedPeopleThrowsAndKeepsTheArea() {
+        when(riskAreaDAO.findById(1L)).thenReturn(Optional.of(savedArea(1L, "Área A", "Guarulhos")));
+        when(sensorDAO.existsByAreaId(1L)).thenReturn(false);
+        when(assistedPersonDAO.existsByAreaId(1L)).thenReturn(true);
+
+        assertThatThrownBy(() -> riskAreaBO.delete(1L))
+                .isInstanceOf(BusinessRuleException.class)
+                .hasMessageContaining("pessoas assistidas");
+        verify(riskAreaDAO, never()).delete(any());
     }
 
     @Test
