@@ -2,7 +2,7 @@
   "info": {
     "_postman_id": "6c3a9479-736f-484c-9ed9-3fa3d2aa4df0",
     "name": "Rota Segura - demonstração",
-    "description": "Roteiro da demonstração da API Rota Segura. Dados simulados (nenhum dado real).\n\nAntes: rode database-design/ddl.sql e dml.sql no Oracle (precisa das áreas e dos sensores).\n\n1. Leituras dos sensores (RF03): envia leituras com a hora do momento. A janela do nível de risco é de 1 hora, por isso as leituras do dml.sql (de 15/11) não contam na demonstração.\n2. Sensor inativo: mostra a recusa (409).\n3. Mapa de risco (RF04): confere o nível de cada área.\n\nEndereço da API: variável baseUrl (padrão http://localhost:8080; para o Render, troque pelo endereço publicado). Pode rodar mais de uma vez: cada execução usa a hora do momento.",
+    "description": "Roteiro da demonstração da API Rota Segura. Dados simulados (nenhum dado real).\n\nAntes: rode database-design/ddl.sql e dml.sql no Oracle (precisa das áreas e dos sensores).\n\n1. Leituras dos sensores (RF03): envia leituras com a hora do momento. A janela do nível de risco é de 1 hora, por isso as leituras do dml.sql (de 15/11) não contam na demonstração.\n2. Sensor inativo: mostra a recusa (409).\n3. Mapa de risco (RF04): confere o nível de cada área.\n4. Abrigos (RF06): lista as vagas livres.\n\nEndereço da API: variável baseUrl (padrão http://localhost:8080; para o Render, troque pelo endereço publicado). Pode rodar mais de uma vez: cada execução usa a hora do momento.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -746,6 +746,44 @@
               ]
             },
             "description": "Histórico do sensor (mais recentes primeiro). O id vem da resposta da primeira leitura."
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Abrigos (RF06)",
+      "item": [
+        {
+          "name": "Abrigos com vagas livres",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const shelters = pm.response.json();",
+                  "pm.test('Os 6 abrigos do dml.sql', () => pm.expect(shelters.length).to.be.at.least(6));",
+                  "pm.test('Um abrigo lotado (availableSpots 0)', () => pm.expect(shelters.some(s => s.availableSpots === 0)).to.be.true);",
+                  "pm.test('Vagas livres = capacidade - ocupadas', () => shelters.forEach(s =>",
+                  "    pm.expect(s.availableSpots).to.eql(s.capacity - s.occupiedSpots)));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/shelters",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "shelters"
+              ]
+            },
+            "description": "Lista os abrigos com as vagas livres, que a rota (RN06) usa para indicar o mais próximo com vaga."
           }
         }
       ]

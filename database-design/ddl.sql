@@ -20,7 +20,8 @@
 -- ============================================================
 
 -- Para recriar do zero, descomente e rode antes dos CREATE
--- (primeiro a tabela filha, depois a tabela pai):
+-- (T_RS_SHELTER é independente; as demais, da tabela filha para a pai):
+-- DROP TABLE T_RS_SHELTER CASCADE CONSTRAINTS;
 -- DROP TABLE T_RS_SENSOR_READING CASCADE CONSTRAINTS;
 -- DROP TABLE T_RS_SENSOR CASCADE CONSTRAINTS;
 -- DROP TABLE T_RS_AREA CASCADE CONSTRAINTS;
@@ -113,3 +114,27 @@ CREATE TABLE T_RS_SENSOR_READING (
 -- estrangeira e à busca das leituras de cada sensor.
 CREATE UNIQUE INDEX UX_RS_READING_SENSOR_TIME
     ON T_RS_SENSOR_READING (ID_SENSOR, SYS_EXTRACT_UTC(MEASURED_AT));
+
+
+-- ============================================================
+-- T_RS_SHELTER: abrigos (RF06), com endereço, posição no mapa e
+-- capacidade. As vagas livres (capacidade - ocupadas) são o que a
+-- rota (RN06) usa para indicar o abrigo mais próximo com vaga.
+-- Não depende de nenhuma outra tabela.
+-- ============================================================
+CREATE TABLE T_RS_SHELTER (
+    ID_SHELTER      NUMBER(19)         GENERATED ALWAYS AS IDENTITY,
+    NAME            VARCHAR2(150 CHAR) CONSTRAINT NN_RS_SHELTER_NAME           NOT NULL,
+    ADDRESS         VARCHAR2(200 CHAR) CONSTRAINT NN_RS_SHELTER_ADDRESS        NOT NULL,
+    LATITUDE        NUMBER(9,6)        CONSTRAINT NN_RS_SHELTER_LATITUDE       NOT NULL,
+    LONGITUDE       NUMBER(9,6)        CONSTRAINT NN_RS_SHELTER_LONGITUDE      NOT NULL,
+    CAPACITY        NUMBER(10)         CONSTRAINT NN_RS_SHELTER_CAPACITY       NOT NULL,
+    OCCUPIED_SPOTS  NUMBER(10)         CONSTRAINT NN_RS_SHELTER_OCCUPIED_SPOTS NOT NULL,
+    CONSTRAINT PK_RS_SHELTER                PRIMARY KEY (ID_SHELTER),
+    CONSTRAINT CK_RS_SHELTER_LATITUDE       CHECK (LATITUDE BETWEEN -90 AND 90),
+    CONSTRAINT CK_RS_SHELTER_LONGITUDE      CHECK (LONGITUDE BETWEEN -180 AND 180),
+    -- Maior que zero e até 2147483647, o maior valor que o Integer do Java consegue ler
+    CONSTRAINT CK_RS_SHELTER_CAPACITY       CHECK (CAPACITY BETWEEN 1 AND 2147483647),
+    -- Ninguém a mais do que cabe: de 0 até a capacidade
+    CONSTRAINT CK_RS_SHELTER_OCCUPIED_SPOTS CHECK (OCCUPIED_SPOTS BETWEEN 0 AND CAPACITY)
+);

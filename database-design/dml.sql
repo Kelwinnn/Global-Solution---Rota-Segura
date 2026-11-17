@@ -6,6 +6,9 @@
 -- coordenadas e os raios são aproximados e ilustrativos: indicam
 -- a região de cada localidade do território do MVP, mas NÃO são
 -- um mapeamento oficial de áreas de risco. Nenhum dado pessoal.
+-- Exceção: nome, endereço e coordenadas dos abrigos são dados
+-- públicos do OpenStreetMap (ver a seção T_RS_SHELTER); a capacidade
+-- e a ocupação deles são simuladas.
 --
 -- Os INSERTs não informam o ID: a coluna é GENERATED ALWAYS AS
 -- IDENTITY, então quem numera é o Oracle. Por isso cada sensor
@@ -19,8 +22,10 @@
 -- Rodar uma vez, com as tabelas vazias: o nome de cada área é único
 -- por cidade, o código de cada sensor é único e cada sensor tem só
 -- uma leitura por instante, então uma segunda execução falha com
--- ORA-00001. Para rodar de novo, descomente e rode antes (das tabelas
--- filhas para as tabelas pai):
+-- ORA-00001 nessas tabelas. Os abrigos não têm nome único: numa segunda
+-- execução eles seriam gravados de novo, duplicados. Para rodar de
+-- novo, descomente e rode antes (das tabelas filhas para as tabelas pai):
+-- DELETE FROM T_RS_SHELTER;
 -- DELETE FROM T_RS_SENSOR_READING;
 -- DELETE FROM T_RS_SENSOR;
 -- DELETE FROM T_RS_AREA;
@@ -33,7 +38,7 @@
 
 -- Zona Leste de São Paulo
 INSERT INTO T_RS_AREA (NAME, CITY, DISTRICT, RISK_TYPE, LATITUDE, LONGITUDE, RADIUS_M)
-VALUES ('Várzea do Jardim Helena', 'São Paulo', 'Jardim Helena', 'FLOOD', -23.482000, -46.415000, 600);
+VALUES ('Várzea do Jardim Helena', 'São Paulo', 'Jardim Helena', 'FLOOD', -23.482000, -46.415000, 550);
 
 INSERT INTO T_RS_AREA (NAME, CITY, DISTRICT, RISK_TYPE, LATITUDE, LONGITUDE, RADIUS_M)
 VALUES ('Beira-Rio do Jardim Pantanal', 'São Paulo', 'Jardim Pantanal', 'FLOOD', -23.477000, -46.398000, 800);
@@ -166,9 +171,41 @@ INSERT INTO T_RS_SENSOR_READING (ID_SENSOR, RAIN_MM, WATER_LEVEL_CM, MEASURED_AT
 VALUES ((SELECT ID_SENSOR FROM T_RS_SENSOR WHERE CODE = 'SEN-GRU-001'),
         27.50, 11.30, TIMESTAMP '2026-11-15 21:15:00 +00:00');
 
+-- ============================================================
+-- T_RS_SHELTER: 6 abrigos do bairro-piloto (Jardim Helena).
+-- Fonte: © colaboradores do OpenStreetMap (licença ODbL), lista em
+-- dynamic-programming/docs/abrigos_sugeridos.json (relação OSM
+-- R3049447, gerada em 12/11/2026). Nomes, endereços
+-- e coordenadas são do OSM; a CAPACIDADE e a OCUPAÇÃO são SIMULADAS.
+-- Outros 4 abrigos da lista entram quando os endereços forem
+-- completados (o OSM não traz endereço para eles).
+-- Um abrigo está lotado, de propósito, para a rota (RN06) ter um
+-- abrigo sem vaga para pular.
+-- ============================================================
+
+INSERT INTO T_RS_SHELTER (NAME, ADDRESS, LATITUDE, LONGITUDE, CAPACITY, OCCUPIED_SPOTS)
+VALUES ('Centro Educacional Unificado Três Pontes', 'Rua Capachos, 400', -23.478226, -46.381098, 400, 0);
+
+INSERT INTO T_RS_SHELTER (NAME, ADDRESS, LATITUDE, LONGITUDE, CAPACITY, OCCUPIED_SPOTS)
+VALUES ('Escola Estadual Heckel Tavares', 'Avenida Doutor José Artur Nova, 2737', -23.474775, -46.424981, 200, 0);
+
+INSERT INTO T_RS_SHELTER (NAME, ADDRESS, LATITUDE, LONGITUDE, CAPACITY, OCCUPIED_SPOTS)
+VALUES ('Escola Municipal de Educação Infantil Professora Célia Ribeiro Landim', 'Praça Craveiro do Campo', -23.479068, -46.419903, 200, 0);
+
+-- Lotado (simulado)
+INSERT INTO T_RS_SHELTER (NAME, ADDRESS, LATITUDE, LONGITUDE, CAPACITY, OCCUPIED_SPOTS)
+VALUES ('Escola Estadual Doutor Diogo de Faria', 'Rua Santa Rosa de Lima, 591', -23.486630, -46.428978, 200, 200);
+
+INSERT INTO T_RS_SHELTER (NAME, ADDRESS, LATITUDE, LONGITUDE, CAPACITY, OCCUPIED_SPOTS)
+VALUES ('Escola Estadual Professor José Bonifácio Andrada e Silva Jardim', 'Rua André Furtado de Mendonça, 473', -23.479673, -46.384704, 200, 35);
+
+INSERT INTO T_RS_SHELTER (NAME, ADDRESS, LATITUDE, LONGITUDE, CAPACITY, OCCUPIED_SPOTS)
+VALUES ('Escola Municipal de Educação Fundamental Murures', 'Rua dos Murures', -23.476716, -46.418575, 200, 0);
+
 COMMIT;
 
--- Conferência: devem vir 10 áreas, 8 sensores e 12 leituras, com os acentos corretos.
+-- Conferência: devem vir 10 áreas, 8 sensores, 12 leituras e 6 abrigos, com os acentos corretos.
 -- SELECT ID_AREA, NAME, CITY, DISTRICT, RISK_TYPE FROM T_RS_AREA ORDER BY ID_AREA;
 -- SELECT ID_SENSOR, ID_AREA, CODE, STATUS FROM T_RS_SENSOR ORDER BY CODE;
 -- SELECT ID_SENSOR, RAIN_MM, WATER_LEVEL_CM, MEASURED_AT FROM T_RS_SENSOR_READING ORDER BY ID_SENSOR, MEASURED_AT;
+-- SELECT ID_SHELTER, NAME, CAPACITY, OCCUPIED_SPOTS FROM T_RS_SHELTER ORDER BY NAME;

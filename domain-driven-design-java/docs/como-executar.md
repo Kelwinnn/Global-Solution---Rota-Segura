@@ -102,7 +102,7 @@ Observações:
 
 ## 5. Verificações depois do deploy
 
-1. `GET /api/areas` devolve as áreas do `dml.sql` (prova que a API acessa o Oracle).
+1. `GET /api/areas` devolve as áreas do `dml.sql` (prova que a API acessa o Oracle), e `GET /api/shelters` os 6 abrigos (um deles lotado, com `availableSpots` 0).
 2. No Swagger: `POST /api/auth/login` com o usuário e a senha do `.env`, depois `GET /api/auth/csrf`, copiar o `token` e colar em **Authorize**.
 3. Um `POST /api/areas` autenticado devolve 201.
 4. O cookie de sessão chega com `SameSite=None` e `Secure` (ferramentas do navegador > Aplicação > Cookies).
