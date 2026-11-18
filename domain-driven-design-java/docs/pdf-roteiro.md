@@ -20,10 +20,10 @@ Gerado pelo editor (Word ou Google Docs: inserir índice a partir dos títulos).
 | Nº | Seção do PDF | Item da rubrica | Pontos | De onde vem |
 |---|---|---|---|---|
 | 1 | Especificação do projeto: descritivo, justificativa e objetivos | Especificação | 5 (com a capa e o índice) | `especificacao.md` |
-| 2 | Diagrama de classes | Diagrama de classes | 10 | `class-diagram.md`: as 4 partes, como imagem |
+| 2 | Diagrama de classes | Diagrama de classes | 10 | `img/class-diagram-1.png` a `img/class-diagram-4.png` (modelo, camadas, DTOs, exceções e segurança), com as frases de `class-diagram.md` |
 | 3 | Protótipos de tela | Protótipos, endpoints e DER | 10 (os três juntos) | Figma (https://www.figma.com/design/EyUuqW4eIANQGnDVRNSYdR): as 4 telas em PNG, com uma frase de cada, tirada de `agile-methodology/prototipo.md` |
 | 4 | Tabela de endpoints | (mesmo item) | | `endpoints.md`: as tabelas e os exemplos JSON |
-| 5 | DER | (mesmo item) | | `der.md`: o diagrama como imagem e as tabelas de relacionamentos e índices |
+| 5 | DER | (mesmo item) | | `img/der.png`, com as tabelas de relacionamentos e índices de `der.md` |
 | 6 | Instruções de execução: ferramentas, versões, links e passo a passo | Instruções | 5 | `como-executar.md` |
 
 Na seção 6, os links precisam aparecer por extenso:
@@ -35,7 +35,7 @@ Na seção 6, os links precisam aparecer por extenso:
 
 1. Crie o documento no Word ou no Google Docs, com estilos de título (Título 1 para as seções), para o índice sair sozinho.
 2. Copie o texto dos arquivos `.md` de cada seção. As tabelas do Markdown podem ser coladas a partir da pré-visualização do IntelliJ ou do GitHub.
-3. **Imagens dos diagramas:** gerar junto com os outros diagramas (combinado para depois). Até lá, deixe um espaço reservado na seção.
+3. **Imagens dos diagramas:** já estão em `img/`. Para gerar de novo depois de mudar um diagrama, use o mermaid-cli com `-s 2 -b white`.
 4. **Telas:** no Figma, selecione cada frame (1 a 4) e use **Export > PNG 2x**.
 5. Exporte em PDF e confira se os links abrem.
 

@@ -9,6 +9,10 @@ A classe `RotaSeguraApplication` (o `main` do Spring Boot) fica de fora de prop�
 Entidades JPA (tabelas `T_RS_*`) e enums. `RiskLevel` não é gravado: o nível de risco é calculado na hora pelo `RiskLevelBO`.
 
 ```mermaid
+---
+config:
+  layout: elk
+---
 classDiagram
     direction LR
 
@@ -120,6 +124,10 @@ classDiagram
 Nenhuma camada pula a seguinte. Um BO pode usar mais de um DAO (ex.: `SensorBO` confere a área pelo `RiskAreaDAO`).
 
 ```mermaid
+---
+config:
+  layout: elk
+---
 classDiagram
     direction LR
 
