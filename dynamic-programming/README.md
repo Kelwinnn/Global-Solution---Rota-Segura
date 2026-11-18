@@ -1,8 +1,8 @@
 # Rota Segura: rota até o abrigo (Dynamic Programming)
 
-**NOMES E RMS: A DEFINIR**
+João Paulo Santana Basta — RM 565383; Kelwin Silva Bastos — RM 566348; Vitor Mantovani Camilo — RM 556537.
 
-**FONTE DO MAPA: A DEFINIR**
+Mapa: © colaboradores do OpenStreetMap, licença ODbL (https://www.openstreetmap.org/copyright), rede de pedestres do distrito Jardim Helena (relação OSM 3049447), baixada com osmnx em 12/11/2026.
 
 Parte de Dynamic Programming da Global Solution FIAP 2026.2 (CitizenTech). O código calcula a rota segura de cada pessoa até o abrigo mais próximo que ainda tenha vaga.
 
