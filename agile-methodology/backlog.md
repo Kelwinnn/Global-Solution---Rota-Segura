@@ -75,7 +75,7 @@ Como **morador**, quero receber um alerta quando o risco da minha área chegar a
 - O alerta sai a partir do nível médio, para as pessoas assistidas e os responsáveis cadastrados na área.
 - Só um alerta ativo por área; ele encerra quando o risco volta a baixo (RN02).
 - Enquanto o alerta durar, o morador recebe o nível de risco a cada 15 minutos; quem ainda não está seguro recebe também a pergunta do check-in (RN07).
-- Quando o modelo de Data Science indicar alta chance de alagamento, sai um aviso antecipado para se preparar (regra a confirmar com o João Paulo).
+- O gatilho principal do alerta é o nível d'água (em cm). Como complemento, quando o modelo de Data Science indicar alta chance de alagamento (`highProbability`), sai antes um SMS de preparação. Em Guarulhos, que não tem estação de chuva nem validação do modelo, vale só o nível d'água.
 
 ### ★ H06 — Cadastrar abrigo (RF06, Must)
 

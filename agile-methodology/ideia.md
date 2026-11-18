@@ -25,12 +25,12 @@ Transformar o alerta de chuva em **ação**. A pessoa recebe a rota até um abri
 
 **Território do MVP:** o Alto Tietê, Guarulhos e cinco distritos da Zona Leste de São Paulo (Jardim Pantanal, São Miguel Paulista, Itaim Paulista, Jardim Helena e Itaim Biacica). O bairro-piloto é o Jardim Helena.
 
-**Por que esse público e esse território:** são regiões da várzea do Rio Tietê sujeitas a alagamento. Na Zona Leste, o histórico vem do Centro de Gerenciamento de Emergências Climáticas (CGE) da Prefeitura de São Paulo; no Alto Tietê, das ocorrências do Reindesc (Cemaden). As duas bases são usadas na parte de Data Science. E quem não consegue sair sozinho é quem mais perde quando o alerta não vira ação.
+**Por que esse público e esse território:** são regiões da várzea do Rio Tietê sujeitas a alagamento. Na Zona Leste, o histórico vem do Centro de Gerenciamento de Emergências Climáticas (CGE) da Prefeitura de São Paulo; no Alto Tietê, das ocorrências do Reindesc (Cemaden). As duas bases são usadas na parte de Data Science. **Limitação:** o modelo foi treinado com dados da capital e validado no Alto Tietê (Mogi das Cruzes e Itaquaquecetuba). Guarulhos não tem estação de chuva nem validação, então lá o MVP usa só os sensores (nível d'água em cm). E quem não consegue sair sozinho é quem mais perde quando o alerta não vira ação.
 
 ## Solução
 
 1. **Sensores de rua** medem a chuva (mm) e o nível d'água (cm) em cada área de risco.
-2. O sistema calcula o **nível de risco** da área: baixo, médio, alto, muito alto ou muito urgente. Um modelo de Data Science estima também a **chance de alagamento antes de acontecer**.
+2. O sistema calcula o **nível de risco** da área: baixo, médio, alto, muito alto ou muito urgente. Um modelo de Data Science estima também a **chance de alagamento antes de acontecer** e, quando ela é alta, manda um SMS de preparação. O gatilho principal do alerta continua sendo o nível d'água medido. No teste com 2024 e 2025, dados que o modelo nunca tinha visto, ele avisou 75,7% dos dias de alagamento (28 de 37), com precisão de 40%. A regra simples "chuva de 23 mm ou mais" avisou 56,8%.
 3. A partir do risco médio, o morador recebe um **alerta por SMS**, com atualização a cada 15 minutos enquanto o risco durar.
 4. O alerta traz a **rota mais segura até o abrigo com vaga mais próximo**. A rota nunca passa por rua alagada e, se não houver rota segura, orienta procurar um local alto.
 5. A pessoa responde pelo SMS: **"Estou seguro"**, **"Estou a caminho de um local seguro"** ou **"Ainda não saí"**.
