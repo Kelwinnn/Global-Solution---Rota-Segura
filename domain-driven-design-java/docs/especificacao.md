@@ -13,7 +13,8 @@ Esta entrega é a **API em Java** que sustenta o sistema. Ela foi feita em Sprin
 - **leituras dos sensores** (RF03): chuva em mm, nível d'água em cm e a hora da medição, enviadas pelo próprio aparelho, sem login;
 - **nível de risco de cada área** (RF04): baixo, médio, alto, muito alto ou muito urgente, calculado na hora a partir das leituras da última 1 hora dos sensores ativos (RN01);
 - **abrigos** (RF06): endereço, capacidade, vagas ocupadas e vagas livres;
-- **pessoas assistidas e responsáveis** (RF08): quem não consegue sair sozinho, com a necessidade especial e ao menos um responsável (RN03). Os dados só aparecem com login, porque são pessoais.
+- **pessoas assistidas e responsáveis** (RF08): quem não consegue sair sozinho, com a necessidade especial e ao menos um responsável (RN03). Os dados só aparecem com login, porque são pessoais;
+- **rota segura até o abrigo** (RF07): a API monta o cenário (onde a pessoa mora, os abrigos com as vagas livres de cada um e as áreas alagadas pelo nível de risco atual) e pede a rota ao serviço Python da equipe, publicado em outro serviço do Render. Se o Python estiver fora, a resposta ainda orienta a pessoa a ir ao abrigo ou a um local mais alto.
 
 A API segue as camadas `controller → bo → dao → repository`:
 - os controllers recebem e devolvem só DTOs;
@@ -26,7 +27,6 @@ A segurança usa login com sessão e token CSRF nas operações que alteram dado
 
 As próximas etapas, já desenhadas no backlog, são:
 - o alerta com atualização a cada 15 minutos (RF05);
-- a rota até o abrigo, calculada pelo serviço Python da equipe (RF07);
 - o check-in "Estou seguro" (RF09);
 - o SMS simulado (RF12);
 - o mapa interativo em React (RF14).
@@ -59,5 +59,6 @@ Algumas escolhas técnicas seguem diretamente o problema:
    - toda pessoa assistida tem ao menos um responsável e uma área.
 5. Responder todo erro num formato único (`ProblemDetail`), em português, com o status HTTP correto (400, 401, 403, 404, 409).
 6. Proteger as operações que alteram dados com login e token CSRF, e os dados pessoais com login até na leitura.
-7. Publicar a API no Render, com o banco Oracle da FIAP e a documentação interativa no Swagger UI.
-8. Garantir a qualidade com testes automatizados: JUnit 5 e Mockito nos BOs, MockMvc nos controllers e `@DataJpaTest` nos repositories, com 264 testes passando.
+7. Integrar o serviço Python de rota (RF07) sem deixar o alerta depender dele: timeout de 10 s e orientação alternativa quando ele não responde.
+8. Publicar a API no Render, com o banco Oracle da FIAP e a documentação interativa no Swagger UI.
+9. Garantir a qualidade com testes automatizados: JUnit 5 e Mockito nos BOs, MockMvc nos controllers, `@DataJpaTest` nos repositories e `MockRestServiceServer` na chamada ao serviço Python, com 293 testes passando.

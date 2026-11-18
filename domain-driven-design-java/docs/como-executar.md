@@ -31,6 +31,7 @@ Nenhuma credencial fica no código. A API lê estas variáveis (só os nomes; os
 | `DB_PASSWORD` | Senha do Oracle | sim |
 | `ADMIN_USERNAME` | Usuário do login do painel | sim |
 | `ADMIN_PASSWORD` | Senha do login do painel | sim |
+| `ROUTE_SERVICE_URL` | URL do serviço Python de rota e risco (RF07) | **sim no Render** (`https://rota-segura-python.onrender.com`); localmente o padrão é `http://localhost:8000`. Sem o Python no endereço, a rota responde `ROUTE_UNAVAILABLE`. Para testar o RF07 localmente, suba o Python (`dynamic-programming/README.md`) ou aponte para o Render |
 | `CORS_ALLOWED_ORIGINS` | Origens do front com permissão de CORS, separadas por vírgula | não (padrão `http://localhost:5173`) |
 | `PORT` | Porta HTTP | não (padrão `8080`; o Render define sozinho) |
 
@@ -91,7 +92,7 @@ docker run --rm -p 8080:8080 --env-file backend/.env rota-segura-api
    - **Dockerfile Path:** `backend/Dockerfile` (relativo ao Root Directory; confira na tela do Render)
    - **Docker Build Context Directory:** `.` (o próprio Root Directory)
    - **Health Check Path:** `/v3/api-docs` (responde sem depender do banco)
-3. Em **Environment**, cadastre as variáveis da tabela acima (`DB_URL`, `DB_USERNAME`, `DB_PASSWORD`, `ADMIN_USERNAME`, `ADMIN_PASSWORD`). Não cadastre `PORT`: o Render define sozinho.
+3. Em **Environment**, cadastre as variáveis da tabela acima (`DB_URL`, `DB_USERNAME`, `DB_PASSWORD`, `ADMIN_USERNAME`, `ADMIN_PASSWORD`) e `ROUTE_SERVICE_URL` com o endereço do serviço Python. Não cadastre `PORT`: o Render define sozinho.
 4. Crie o serviço e acompanhe o log do build. A API está no ar quando aparecer `Started RotaSeguraApplication`.
 5. Abra `<endereço do Render>/swagger-ui.html`.
 

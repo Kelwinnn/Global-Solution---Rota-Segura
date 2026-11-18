@@ -19,7 +19,7 @@ Histórias no formato "Como <ator>, quero <ação>, para <benefício>", prioriza
 | H04 | UC04 | RF04 | Consultar nível de risco da área | Must | ★ | a estimar | pronto |
 | H05 | UC05 | RF05 | Receber alerta e atualizações | Must | ★ | a estimar | a fazer |
 | H06 | UC06 | RF06 | Cadastrar abrigo | Must | ★ | a estimar | pronto |
-| H07 | UC07 | RF07 | Receber rota segura até o abrigo | Must | ★ | a estimar | a fazer |
+| H07 | UC07 | RF07 | Receber rota segura até o abrigo | Must | ★ | a estimar | pronto na API (falta o SMS e a tela) |
 | H08 | UC08 | RF08 | Cadastrar pessoa assistida e responsáveis | Must | ★ | a estimar | pronto |
 | H09 | UC09 | RF09 | Responder ao check-in | Must | ★ | a estimar | a fazer |
 | H10 | UC10 | RF12 | Receber mensagens por SMS | Must | ★ | a estimar | a fazer |

@@ -1,8 +1,10 @@
 package br.com.rotasegura.controller;
 
 import br.com.rotasegura.bo.AssistedPersonBO;
+import br.com.rotasegura.bo.RouteBO;
 import br.com.rotasegura.dto.AssistedPersonRequest;
 import br.com.rotasegura.dto.AssistedPersonResponse;
+import br.com.rotasegura.dto.RouteResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -31,9 +33,11 @@ import java.util.List;
 public class AssistedPersonController {
 
     private final AssistedPersonBO assistedPersonBO;
+    private final RouteBO routeBO;
 
-    public AssistedPersonController(AssistedPersonBO assistedPersonBO) {
+    public AssistedPersonController(AssistedPersonBO assistedPersonBO, RouteBO routeBO) {
         this.assistedPersonBO = assistedPersonBO;
+        this.routeBO = routeBO;
     }
 
     @GetMapping
@@ -55,6 +59,20 @@ public class AssistedPersonController {
     @ApiResponse(responseCode = "404", description = "Pessoa não encontrada")
     public AssistedPersonResponse findById(@PathVariable Long id) {
         return assistedPersonBO.findById(id);
+    }
+
+    @GetMapping("/{id}/route")
+    @Operation(operationId = "findAssistedPersonRoute", summary = "Rota segura até o abrigo (RF07)",
+            description = "Rota a pé de onde a pessoa mora até o abrigo com vaga mais próximo, sem passar por área "
+                    + "alagada (RN05, RN06), calculada pelo serviço Python. Sempre 200: o status diz se achou rota "
+                    + "(ROUTE_FOUND), se não há rota segura (NO_SAFE_ROUTE), se o serviço de rota está fora "
+                    + "(ROUTE_UNAVAILABLE) ou se a pessoa mora fora do bairro-piloto (OUTSIDE_PILOT_AREA). Exige login.")
+    @ApiResponse(responseCode = "200", description = "Resultado da rota, com a orientação em message")
+    @ApiResponse(responseCode = "400", description = "id não é um número")
+    @ApiResponse(responseCode = "401", description = "Sem login")
+    @ApiResponse(responseCode = "404", description = "Pessoa não encontrada")
+    public RouteResponse findRoute(@PathVariable Long id) {
+        return routeBO.findRouteForAssistedPerson(id);
     }
 
     @PostMapping

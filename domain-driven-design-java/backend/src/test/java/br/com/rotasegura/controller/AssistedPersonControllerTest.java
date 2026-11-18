@@ -1,11 +1,14 @@
 package br.com.rotasegura.controller;
 
 import br.com.rotasegura.bo.AssistedPersonBO;
+import br.com.rotasegura.bo.RouteBO;
 import br.com.rotasegura.config.CorsConfig;
 import br.com.rotasegura.dto.AssistedPersonRequest;
 import br.com.rotasegura.dto.AssistedPersonResponse;
 import br.com.rotasegura.dto.GuardianResponse;
+import br.com.rotasegura.dto.RouteResponse;
 import br.com.rotasegura.exception.ResourceNotFoundException;
+import br.com.rotasegura.model.RouteStatus;
 import br.com.rotasegura.model.SpecialNeed;
 import br.com.rotasegura.security.SecurityConfig;
 import org.junit.jupiter.api.Test;
@@ -68,6 +71,9 @@ class AssistedPersonControllerTest {
     @MockitoBean
     private AssistedPersonBO assistedPersonBO;
 
+    @MockitoBean
+    private RouteBO routeBO;
+
     // ---- Privacidade: até o GET exige login ----
 
     @Test
@@ -78,7 +84,9 @@ class AssistedPersonControllerTest {
         mockMvc.perform(get("/api/assisted-people/1")).andExpect(status().isUnauthorized());
         mockMvc.perform(head("/api/assisted-people")).andExpect(status().isUnauthorized());
         mockMvc.perform(head("/api/assisted-people/1")).andExpect(status().isUnauthorized());
-        verifyNoInteractions(assistedPersonBO);
+        mockMvc.perform(get("/api/assisted-people/1/route")).andExpect(status().isUnauthorized());
+        mockMvc.perform(head("/api/assisted-people/1/route")).andExpect(status().isUnauthorized());
+        verifyNoInteractions(assistedPersonBO, routeBO);
     }
 
     @Test
@@ -110,6 +118,54 @@ class AssistedPersonControllerTest {
         mockMvc.perform(get("/api/assisted-people/99"))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.detail").value("Pessoa assistida 99 não encontrada."));
+    }
+
+    // ---- Rota até o abrigo (RF07) ----
+
+    @Test
+    @WithMockUser
+    void routeWithLoginReturnsTheRouteToTheShelter() throws Exception {
+        when(routeBO.findRouteForAssistedPerson(1L)).thenReturn(new RouteResponse(1L, RouteStatus.ROUTE_FOUND,
+                new RouteResponse.ShelterInfo(3L, "Escola Exemplo", "Rua dos Murures",
+                        new BigDecimal("-23.476716"), new BigDecimal("-46.418575")),
+                700, 10, List.of(new RouteResponse.RoutePoint(new BigDecimal("-23.4805"), new BigDecimal("-46.4138"))),
+                "Siga a rota até Escola Exemplo."));
+
+        mockMvc.perform(get("/api/assisted-people/1/route"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("ROUTE_FOUND"))
+                .andExpect(jsonPath("$.shelter.address").value("Rua dos Murures"))
+                .andExpect(jsonPath("$.durationMin").value(10))
+                .andExpect(jsonPath("$.path[0].latitude").value(-23.4805));
+    }
+
+    @Test
+    @WithMockUser
+    void routeWhenServiceIsDownIsStill200WithGuidance() throws Exception {
+        when(routeBO.findRouteForAssistedPerson(1L)).thenReturn(RouteResponse.withoutRoute(1L,
+                RouteStatus.ROUTE_UNAVAILABLE, "A rota está indisponível agora."));
+
+        mockMvc.perform(get("/api/assisted-people/1/route"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("ROUTE_UNAVAILABLE"))
+                .andExpect(jsonPath("$.shelter").doesNotExist())
+                .andExpect(jsonPath("$.path").isEmpty());
+    }
+
+    @Test
+    @WithMockUser
+    void routeForUnknownPersonReturns404() throws Exception {
+        when(routeBO.findRouteForAssistedPerson(99L))
+                .thenThrow(new ResourceNotFoundException("Pessoa assistida 99 não encontrada."));
+
+        mockMvc.perform(get("/api/assisted-people/99/route")).andExpect(status().isNotFound());
+    }
+
+    @Test
+    @WithMockUser
+    void routeWithNonNumericIdReturns400() throws Exception {
+        mockMvc.perform(get("/api/assisted-people/abc/route")).andExpect(status().isBadRequest());
+        verifyNoInteractions(routeBO);
     }
 
     // ---- POST ----

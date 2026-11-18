@@ -73,6 +73,23 @@ Leitura é histórico: não há `PUT` nem `DELETE` (405 com login e token; 403 c
 | PUT | `/api/assisted-people/{id}` | Atualiza a pessoa e troca a lista inteira de responsáveis | `AssistedPersonRequest` | 200, 400, 401, 403, 404 |
 | DELETE | `/api/assisted-people/{id}` | Exclui a pessoa e os responsáveis dela | — | 204, 400, 401, 403, 404 |
 
+## Rota segura até o abrigo (RF07) — exige login
+
+| Método | Rota | O que faz | Corpo da requisição | Respostas (status) |
+|---|---|---|---|---|
+| GET | `/api/assisted-people/{id}/route` | Rota a pé de onde a pessoa mora até o abrigo com vaga mais próximo, sem passar por área alagada (RN05, RN06). Calculada pelo serviço Python (`POST /route` do contrato v2) | — | 200, 400, 401, 404 |
+
+A resposta é **sempre 200** quando a pessoa existe; o campo `status` diz o que aconteceu, e `message` traz a orientação em linguagem simples:
+
+| `status` | Quando | O que vem junto |
+|---|---|---|
+| `ROUTE_FOUND` | Achou rota | `shelter` (com o endereço do cadastro), `distanceMeters`, `durationMin` (a pé, 70 m/min) e `path` (pontos do caminho) |
+| `NO_SAFE_ROUTE` | Todo caminho passa por área alagada | Orientação do Python: ir para um local alto e aguardar ajuda |
+| `ROUTE_UNAVAILABLE` | Serviço Python fora do ar, com erro ou mais de 10 s | Orientação de ir ao abrigo mais próximo ou a um local mais alto (decidido em 10/11) |
+| `OUTSIDE_PILOT_AREA` | A pessoa mora fora do mapa do bairro-piloto (Jardim Helena) | A mesma orientação geral |
+
+Áreas evitadas pela rota: as outras áreas em nível **alto ou acima**, e a área da própria pessoa só em **muito urgente** (decidido em 18/11). Abrigos lotados são ignorados. O timeout é de 10 s para conectar e 10 s para ler a resposta. Pela RN05, quem fica sem rota segura iria para o painel de resgate; isso depende do painel (RF10, Should), que ainda não existe: hoje o `NO_SAFE_ROUTE` não é gravado.
+
 O conjunto tem **GET, POST, PUT e DELETE**, como pede a rubrica (áreas, sensores, abrigos e pessoas assistidas têm os quatro).
 
 ## Exemplos (dados simulados)
@@ -122,6 +139,33 @@ Mesmo POST com `radiusM: 0` → `400 Bad Request`:
   ]
 }
 ```
+
+### GET `/api/assisted-people/1/route` (com login)
+
+Resposta `200 OK` (trecho do `path`):
+
+```json
+{
+  "assistedPersonId": 1,
+  "status": "ROUTE_FOUND",
+  "shelter": {
+    "id": 6,
+    "name": "Escola Municipal de Educação Fundamental Murures",
+    "address": "Rua dos Murures",
+    "latitude": -23.476716,
+    "longitude": -46.418575
+  },
+  "distanceMeters": 1039,
+  "durationMin": 15,
+  "path": [
+    { "latitude": -23.4805, "longitude": -46.4138 },
+    { "latitude": -23.476716, "longitude": -46.418575 }
+  ],
+  "message": "Siga a rota até Escola Municipal de Educação Fundamental Murures."
+}
+```
+
+Resultado real do serviço Python em 18/11 para a Benedita (Jardim Helena, dados fictícios do `dml.sql`), com o Jardim Pantanal alagado; o `path` completo tem dezenas de pontos. A rota muda com as áreas alagadas e as vagas do momento. Para quem mora fora do Jardim Helena (ex.: Poá), o status é `OUTSIDE_PILOT_AREA`.
 
 ### GET `/api/areas/risk` (aberto)
 
