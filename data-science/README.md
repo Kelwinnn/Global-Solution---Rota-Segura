@@ -5,7 +5,7 @@ O pacote `rota_dados/` reúne os scripts que preparam os dados.
 
 ## Fontes
 
-- **PED (Cemaden):** Centro Nacional de Monitoramento e Alertas de Desastres Naturais (Cemaden), Plataforma de Estações (PED).
+- **PED (Cemaden):** Centro Nacional de Monitoramento e Alertas de Desastres Naturais (Cemaden), Plataforma de Entrega de Dados (PED).
   Arquivos em `dados/ped/` (não versionados): `PED_Cemaden_355030881A.csv` (Itaim Paulista, São Paulo)
   e `PED_Cemaden_355250201A.csv` (Jardim Amazonas, Suzano). Mogi das Cruzes e Itaquaquecetuba entram no mesmo formato.
 - **CGE:** PREFEITURA DE SÃO PAULO. Centro de Gerenciamento de Emergências Climáticas (CGE). Histórico de pontos de

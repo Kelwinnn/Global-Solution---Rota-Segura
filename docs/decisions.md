@@ -130,7 +130,7 @@ Regra: o Claude Code segue o que está em **Decidido** e **pergunta antes** de q
 | 11/11 | Probabilidade alta | Limite 0,572: o de maior precisão entre os que avisam pelo menos 70% dos dias de alagamento em validação temporal 2019–2023 (cada ano previsto por modelo treinado nos anos anteriores; 57 dias de alagamento). Teste 2024–2025: recall 0,757, precisão 0,400. (João Paulo, 17/11) |
 | 11/11 | Alerta antecipado | Quando `highProbability` for `true`, SMS: "Há alta chance de alagamento na sua área hoje. Prepare-se para ir ao abrigo." (João Paulo; validar com o Kelwin) |
 | 11/11 | Base do Data Science | Chuva do Cemaden (PED), estação Itaim Paulista (355030881A), 2016–2025. Rótulo: alagamentos do CGE (Extremo Leste e Zona Leste), 2016–2025. Alto Tietê: modelo aplicado com a chuva de Mogi das Cruzes e Itaquaquecetuba e validado contra as ocorrências do Reindesc (Cemaden). Substitui o INMET de 09/11 (João Paulo; validar com o Kelwin) |
-| 11/11 | Modelos de Data Science | Regressão logística = alagou no dia (é o `/risk`); regressão linear = número de pontos de alagamento no dia. Divisão por tempo: treino 2016–2022, validação 2023, teste 2024–2025 (João Paulo; validar com o Kelwin) |
+| 11/11 | Modelos de Data Science | Regressão logística = alagou no dia (é o `/risk`); regressão linear = número de pontos de alagamento no dia. Divisão por tempo: treino 2016–2023 (limite por validação temporal 2019–2023), teste 2024–2025 (João Paulo; validar com o Kelwin) |
 
 ### Estrutura do monorepo
 

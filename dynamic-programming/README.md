@@ -184,6 +184,8 @@ O OpenStreetMap muda com o tempo: regerar pode alterar o número de esquinas e t
 
 Implementa o contrato v2 em [`docs/contrato.md`](docs/contrato.md): `GET /health`, `POST /route` e `POST /risk`. JSON em camelCase. **O mapa é fixo**: fica no serviço e é carregado na subida, em vez de chegar em cada requisição.
 
+**Produção (Render):** https://rota-segura-python.onrender.com. Documentação interativa (Swagger do FastAPI): https://rota-segura-python.onrender.com/docs.
+
 | Variável | Uso |
 | --- | --- |
 | `GRAFO_PATH` | JSON do mapa (esquinas com `id`, `lat`, `lng`; trechos com `origem`, `destino`, `distanciaM` opcional e `fatorRisco` opcional). Padrão: `dados/grafo_jardim_helena.json` |

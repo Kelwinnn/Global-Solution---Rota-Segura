@@ -23,7 +23,7 @@
 - Coordenadas em graus decimais (WGS 84): `lat`, `lng`.
 - Distâncias em metros, tempo em minutos, chuva em mm.
 - Datas e horas em ISO 8601 com fuso (`2026-11-19T18:30:00-03:00`).
-- URLs: `http://localhost:8000` em desenvolvimento; serviço próprio no Render (Dockerfile) em produção.
+- URLs: `http://localhost:8000` em desenvolvimento; produção no Render (Dockerfile): https://rota-segura-python.onrender.com
 
 ## 3. GET /health
 
@@ -97,7 +97,7 @@ O Java usa esse status para mandar a pessoa ao painel de prioridade (RN05).
 
 ### Regras do cálculo
 
-- Custo do trecho = distância × (1 + fatorRisco). `fatorRisco` vem do modelo de Data Science, calculado no Python a partir da última estimativa de risco da área do trecho; sem estimativa, vale 0.
+- Custo do trecho = distância × (1 + fatorRisco). No MVP, fatorRisco vem do arquivo do mapa e é 0 em todos os trechos; usar a probabilidade do modelo por trecho é trabalho futuro.
 - Algoritmo: Dijkstra multi-origem a partir dos abrigos com vaga, com resultado memoizado por cenário (áreas alagadas + abrigos com vaga). Bellman-Ford tabular usado como verificação nos testes.
 - Desempate: menor custo, depois menor distância, depois menor ID do abrigo.
 - `durationMin` = distância ÷ 70 m/min (a pé, decidido em 10/11), arredondado para cima. O grafo usa só ruas caminháveis.
@@ -133,12 +133,12 @@ Serve só para o **alerta antecipado**: a chance de alagar antes de acontecer. �
   "floodProbability": 0.82,
   "highProbability": true,
   "lowData": false,
-  "modelVersion": "2026-11-17"
+  "modelVersion": "2026-11-12"
 }
 ```
 
 - `floodProbability`: saída da regressão logística (0 a 1).
-- `highProbability`: `floodProbability` ≥ limite. Regra: o limite é o de maior precisão entre os que avisam ao menos 70% dos dias de alagamento na validação (2023). O valor numérico entra aqui depois do treino (até 17/11).
+- `highProbability`: `floodProbability` ≥ limite. Limite 0,572: o de maior precisão entre os que avisam pelo menos 70% dos dias de alagamento em validação temporal 2019–2023. Teste 2024–2025: recall 0,757, precisão 0,400.
 - Texto do alerta antecipado (o Java monta o SMS quando `highProbability` for `true`): "Há alta chance de alagamento na sua área hoje. Prepare-se para ir ao abrigo."
 
 ## 6. Erros
