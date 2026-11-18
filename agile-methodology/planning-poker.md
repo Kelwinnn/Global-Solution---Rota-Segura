@@ -45,7 +45,7 @@ MVP = os 11 **Must**. RF15 (integração real com a Defesa Civil) é **Won't** e
 | H10 | RF12 | Must | Como **morador**, quero receber o alerta e as perguntas por SMS, para ser avisado mesmo sem internet. | No MVP o SMS é simulado: o sistema registra a mensagem e o front mostra como se fosse o celular; linguagem simples, com o nível de risco e a rota. |
 | H11 | RF14 | Must | Como **morador**, quero ver num mapa as áreas de risco, o nível de cada uma e os abrigos, para entender a situação perto de mim. | É a tela inicial; mostra o nível atual de cada área e os abrigos; funciona no celular, com letra legível e bom contraste. |
 | H12 | RF10 | Should | Como **operador do painel**, quero um painel de prioridade de resgate, para atender primeiro quem está em perigo. | Assistido sem resposta em até 15 min após o alerta entra no painel como prioridade (RN04); quem não tem rota segura também (RN05); o operador aciona o resgate pela lista. |
-| H13 | RF11 | Should | Como **responsável**, quero ser avisado sobre a pessoa que acompanho durante o alerta, para poder ajudá-la. | _Detalhar com a equipe antes de votar: quando o aviso sai e o que ele diz._ |
+| H13 | RF11 | Should | Como **responsável**, quero ser avisado sobre a pessoa que acompanho durante o alerta, para poder ajudá-la. | SMS ao responsável quando sai o alerta na área; aviso se a pessoa não responder em 15 min ou responder "Ainda não saí"; aviso quando ela responde "Estou seguro". |
 | H14 | RF13 | Should | Como **voluntário**, quero ser avisado quando alguém responder "Estou a caminho", "Ainda não saí" ou não responder em 15 min, para ir ajudar. | Os três casos acionam a mensagem (RN08). |
 
 ## 4. Folha de votação
@@ -76,3 +76,24 @@ Uma linha por história. Anote o voto de cada um em cada rodada e o valor final.
 1. Passe a folha preenchida para o Claude (pode ser foto ou texto). Os pontos entram na coluna Story Points do `backlog.md`.
 2. Guarde uma **evidência** da sessão para o PDF de Agile: foto das cartas na mesa ou print do app, com a data.
 3. História que mudou na conversa (dividida, ou com critério novo) também precisa mudar no backlog e no diagrama de casos de uso, para manter a coerência que a rubrica avalia.
+
+## 6. Para o facilitador: sugestão de referência (fora do PDF)
+
+Use **só depois da primeira rodada** de cada história, para não influenciar os votos (o Planning Poker serve justamente para cada um estimar sozinho). Não é estimativa da equipe: é um ponto de comparação preparado pelo Claude a partir do que já foi feito na API. **Story Points do backlog = votos da equipe**, nunca esta coluna.
+
+| ID | Sugestão | Por quê |
+|---|---|---|
+| H01 | 3 | CRUD simples já pronto; bom como história de referência |
+| H02 | 3 | CRUD com vínculo à área e a regra de só inativar |
+| H03 | 5 | Validações de hora, sensor inativo e leitura repetida |
+| H04 | 5 | Regra de cálculo com janela de 1 hora e desempates |
+| H05 | 13 | Alerta com estado, ciclos de 15 min, repetição do check-in e aviso antecipado |
+| H06 | 2 | CRUD simples com vagas livres |
+| H07 | 8 | Integração com o serviço Python, falhas e áreas alagadas |
+| H08 | 5 | Cadastro com lista de responsáveis e privacidade |
+| H09 | 5 | Endpoint aberto, ligação com o alerta e regra de quem já está seguro |
+| H10 | 8 | Registro das mensagens e tela do celular simulado |
+| H11 | 8 | Mapa no front com níveis e abrigos, acessível no celular |
+| H12 | 8 | Painel com prioridade e tempo sem resposta |
+| H13 | 5 | Três avisos por SMS ao responsável, ligados ao alerta e às respostas |
+| H14 | 5 | Mensagem aos voluntários nos três casos da RN08 |

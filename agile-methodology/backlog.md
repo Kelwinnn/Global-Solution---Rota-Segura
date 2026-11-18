@@ -138,7 +138,9 @@ Como **operador do painel**, quero um painel de prioridade de resgate, para aten
 
 Como **responsável**, quero ser avisado sobre a pessoa que acompanho durante o alerta, para poder ajudá-la.
 
-- _Critérios a detalhar pela equipe: quando o aviso sai e o que ele diz._
+- Quando sai o alerta na área da pessoa assistida, cada responsável recebe um SMS (simulado) com o nível de risco e a área.
+- Se a pessoa não responder em 15 minutos, ou responder "Ainda não saí", o responsável recebe um aviso de que ela ainda não está segura.
+- Quando a pessoa responde "Estou seguro", o responsável é avisado.
 
 ### H14 — Receber pedido de ajuda (RF13, Should)
 
