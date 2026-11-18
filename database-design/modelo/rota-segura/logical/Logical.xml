@@ -1,0 +1,7 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<LogicalDesign class="oracle.dbtools.crest.model.design.logical.LogicalDesign" name="Logical" id="A3713F4C-989C-CE47-90D9-D18F751F56FD" mainViewID="3A01B99F-004F-CC17-EE77-A55DD31547B9">
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:03:05 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<shouldBeOpen>false</shouldBeOpen>
+</LogicalDesign>

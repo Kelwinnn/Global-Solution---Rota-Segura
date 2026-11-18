@@ -1,0 +1,97 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<TableProxyOraclev20c class="oracle.dbtools.crest.model.design.storage.oracle.v20c.TableProxyOraclev20c" name="T_RS_ASSISTED_PERSON" directorySegmentName="seg_0" id="B3C8940A-ACD9-3307-170D-4A34935EC1CD">
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<logging>YES</logging>
+<partitionedRowMovement>DISABLE</partitionedRowMovement>
+<temporaryChanged>false</temporaryChanged>
+<accessDriverType>oracle_loader</accessDriverType>
+<rejectLimit></rejectLimit>
+<columnProxies itemClass="oracle.dbtools.crest.model.design.storage.oracle.v12c.ColumnProxyOraclev12c">
+<ColumnProxy name="ID_ASSISTED_PERSON" id="08EBEDB7-83C4-1D7B-E03F-39B17561C056">
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<autoIncrementDDL>IDENTITY_CLAUSE</autoIncrementDDL>
+</ColumnProxy>
+<ColumnProxy name="NAME" id="32059A9F-134C-FF06-F12D-AF166EC9F642">
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+</ColumnProxy>
+<ColumnProxy name="SPECIAL_NEED" id="32AAAB50-BD1C-890D-F110-C41ACF56E3E0">
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+</ColumnProxy>
+<ColumnProxy name="PHONE" id="3F112173-440D-BDFF-DFB8-9B94D73A5C41">
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+</ColumnProxy>
+<ColumnProxy name="NOTES" id="4E78A608-CA82-9F71-9F4C-15E32CF87F9A">
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+</ColumnProxy>
+<ColumnProxy name="LONGITUDE" id="87DA301B-2994-D508-CC61-8390C83A7DD3">
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+</ColumnProxy>
+<ColumnProxy name="ID_AREA" id="9A7FA1A8-DBFA-9254-C591-833678858B00">
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+</ColumnProxy>
+<ColumnProxy name="LATITUDE" id="C0DD4E21-79CA-CB7A-B207-289CC71959DB">
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+</ColumnProxy>
+</columnProxies>
+<indexProxies>
+<IndexProxy class="oracle.dbtools.crest.model.design.storage.oracle.v10g.IndexProxyOraclev10g" name="IX_RS_ASSISTED_AREA" id="1D2590BA-1FE8-5375-BF4C-E621F144E9D0">
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<logging></logging>
+</IndexProxy>
+</indexProxies>
+<foreignKeys>
+<ForeignKey class="oracle.dbtools.crest.model.design.storage.oracle.v10g.FKProxyOraclev10g" name="FK_RS_ASSISTED_AREA" id="399321F6-89BC-A5E2-D23B-EE880BFC3B8D">
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+</ForeignKey>
+</foreignKeys>
+<primaryKeys>
+<PrimaryKey class="oracle.dbtools.crest.model.design.storage.oracle.v10g.PKProxyOraclev10g" name="PK_RS_ASSISTED" id="5455466A-B01C-5FA2-767F-F0CC11DA0FC4">
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<indexSort>SORTED</indexSort>
+</PrimaryKey>
+</primaryKeys>
+<tableCheckConstraints itemClass="oracle.dbtools.crest.model.design.storage.oracle.TableCheckConstraintOracle">
+<TableCheckConstraint name="CK_RS_ASSISTED_LATITUDE" id="0D4D0735-5971-C85D-8009-3258F077A44E">
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<nameChanged>true</nameChanged>
+</TableCheckConstraint>
+<TableCheckConstraint name="CK_RS_ASSISTED_SPECIAL_NEED" id="2DEBD516-A47D-E759-26A8-153D338434CE">
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<nameChanged>true</nameChanged>
+</TableCheckConstraint>
+<TableCheckConstraint name="CK_RS_ASSISTED_LONGITUDE" id="EF6A92A1-3D39-387F-795C-71EC300D713C">
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<nameChanged>true</nameChanged>
+</TableCheckConstraint>
+</tableCheckConstraints>
+</TableProxyOraclev20c>

@@ -1,0 +1,156 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Table class="oracle.dbtools.crest.model.design.relational.Table" directorySegmentName="seg_0" id="C65E926D-9AB9-B267-9339-1681B9B56068" name="T_RS_SHELTER">
+<sourceDDLFile>ddl.sql</sourceDDLFile>
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<importedID>2894F0DD-4771-9313-9935-C4058EAAECA1</importedID>
+<allowColumnReorder>false</allowColumnReorder>
+<existDependencyGenerateInDDl>true</existDependencyGenerateInDDl>
+<parsed>true</parsed>
+<columns itemClass="oracle.dbtools.crest.model.design.relational.Column">
+<Column name="ID_SHELTER" id="E6BCC088-259B-9AA7-CAD3-5BF790F0CF16">
+<sourceDDLFile>ddl.sql</sourceDDLFile>
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<importedID>45DF3E61-B1BB-AD0B-3E99-AFE609367357</importedID>
+<use>0</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<domain>AE35D331-650D-9C11-AD9E-B174BA0A9824</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementColumn>true</autoIncrementColumn>
+<identityColumn>true</identityColumn>
+<autoIncrementGenerateAlways>true</autoIncrementGenerateAlways>
+<autoIncrementCycle>false</autoIncrementCycle>
+<autoIncrementOrder>false</autoIncrementOrder>
+</Column>
+<Column name="NAME" id="DA37213B-D3AC-08D6-EF51-E33389DE16EF">
+<sourceDDLFile>ddl.sql</sourceDDLFile>
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<importedID>5B16F281-91A7-C883-BEFD-C1B347637917</importedID>
+<use>0</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<domain>5E8528A1-B360-785A-EE8E-3ADE94304983</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+<notNullConstraintName>NN_RS_SHELTER_NAME</notNullConstraintName>
+</Column>
+<Column name="ADDRESS" id="C6594C8A-C16F-C798-01F1-DE3E33A56E71">
+<sourceDDLFile>ddl.sql</sourceDDLFile>
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<importedID>621E8F77-7D61-18CF-A4A9-483F90804E0E</importedID>
+<use>0</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<domain>E7C69E86-FE8B-D33B-1564-51BEC85F6DA6</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+<notNullConstraintName>NN_RS_SHELTER_ADDRESS</notNullConstraintName>
+</Column>
+<Column name="LATITUDE" id="DBE015D2-0E3E-1582-FE3F-3737D76624C8">
+<sourceDDLFile>ddl.sql</sourceDDLFile>
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<importedID>227896E5-EDAE-6BA7-A830-985F92E3850B</importedID>
+<use>0</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<domain>EB4D33A4-387C-24D7-5B7C-BED1A048914D</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+<notNullConstraintName>NN_RS_SHELTER_LATITUDE</notNullConstraintName>
+</Column>
+<Column name="LONGITUDE" id="F35D062E-3DFA-A82E-E4A6-6007E8F2C742">
+<sourceDDLFile>ddl.sql</sourceDDLFile>
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<importedID>EB869B8A-018B-E179-7A8D-A8BEB58E63E1</importedID>
+<use>0</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<domain>EB4D33A4-387C-24D7-5B7C-BED1A048914D</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+<notNullConstraintName>NN_RS_SHELTER_LONGITUDE</notNullConstraintName>
+</Column>
+<Column name="CAPACITY" id="913356A8-77ED-D986-9C72-55683207FD6E">
+<sourceDDLFile>ddl.sql</sourceDDLFile>
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<importedID>AEDB8592-7298-A368-EC45-767995816798</importedID>
+<use>0</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<domain>DF0BD0D9-F2D9-EBDD-7757-84A4702B5563</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+<notNullConstraintName>NN_RS_SHELTER_CAPACITY</notNullConstraintName>
+</Column>
+<Column name="OCCUPIED_SPOTS" id="2E8064E3-2A4A-5E42-E8CC-81B908D4DFA6">
+<sourceDDLFile>ddl.sql</sourceDDLFile>
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<importedID>90FF55D9-D2DA-8496-B463-C90B8C6D865A</importedID>
+<use>0</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<domain>DF0BD0D9-F2D9-EBDD-7757-84A4702B5563</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+<notNullConstraintName>NN_RS_SHELTER_OCCUPIED_SPOTS</notNullConstraintName>
+</Column>
+</columns>
+<indexes itemClass="oracle.dbtools.crest.model.design.relational.Index">
+<ind_PK_UK id="F3D975FC-8007-C1DE-3697-7E4AEEF5A4EC" name="PK_RS_SHELTER">
+<sourceDDLFile>ddl.sql</sourceDDLFile>
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<importedID>1F408F6D-4C10-8D43-39B3-3CFF6FD38130</importedID>
+<pk>true</pk>
+<indexState>Primary Constraint</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="E6BCC088-259B-9AA7-CAD3-5BF790F0CF16"/>
+</indexColumnUsage>
+</ind_PK_UK>
+</indexes>
+<tableCheckConstraints itemClass="oracle.dbtools.crest.model.design.constraint.TableLevelConstraint">
+<tableCheckConstraint name="CK_RS_SHELTER_LATITUDE" directorySegmentName="seg_0" id="ED97391C-0C41-8EAD-7C5F-D42A78CE5E71">
+<sourceDDLFile>ddl.sql</sourceDDLFile>
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<importedID>664B3D9C-4F54-5841-438A-97511ED91BD2</importedID>
+<rule><![CDATA[LATITUDE BETWEEN -90 AND 90]]></rule>
+</tableCheckConstraint>
+<tableCheckConstraint name="CK_RS_SHELTER_LONGITUDE" directorySegmentName="seg_0" id="D2D9EDA3-63EB-7BB8-D037-97FBDD13214A">
+<sourceDDLFile>ddl.sql</sourceDDLFile>
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<importedID>E9DA2950-4630-99F1-53BA-2701BD011B14</importedID>
+<rule><![CDATA[LONGITUDE BETWEEN -180 AND 180]]></rule>
+</tableCheckConstraint>
+<tableCheckConstraint name="CK_RS_SHELTER_CAPACITY" directorySegmentName="seg_0" id="61577BDF-A077-1A03-65E4-073CBC3A16AD">
+<sourceDDLFile>ddl.sql</sourceDDLFile>
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<importedID>71F9AFDD-FB88-A06E-5963-5FA94062685A</importedID>
+<rule><![CDATA[CAPACITY BETWEEN 1 AND 2147483647]]></rule>
+</tableCheckConstraint>
+<tableCheckConstraint name="CK_RS_SHELTER_OCCUPIED_SPOTS" directorySegmentName="seg_0" id="480DA96C-68CC-D8F3-B050-23EE3FF1F8AC">
+<sourceDDLFile>ddl.sql</sourceDDLFile>
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<importedID>D7F86A8D-F08B-078F-2731-5F0F82566A2F</importedID>
+<rule><![CDATA[OCCUPIED_SPOTS BETWEEN 0 AND CAPACITY]]></rule>
+</tableCheckConstraint>
+</tableCheckConstraints>
+</Table>

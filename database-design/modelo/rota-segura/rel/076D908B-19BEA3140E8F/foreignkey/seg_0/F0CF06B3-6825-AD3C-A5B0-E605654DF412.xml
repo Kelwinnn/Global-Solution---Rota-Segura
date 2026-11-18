@@ -1,0 +1,18 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<FKIndexAssociation class="oracle.dbtools.crest.model.design.relational.FKIndexAssociation" directorySegmentName="seg_0" id="F0CF06B3-6825-AD3C-A5B0-E605654DF412" containerWithKeyObject="F4AF4599-6FAA-DAA8-8492-530D364ED7E9" localFKIndex="17C4A7EA-FE3D-4B7A-3C1E-0FBAEB158BAB" name="FK_RS_GUARDIAN_ASSISTED">
+<sourceDDLFile>ddl.sql</sourceDDLFile>
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<importedID>E778234F-E47A-CE60-938D-500FB9FE9B8A</importedID>
+<referredTableLongName>T_RS_ASSISTED_PERSON</referredTableLongName>
+<deleteRule>CASCADE</deleteRule>
+<referredTableID>B3C8940A-ACD9-3307-170D-4A34935EC1CD</referredTableID>
+<keyObject>5455466A-B01C-5FA2-767F-F0CC11DA0FC4</keyObject>
+<referredKeyID>5455466A-B01C-5FA2-767F-F0CC11DA0FC4</referredKeyID>
+<mandatory>true</mandatory>
+<refColNames>ID_ASSISTED_PERSON</refColNames>
+<transferable>true</transferable>
+<rely>false</rely>
+<columnDependencyConstraintGenerateInDDL>true</columnDependencyConstraintGenerateInDDL>
+</FKIndexAssociation>

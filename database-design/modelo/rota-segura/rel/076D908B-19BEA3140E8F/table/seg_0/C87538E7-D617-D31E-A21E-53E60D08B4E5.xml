@@ -1,0 +1,169 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Table class="oracle.dbtools.crest.model.design.relational.Table" directorySegmentName="seg_0" id="C87538E7-D617-D31E-A21E-53E60D08B4E5" name="T_RS_SENSOR">
+<sourceDDLFile>ddl.sql</sourceDDLFile>
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<importedID>7435D33A-D4D8-26C0-8EA2-D32D13C710A1</importedID>
+<allowColumnReorder>false</allowColumnReorder>
+<existDependencyGenerateInDDl>true</existDependencyGenerateInDDl>
+<parsed>true</parsed>
+<columns itemClass="oracle.dbtools.crest.model.design.relational.Column">
+<Column name="ID_SENSOR" id="AF61FD2F-9340-C207-1CC1-84A319DEF4E4">
+<sourceDDLFile>ddl.sql</sourceDDLFile>
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<importedID>114E107C-BDC7-9665-171C-27485075A34D</importedID>
+<use>0</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<domain>AE35D331-650D-9C11-AD9E-B174BA0A9824</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementColumn>true</autoIncrementColumn>
+<identityColumn>true</identityColumn>
+<autoIncrementGenerateAlways>true</autoIncrementGenerateAlways>
+<autoIncrementCycle>false</autoIncrementCycle>
+<autoIncrementOrder>false</autoIncrementOrder>
+</Column>
+<Column name="ID_AREA" id="E9623DE4-09AC-7241-EC19-F9FAFBA67459">
+<sourceDDLFile>ddl.sql</sourceDDLFile>
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<importedID>B725D022-E46E-CBE0-3C0C-260F78D13FBB</importedID>
+<use>0</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<domain>AE35D331-650D-9C11-AD9E-B174BA0A9824</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+<notNullConstraintName>NN_RS_SENSOR_ID_AREA</notNullConstraintName>
+<associations>
+<colAssociation fkAssociation="92456ED1-67D0-CEAC-47D0-66A681D416D5" referredColumn="1F605372-44A4-CD07-85B4-8ED493E42F86"/>
+</associations>
+</Column>
+<Column name="CODE" id="C1CC0415-8462-9D47-1642-6B521D9E5D2F">
+<sourceDDLFile>ddl.sql</sourceDDLFile>
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<importedID>7203BD07-E047-44BD-87FC-BCCA6D2780E4</importedID>
+<use>0</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<domain>5E73187E-0C3B-A8A8-D6E4-F485C6866732</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+<notNullConstraintName>NN_RS_SENSOR_CODE</notNullConstraintName>
+</Column>
+<Column name="LATITUDE" id="C37C6E15-896A-F548-6B84-2D5075414AB2">
+<sourceDDLFile>ddl.sql</sourceDDLFile>
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<importedID>56AFDED4-3A7C-72AB-E68C-EEB80DEC285B</importedID>
+<use>0</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<domain>EB4D33A4-387C-24D7-5B7C-BED1A048914D</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+<notNullConstraintName>NN_RS_SENSOR_LATITUDE</notNullConstraintName>
+</Column>
+<Column name="LONGITUDE" id="931D27FC-E085-4723-3819-D78604E36656">
+<sourceDDLFile>ddl.sql</sourceDDLFile>
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<importedID>71303F1B-C3AE-D67C-B325-AF5F9228D86C</importedID>
+<use>0</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<domain>EB4D33A4-387C-24D7-5B7C-BED1A048914D</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+<notNullConstraintName>NN_RS_SENSOR_LONGITUDE</notNullConstraintName>
+</Column>
+<Column name="STATUS" id="EC0CDBE1-CB14-1B3D-4862-A5FCBE781670">
+<sourceDDLFile>ddl.sql</sourceDDLFile>
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<importedID>12EAD86E-6DC2-FD21-4DBA-3E7F0A53ED05</importedID>
+<use>0</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<domain>29525E47-E795-1A97-C488-00DFAC25834C</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+<notNullConstraintName>NN_RS_SENSOR_STATUS</notNullConstraintName>
+</Column>
+</columns>
+<indexes itemClass="oracle.dbtools.crest.model.design.relational.Index">
+<ind_PK_UK id="E431DA82-D610-FB03-8B4F-B7D8107A7CA3" name="PK_RS_SENSOR">
+<sourceDDLFile>ddl.sql</sourceDDLFile>
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<importedID>0A2321F9-5BF7-B1A1-93C0-660540B730D2</importedID>
+<pk>true</pk>
+<indexState>Primary Constraint</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="AF61FD2F-9340-C207-1CC1-84A319DEF4E4"/>
+</indexColumnUsage>
+</ind_PK_UK>
+<ind_PK_UK id="55B120B6-CA9E-A626-8491-EB7E8F61ECE0" name="UX_RS_SENSOR_CODE">
+<sourceDDLFile>ddl.sql</sourceDDLFile>
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<importedID>EFD0FD09-B35C-8714-ADB9-EF3144401430</importedID>
+<indexExpression>UPPER(CODE)</indexExpression>
+<indexState>Unique Plain Index</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+</ind_PK_UK>
+<ind_PK_UK id="70A78D0D-269F-8257-2EF5-AE98BD249563" name="IX_RS_SENSOR_AREA">
+<sourceDDLFile>ddl.sql</sourceDDLFile>
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<importedID>245CFBF5-7F47-5A79-C148-F3CE6004398C</importedID>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="E9623DE4-09AC-7241-EC19-F9FAFBA67459"/>
+</indexColumnUsage>
+</ind_PK_UK>
+<ind_PK_UK id="72702BDD-7AA2-FE78-02AB-B4E45BEBF760" name="FK_RS_SENSOR_AREA">
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<indexState>Foreign Key</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="E9623DE4-09AC-7241-EC19-F9FAFBA67459"/>
+</indexColumnUsage>
+</ind_PK_UK>
+</indexes>
+<tableCheckConstraints itemClass="oracle.dbtools.crest.model.design.constraint.TableLevelConstraint">
+<tableCheckConstraint name="CK_RS_SENSOR_STATUS" directorySegmentName="seg_0" id="96DB9D21-023F-4744-9B97-5422795F3B08">
+<sourceDDLFile>ddl.sql</sourceDDLFile>
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<importedID>CC6D77DA-19B4-4937-6DD5-E480B19B2EDD</importedID>
+<rule><![CDATA[STATUS IN ('ACTIVE', 'INACTIVE')]]></rule>
+</tableCheckConstraint>
+<tableCheckConstraint name="CK_RS_SENSOR_LATITUDE" directorySegmentName="seg_0" id="C13BA7C1-046E-E931-3253-6F5DAAFB71C2">
+<sourceDDLFile>ddl.sql</sourceDDLFile>
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<importedID>67929F68-8FF7-0CC9-444C-A56D437BFE70</importedID>
+<rule><![CDATA[LATITUDE BETWEEN -90 AND 90]]></rule>
+</tableCheckConstraint>
+<tableCheckConstraint name="CK_RS_SENSOR_LONGITUDE" directorySegmentName="seg_0" id="62023E1A-C6E6-691B-9C52-3F2C235B409D">
+<sourceDDLFile>ddl.sql</sourceDDLFile>
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<importedID>405ECCA4-469A-86D4-E674-A39C9BB707A1</importedID>
+<rule><![CDATA[LONGITUDE BETWEEN -180 AND 180]]></rule>
+</tableCheckConstraint>
+</tableCheckConstraints>
+</Table>

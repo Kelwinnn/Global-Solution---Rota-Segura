@@ -1,0 +1,137 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Table class="oracle.dbtools.crest.model.design.relational.Table" directorySegmentName="seg_0" id="EF8BAEB0-5E64-1799-CFFA-BB50047878D8" name="T_RS_SENSOR_READING">
+<sourceDDLFile>ddl.sql</sourceDDLFile>
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<importedID>0B755CC2-06B0-A486-DD6B-D898A1FB75F1</importedID>
+<allowColumnReorder>false</allowColumnReorder>
+<existDependencyGenerateInDDl>true</existDependencyGenerateInDDl>
+<parsed>true</parsed>
+<columns itemClass="oracle.dbtools.crest.model.design.relational.Column">
+<Column name="ID_SENSOR_READING" id="4C716828-A4D1-CCB0-A003-572C1D339BB6">
+<sourceDDLFile>ddl.sql</sourceDDLFile>
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<importedID>736B65FD-3C16-084F-3816-158FE27D62DD</importedID>
+<use>0</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<domain>AE35D331-650D-9C11-AD9E-B174BA0A9824</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementColumn>true</autoIncrementColumn>
+<identityColumn>true</identityColumn>
+<autoIncrementGenerateAlways>true</autoIncrementGenerateAlways>
+<autoIncrementCycle>false</autoIncrementCycle>
+<autoIncrementOrder>false</autoIncrementOrder>
+</Column>
+<Column name="ID_SENSOR" id="6F96DD29-5348-4E48-B74A-6A07710FEAC3">
+<sourceDDLFile>ddl.sql</sourceDDLFile>
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<importedID>C5AD3CB2-E525-0A41-13CA-7CD22F4D38C5</importedID>
+<use>0</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<domain>AE35D331-650D-9C11-AD9E-B174BA0A9824</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+<notNullConstraintName>NN_RS_READING_ID_SENSOR</notNullConstraintName>
+<associations>
+<colAssociation fkAssociation="B2E3F36B-B036-D984-9079-EAEAC0900B65" referredColumn="AF61FD2F-9340-C207-1CC1-84A319DEF4E4"/>
+</associations>
+</Column>
+<Column name="RAIN_MM" id="1443CF6D-55FB-88A5-1DA6-C228B9735755">
+<sourceDDLFile>ddl.sql</sourceDDLFile>
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<importedID>322A95ED-E22C-50E3-230C-DC1AA5E723B8</importedID>
+<use>0</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<domain>4B31B1C7-DE9D-02D2-3E31-00DB600DF05B</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+<notNullConstraintName>NN_RS_READING_RAIN_MM</notNullConstraintName>
+</Column>
+<Column name="WATER_LEVEL_CM" id="D3E1F890-B7CB-11FB-02AF-5717B924983A">
+<sourceDDLFile>ddl.sql</sourceDDLFile>
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<importedID>F9675F49-3B23-3CC7-4802-F394C7A8051B</importedID>
+<use>0</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<domain>0879C837-6D0F-F9B2-C316-B9D295A556A9</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+<notNullConstraintName>NN_RS_READING_WATER_LEVEL_CM</notNullConstraintName>
+</Column>
+<Column name="MEASURED_AT" id="CFD24426-042E-0EDE-BF72-80900405CDF5">
+<sourceDDLFile>ddl.sql</sourceDDLFile>
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<importedID>A4BC68DB-4041-40E2-1D77-0CBDFEE035FB</importedID>
+<use>0</use>
+<logicalDatatype>LOGDT046</logicalDatatype>
+<domain>B5AA75F4-E3E2-0A55-73EE-A0B325FDD320</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+<notNullConstraintName>NN_RS_READING_MEASURED_AT</notNullConstraintName>
+</Column>
+</columns>
+<indexes itemClass="oracle.dbtools.crest.model.design.relational.Index">
+<ind_PK_UK id="97A32615-C21B-32DF-726F-3EA381F72BA9" name="PK_RS_READING">
+<sourceDDLFile>ddl.sql</sourceDDLFile>
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<importedID>25FEE59A-A71E-258F-2F17-E9F8D2AE4F32</importedID>
+<pk>true</pk>
+<indexState>Primary Constraint</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="4C716828-A4D1-CCB0-A003-572C1D339BB6"/>
+</indexColumnUsage>
+</ind_PK_UK>
+<ind_PK_UK id="585182E6-EDB0-280F-1A5C-C303B20CB2BB" name="UX_RS_READING_SENSOR_TIME">
+<sourceDDLFile>ddl.sql</sourceDDLFile>
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<importedID>7057462D-8A9A-150C-C5FD-8A125E9889D6</importedID>
+<indexExpression>ID_SENSOR, SYS_EXTRACT_UTC(MEASURED_AT)</indexExpression>
+<indexState>Unique Plain Index</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+</ind_PK_UK>
+<ind_PK_UK id="671BC920-4B5F-3F3D-7F48-0204A0BA41D7" name="FK_RS_READING_SENSOR">
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<indexState>Foreign Key</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="6F96DD29-5348-4E48-B74A-6A07710FEAC3"/>
+</indexColumnUsage>
+</ind_PK_UK>
+</indexes>
+<tableCheckConstraints itemClass="oracle.dbtools.crest.model.design.constraint.TableLevelConstraint">
+<tableCheckConstraint name="CK_RS_READING_RAIN_MM" directorySegmentName="seg_0" id="FC9569FD-7833-E5D6-DD20-9BDD7980A7AE">
+<sourceDDLFile>ddl.sql</sourceDDLFile>
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<importedID>64E6B253-2098-BE95-A860-B7117684CFF7</importedID>
+<rule><![CDATA[RAIN_MM >= 0]]></rule>
+</tableCheckConstraint>
+<tableCheckConstraint name="CK_RS_READING_WATER_LEVEL_CM" directorySegmentName="seg_0" id="809238AB-9771-EC27-FEF7-A3FAB62F019A">
+<sourceDDLFile>ddl.sql</sourceDDLFile>
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<importedID>3311B9D3-3E99-805D-B29C-BC0F859D1BC8</importedID>
+<rule><![CDATA[WATER_LEVEL_CM >= 0]]></rule>
+</tableCheckConstraint>
+</tableCheckConstraints>
+</Table>

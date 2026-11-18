@@ -1,0 +1,18 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<FKIndexAssociation class="oracle.dbtools.crest.model.design.relational.FKIndexAssociation" directorySegmentName="seg_0" id="92456ED1-67D0-CEAC-47D0-66A681D416D5" containerWithKeyObject="C87538E7-D617-D31E-A21E-53E60D08B4E5" localFKIndex="72702BDD-7AA2-FE78-02AB-B4E45BEBF760" name="FK_RS_SENSOR_AREA">
+<sourceDDLFile>ddl.sql</sourceDDLFile>
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<importedID>82493C69-518A-82F7-D1C3-C57C9B928388</importedID>
+<referredTableLongName>T_RS_AREA</referredTableLongName>
+<deleteRule>NO ACTION</deleteRule>
+<referredTableID>E626FD1B-484D-3EFD-4DA1-AB8C92A16CCC</referredTableID>
+<keyObject>1270E7AC-DD1F-F77B-DBC9-C0D0667AD74F</keyObject>
+<referredKeyID>1270E7AC-DD1F-F77B-DBC9-C0D0667AD74F</referredKeyID>
+<mandatory>true</mandatory>
+<refColNames>ID_AREA</refColNames>
+<transferable>true</transferable>
+<rely>false</rely>
+<columnDependencyConstraintGenerateInDDL>true</columnDependencyConstraintGenerateInDDL>
+</FKIndexAssociation>

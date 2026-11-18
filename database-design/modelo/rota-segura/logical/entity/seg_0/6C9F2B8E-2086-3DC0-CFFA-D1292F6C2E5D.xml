@@ -1,0 +1,114 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Entity class="oracle.dbtools.crest.model.design.logical.Entity" directorySegmentName="seg_0" id="6C9F2B8E-2086-3DC0-CFFA-D1292F6C2E5D" name="T RS SENSOR">
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:13:43 UTC</createdTime>
+<generatorID>C87538E7-D617-D31E-A21E-53E60D08B4E5</generatorID>
+<ownerDesignName>rota-segura</ownerDesignName>
+<engineerTo>
+<item key="076D908B-A3BE-45B2-54B8-19BEA3140E8F" value="true"/>
+</engineerTo>
+<adequatelyNormalized>NO</adequatelyNormalized>
+<expectedVolumes>0</expectedVolumes>
+<fwdEngineeringStrategyName>Single Table</fwdEngineeringStrategyName>
+<growthPercent>0</growthPercent>
+<growthType>Year</growthType>
+<maxVolumes>9999999</maxVolumes>
+<minVolumes>0</minVolumes>
+<normalForm>Third</normalForm>
+<attributes itemClass="oracle.dbtools.crest.model.design.logical.Attribute">
+<Attribute name="ID SENSOR" id="11703CD5-2AAD-4A8E-7F3E-13E21022E637">
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:13:43 UTC</createdTime>
+<generatorID>AF61FD2F-9340-C207-1CC1-84A319DEF4E4</generatorID>
+<ownerDesignName>rota-segura</ownerDesignName>
+<engineerTo>
+<item key="076D908B-A3BE-45B2-54B8-19BEA3140E8F" value="true"/>
+</engineerTo>
+<use>0</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<domain>AE35D331-650D-9C11-AD9E-B174BA0A9824</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="ID AREA" id="82BE58DA-EB92-19BF-A531-F492202086C8">
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:13:43 UTC</createdTime>
+<generatorID>E08252C2-28BE-5A9C-44D9-0271BC7AA50F</generatorID>
+<ownerDesignName>rota-segura</ownerDesignName>
+<engineerTo>
+<item key="076D908B-A3BE-45B2-54B8-19BEA3140E8F" value="true"/>
+</engineerTo>
+<referedAttribute>447F628C-2251-A56A-A6D8-BCE336F9A0B8</referedAttribute>
+<use>0</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<domain>AE35D331-650D-9C11-AD9E-B174BA0A9824</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="CODE" id="FE2E21D0-46F0-C193-9421-67329E29F749">
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:13:43 UTC</createdTime>
+<generatorID>C1CC0415-8462-9D47-1642-6B521D9E5D2F</generatorID>
+<ownerDesignName>rota-segura</ownerDesignName>
+<engineerTo>
+<item key="076D908B-A3BE-45B2-54B8-19BEA3140E8F" value="true"/>
+</engineerTo>
+<use>0</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<domain>5E73187E-0C3B-A8A8-D6E4-F485C6866732</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="LATITUDE" id="58295669-9CA3-8630-4FF4-2E5D5A3D54F0">
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:13:43 UTC</createdTime>
+<generatorID>C37C6E15-896A-F548-6B84-2D5075414AB2</generatorID>
+<ownerDesignName>rota-segura</ownerDesignName>
+<engineerTo>
+<item key="076D908B-A3BE-45B2-54B8-19BEA3140E8F" value="true"/>
+</engineerTo>
+<use>0</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<domain>EB4D33A4-387C-24D7-5B7C-BED1A048914D</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="LONGITUDE" id="271EF556-48EB-A457-3D1E-5108C0C17D32">
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:13:43 UTC</createdTime>
+<generatorID>931D27FC-E085-4723-3819-D78604E36656</generatorID>
+<ownerDesignName>rota-segura</ownerDesignName>
+<engineerTo>
+<item key="076D908B-A3BE-45B2-54B8-19BEA3140E8F" value="true"/>
+</engineerTo>
+<use>0</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<domain>EB4D33A4-387C-24D7-5B7C-BED1A048914D</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="STATUS" id="72D00EAD-5BFD-0393-FE91-EC0C358B22AD">
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:13:43 UTC</createdTime>
+<generatorID>EC0CDBE1-CB14-1B3D-4862-A5FCBE781670</generatorID>
+<ownerDesignName>rota-segura</ownerDesignName>
+<engineerTo>
+<item key="076D908B-A3BE-45B2-54B8-19BEA3140E8F" value="true"/>
+</engineerTo>
+<use>0</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<domain>29525E47-E795-1A97-C488-00DFAC25834C</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+</attributes>
+<identifiers itemClass="oracle.dbtools.crest.model.design.logical.CandidateKey">
+<identifier id="70A0F7F6-4447-64DF-5498-4357716511FE" name="PK RS SENSOR">
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:13:43 UTC</createdTime>
+<generatorID>E431DA82-D610-FB03-8B4F-B7D8107A7CA3</generatorID>
+<ownerDesignName>rota-segura</ownerDesignName>
+<engineerTo>
+<item key="076D908B-A3BE-45B2-54B8-19BEA3140E8F" value="true"/>
+</engineerTo>
+<pk>true</pk>
+<usedAttributes>
+<attributeRef>11703CD5-2AAD-4A8E-7F3E-13E21022E637</attributeRef>
+</usedAttributes>
+</identifier>
+</identifiers>
+</Entity>

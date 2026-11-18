@@ -1,0 +1,20 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Relation class="oracle.dbtools.crest.model.design.logical.Relation" name="FK_RS_SENSOR_AREA" directorySegmentName="seg_0" id="E08252C2-28BE-5A9C-44D9-0271BC7AA50F">
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:13:43 UTC</createdTime>
+<generatorID>92456ED1-67D0-CEAC-47D0-66A681D416D5</generatorID>
+<ownerDesignName>rota-segura</ownerDesignName>
+<engineerTo>
+<item key="076D908B-A3BE-45B2-54B8-19BEA3140E8F" value="true"/>
+</engineerTo>
+<sourcePk>E71F99EB-C776-97CE-D91F-55421A0E9A23</sourcePk>
+<identifying>false</identifying>
+<optionalSource>true</optionalSource>
+<optionalTarget>false</optionalTarget>
+<sourceCardinality>1</sourceCardinality>
+<sourceEntity>01C61D4F-4A60-A4EF-01E2-F57B96CB9862</sourceEntity>
+<targetCardinalityString>*</targetCardinalityString>
+<targetEntity>6C9F2B8E-2086-3DC0-CFFA-D1292F6C2E5D</targetEntity>
+<transferable>true</transferable>
+<deleteRule>NO ACTION</deleteRule>
+</Relation>

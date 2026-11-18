@@ -1,0 +1,140 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Entity class="oracle.dbtools.crest.model.design.logical.Entity" directorySegmentName="seg_0" id="01C61D4F-4A60-A4EF-01E2-F57B96CB9862" name="T RS AREA">
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:13:43 UTC</createdTime>
+<generatorID>E626FD1B-484D-3EFD-4DA1-AB8C92A16CCC</generatorID>
+<ownerDesignName>rota-segura</ownerDesignName>
+<engineerTo>
+<item key="076D908B-A3BE-45B2-54B8-19BEA3140E8F" value="true"/>
+</engineerTo>
+<adequatelyNormalized>NO</adequatelyNormalized>
+<expectedVolumes>0</expectedVolumes>
+<fwdEngineeringStrategyName>Single Table</fwdEngineeringStrategyName>
+<growthPercent>0</growthPercent>
+<growthType>Year</growthType>
+<maxVolumes>9999999</maxVolumes>
+<minVolumes>0</minVolumes>
+<normalForm>Third</normalForm>
+<attributes itemClass="oracle.dbtools.crest.model.design.logical.Attribute">
+<Attribute name="ID AREA" id="447F628C-2251-A56A-A6D8-BCE336F9A0B8">
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:13:43 UTC</createdTime>
+<generatorID>1F605372-44A4-CD07-85B4-8ED493E42F86</generatorID>
+<ownerDesignName>rota-segura</ownerDesignName>
+<engineerTo>
+<item key="076D908B-A3BE-45B2-54B8-19BEA3140E8F" value="true"/>
+</engineerTo>
+<use>0</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<domain>AE35D331-650D-9C11-AD9E-B174BA0A9824</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="NAME" id="4639C383-6628-B873-53BD-D3580E09C17C">
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:13:43 UTC</createdTime>
+<generatorID>BE4139C7-B141-E0D8-23C0-E20394182A80</generatorID>
+<ownerDesignName>rota-segura</ownerDesignName>
+<engineerTo>
+<item key="076D908B-A3BE-45B2-54B8-19BEA3140E8F" value="true"/>
+</engineerTo>
+<use>0</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<domain>13DF4B70-1FED-5203-DACE-00608D5C91ED</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="CITY" id="4688399E-8D02-6819-0A1E-4028C309E188">
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:13:43 UTC</createdTime>
+<generatorID>F4F9E4EA-FCD8-7628-18C1-6FD1B1F1CE13</generatorID>
+<ownerDesignName>rota-segura</ownerDesignName>
+<engineerTo>
+<item key="076D908B-A3BE-45B2-54B8-19BEA3140E8F" value="true"/>
+</engineerTo>
+<use>0</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<domain>980E44F4-6377-1E87-7B7C-5045FEA53EB9</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="DISTRICT" id="545528AE-D933-55EA-2B92-21F925DBE671">
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:13:43 UTC</createdTime>
+<generatorID>D0396BB6-BE81-18A0-6AFA-BBCE76098E88</generatorID>
+<ownerDesignName>rota-segura</ownerDesignName>
+<engineerTo>
+<item key="076D908B-A3BE-45B2-54B8-19BEA3140E8F" value="true"/>
+</engineerTo>
+<nullsAllowed>true</nullsAllowed>
+<use>0</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<domain>980E44F4-6377-1E87-7B7C-5045FEA53EB9</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="RISK TYPE" id="D0883BEA-8D2A-8F0C-AF91-6B8ABE3731A5">
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:13:43 UTC</createdTime>
+<generatorID>BA80C48A-BF00-A50C-661E-100D32AA934B</generatorID>
+<ownerDesignName>rota-segura</ownerDesignName>
+<engineerTo>
+<item key="076D908B-A3BE-45B2-54B8-19BEA3140E8F" value="true"/>
+</engineerTo>
+<use>0</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<domain>29525E47-E795-1A97-C488-00DFAC25834C</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="LATITUDE" id="4E2310A8-857B-138D-CE69-764775F88BF8">
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:13:43 UTC</createdTime>
+<generatorID>C3981CD2-1BBD-C6A7-21DC-CD1AE6441D38</generatorID>
+<ownerDesignName>rota-segura</ownerDesignName>
+<engineerTo>
+<item key="076D908B-A3BE-45B2-54B8-19BEA3140E8F" value="true"/>
+</engineerTo>
+<use>0</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<domain>EB4D33A4-387C-24D7-5B7C-BED1A048914D</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="LONGITUDE" id="30EB4582-E5B6-2DFF-5F20-B8E64201D0B2">
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:13:43 UTC</createdTime>
+<generatorID>527D3147-9589-AA2E-4F6F-AFE527C4F58F</generatorID>
+<ownerDesignName>rota-segura</ownerDesignName>
+<engineerTo>
+<item key="076D908B-A3BE-45B2-54B8-19BEA3140E8F" value="true"/>
+</engineerTo>
+<use>0</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<domain>EB4D33A4-387C-24D7-5B7C-BED1A048914D</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="RADIUS M" id="53F9CE46-A10C-35A2-6C3C-8A3448A22D00">
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:13:43 UTC</createdTime>
+<generatorID>28A535AF-1829-5B23-1C99-3E62B3CD5BFD</generatorID>
+<ownerDesignName>rota-segura</ownerDesignName>
+<engineerTo>
+<item key="076D908B-A3BE-45B2-54B8-19BEA3140E8F" value="true"/>
+</engineerTo>
+<use>0</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<domain>DF0BD0D9-F2D9-EBDD-7757-84A4702B5563</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+</attributes>
+<identifiers itemClass="oracle.dbtools.crest.model.design.logical.CandidateKey">
+<identifier id="E71F99EB-C776-97CE-D91F-55421A0E9A23" name="PK RS AREA">
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:13:43 UTC</createdTime>
+<generatorID>1270E7AC-DD1F-F77B-DBC9-C0D0667AD74F</generatorID>
+<ownerDesignName>rota-segura</ownerDesignName>
+<engineerTo>
+<item key="076D908B-A3BE-45B2-54B8-19BEA3140E8F" value="true"/>
+</engineerTo>
+<pk>true</pk>
+<usedAttributes>
+<attributeRef>447F628C-2251-A56A-A6D8-BCE336F9A0B8</attributeRef>
+</usedAttributes>
+</identifier>
+</identifiers>
+</Entity>

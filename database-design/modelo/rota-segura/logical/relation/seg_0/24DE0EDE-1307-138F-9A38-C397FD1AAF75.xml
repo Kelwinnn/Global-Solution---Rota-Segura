@@ -1,0 +1,20 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Relation class="oracle.dbtools.crest.model.design.logical.Relation" name="FK_RS_ASSISTED_AREA" directorySegmentName="seg_0" id="24DE0EDE-1307-138F-9A38-C397FD1AAF75">
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:13:43 UTC</createdTime>
+<generatorID>882AB8C9-BDA8-46FA-96B2-2A364CEE2D3E</generatorID>
+<ownerDesignName>rota-segura</ownerDesignName>
+<engineerTo>
+<item key="076D908B-A3BE-45B2-54B8-19BEA3140E8F" value="true"/>
+</engineerTo>
+<sourcePk>E71F99EB-C776-97CE-D91F-55421A0E9A23</sourcePk>
+<identifying>false</identifying>
+<optionalSource>true</optionalSource>
+<optionalTarget>false</optionalTarget>
+<sourceCardinality>1</sourceCardinality>
+<sourceEntity>01C61D4F-4A60-A4EF-01E2-F57B96CB9862</sourceEntity>
+<targetCardinalityString>*</targetCardinalityString>
+<targetEntity>D9B496AA-60BF-0E32-F236-06E9CD3BA88A</targetEntity>
+<transferable>true</transferable>
+<deleteRule>NO ACTION</deleteRule>
+</Relation>

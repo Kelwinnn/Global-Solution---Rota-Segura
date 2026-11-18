@@ -1,0 +1,13 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<OSDM_Design class="oracle.dbtools.crest.model.design.Design" name="rota-segura" id="EBE7BA50-4C07-81F3-91AC-253284E40523" version="3.5">
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:03:05 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<capitalNames>false</capitalNames>
+<designId>EBE7BA50-4C07-81F3-91AC-253284E40523</designId>
+<usedDesignStorageDescriptors>
+<designDescr class="oracle.dbtools.crest.model.design.Design$DesignStorageDesc" id="5EFB265D-25D7-A2AD-ED1E-BF2CED172AF3">
+<designStoragePath>/ddl</designStoragePath>
+</designDescr>
+</usedDesignStorageDescriptors>
+</OSDM_Design>

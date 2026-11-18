@@ -1,0 +1,120 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Table class="oracle.dbtools.crest.model.design.relational.Table" directorySegmentName="seg_0" id="F4AF4599-6FAA-DAA8-8492-530D364ED7E9" name="T_RS_GUARDIAN">
+<sourceDDLFile>ddl.sql</sourceDDLFile>
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<importedID>1EC92757-0D21-E7A5-0A99-FB5C0DB17013</importedID>
+<allowColumnReorder>false</allowColumnReorder>
+<existDependencyGenerateInDDl>true</existDependencyGenerateInDDl>
+<parsed>true</parsed>
+<columns itemClass="oracle.dbtools.crest.model.design.relational.Column">
+<Column name="ID_GUARDIAN" id="53FB2C39-2BEE-3542-F9F1-6044381631D9">
+<sourceDDLFile>ddl.sql</sourceDDLFile>
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<importedID>F995D525-1269-31C6-0147-177ABE1BB5C9</importedID>
+<use>0</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<domain>AE35D331-650D-9C11-AD9E-B174BA0A9824</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementColumn>true</autoIncrementColumn>
+<identityColumn>true</identityColumn>
+<autoIncrementGenerateAlways>true</autoIncrementGenerateAlways>
+<autoIncrementCycle>false</autoIncrementCycle>
+<autoIncrementOrder>false</autoIncrementOrder>
+</Column>
+<Column name="ID_ASSISTED_PERSON" id="3CF52A84-809B-4218-A344-1B318C0E7E1C">
+<sourceDDLFile>ddl.sql</sourceDDLFile>
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<importedID>2B545755-E166-E3B5-C681-4D663ACD17B5</importedID>
+<use>0</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<domain>AE35D331-650D-9C11-AD9E-B174BA0A9824</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+<notNullConstraintName>NN_RS_GUARDIAN_ASSISTED</notNullConstraintName>
+<associations>
+<colAssociation fkAssociation="F0CF06B3-6825-AD3C-A5B0-E605654DF412" referredColumn="08EBEDB7-83C4-1D7B-E03F-39B17561C056"/>
+</associations>
+</Column>
+<Column name="NAME" id="509B24BD-5004-B1EE-3289-DCCB41E8B1CC">
+<sourceDDLFile>ddl.sql</sourceDDLFile>
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<importedID>1F6E77CF-47D9-11ED-EB8B-BB576B846584</importedID>
+<use>0</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<domain>5E8528A1-B360-785A-EE8E-3ADE94304983</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+<notNullConstraintName>NN_RS_GUARDIAN_NAME</notNullConstraintName>
+</Column>
+<Column name="PHONE" id="B6234DE2-90A4-28D9-35F1-7B19DFF2688A">
+<sourceDDLFile>ddl.sql</sourceDDLFile>
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<importedID>B1A26C0A-2463-1F7A-BBA7-F0B98D2B9797</importedID>
+<use>0</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<domain>29525E47-E795-1A97-C488-00DFAC25834C</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+<notNullConstraintName>NN_RS_GUARDIAN_PHONE</notNullConstraintName>
+</Column>
+<Column name="RELATIONSHIP" id="B2A9B156-CD88-9F8C-81E1-3A94D5B140B0">
+<sourceDDLFile>ddl.sql</sourceDDLFile>
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<importedID>16646610-04C8-7BEA-7D1B-DCC698C19E77</importedID>
+<use>0</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<domain>7871DBF7-7DDD-6044-13DD-16160BB6A81D</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+<notNullConstraintName>NN_RS_GUARDIAN_RELATIONSHIP</notNullConstraintName>
+</Column>
+</columns>
+<indexes itemClass="oracle.dbtools.crest.model.design.relational.Index">
+<ind_PK_UK id="98ADB98F-A837-E21D-D0DB-3F40AB209B0C" name="PK_RS_GUARDIAN">
+<sourceDDLFile>ddl.sql</sourceDDLFile>
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<importedID>16277A97-9302-C995-89CC-30359C385E55</importedID>
+<pk>true</pk>
+<indexState>Primary Constraint</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="53FB2C39-2BEE-3542-F9F1-6044381631D9"/>
+</indexColumnUsage>
+</ind_PK_UK>
+<ind_PK_UK id="C7360DB8-9E14-595E-5917-C7C99749C405" name="IX_RS_GUARDIAN_ASSISTED">
+<sourceDDLFile>ddl.sql</sourceDDLFile>
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<importedID>42518523-E927-6399-9D5D-B91B06CFC3F2</importedID>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="3CF52A84-809B-4218-A344-1B318C0E7E1C"/>
+</indexColumnUsage>
+</ind_PK_UK>
+<ind_PK_UK id="17C4A7EA-FE3D-4B7A-3C1E-0FBAEB158BAB" name="FK_RS_GUARDIAN_ASSISTED">
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<indexState>Foreign Key</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="3CF52A84-809B-4218-A344-1B318C0E7E1C"/>
+</indexColumnUsage>
+</ind_PK_UK>
+</indexes>
+</Table>

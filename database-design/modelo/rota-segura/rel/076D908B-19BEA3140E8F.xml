@@ -1,0 +1,15 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<relationalModel class="oracle.dbtools.crest.model.design.relational.RelationalDesign" name="Relational_1" id="076D908B-A3BE-45B2-54B8-19BEA3140E8F" mainViewID="32D3CBF2-FEED-CB19-D038-87CF7B3520C9">
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:03:07 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<shouldBeOpen>false</shouldBeOpen>
+<selectedRDBMSSite>01F6E6D1-21D0-CFBD-ABDD-3988D1813575</selectedRDBMSSite>
+<importDDLFileStamps>
+<importDDLFileStamp class="oracle.dbtools.crest.imports.DDLFileStamp">
+<fileName>ddl.sql</fileName>
+<pathName>/home/kelwin/Desktop/Global-Solution---Rota-Segura/database-design</pathName>
+<dbType>17</dbType>
+</importDDLFileStamp>
+</importDDLFileStamps>
+</relationalModel>

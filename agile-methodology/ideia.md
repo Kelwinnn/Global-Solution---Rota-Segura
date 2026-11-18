@@ -38,6 +38,8 @@ Transformar o alerta de chuva em **ação**. A pessoa recebe a rota até um abri
 
 Um **mapa interativo** mostra as áreas, o nível de risco de cada uma e os abrigos.
 
+**Quem recebe no MVP:** as pessoas assistidas e os responsáveis cadastrados, que são os que têm telefone no sistema. O cadastro de qualquer morador da área para receber alertas fica para uma próxima versão.
+
 **Por que SMS:** funciona em qualquer celular, sem internet e sem instalar aplicativo, o que importa para o público idoso. No MVP o SMS é simulado: o sistema registra a mensagem e a tela mostra como se fosse o celular.
 
 **Por que sensores próprios, e não só a previsão do tempo:** a previsão diz que vai chover. O nível d'água medido na rua diz se a área já está alagando, e é isso que define a urgência de sair.

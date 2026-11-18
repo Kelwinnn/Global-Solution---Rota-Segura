@@ -7,6 +7,7 @@ Histórias no formato "Como <ator>, quero <ação>, para <benefício>", prioriza
 - **MVP:** as 11 histórias **Must** (marcadas com ★).
 - **Story Points:** estimados pela equipe em Planning Poker, na sequência de Fibonacci (roteiro em `planning-poker.md`). _A estimar._
 - **Situação:** pronto (API publicada no Render), a fazer.
+- **Morador no MVP:** quem recebe o alerta e o SMS são as pessoas assistidas e os responsáveis cadastrados (H08), os únicos com telefone no sistema. O cadastro de qualquer morador da área fica para uma próxima versão.
 
 ## Resumo
 
@@ -71,7 +72,7 @@ Como **operador do painel**, quero ver o nível de risco atual de cada área, pa
 
 Como **morador**, quero receber um alerta quando o risco da minha área chegar a médio, com atualizações a cada 15 minutos, para saber quando sair.
 
-- O alerta sai a partir do nível médio.
+- O alerta sai a partir do nível médio, para as pessoas assistidas e os responsáveis cadastrados na área.
 - Só um alerta ativo por área; ele encerra quando o risco volta a baixo (RN02).
 - Enquanto o alerta durar, o morador recebe o nível de risco a cada 15 minutos; quem ainda não está seguro recebe também a pergunta do check-in (RN07).
 - Quando o modelo de Data Science indicar alta chance de alagamento, sai um aviso antecipado para se preparar (regra a confirmar com o João Paulo).

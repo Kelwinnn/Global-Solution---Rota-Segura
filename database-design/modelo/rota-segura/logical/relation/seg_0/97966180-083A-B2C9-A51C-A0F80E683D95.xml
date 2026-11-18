@@ -1,0 +1,20 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Relation class="oracle.dbtools.crest.model.design.logical.Relation" name="FK_RS_READING_SENSOR" directorySegmentName="seg_0" id="97966180-083A-B2C9-A51C-A0F80E683D95">
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:13:43 UTC</createdTime>
+<generatorID>B2E3F36B-B036-D984-9079-EAEAC0900B65</generatorID>
+<ownerDesignName>rota-segura</ownerDesignName>
+<engineerTo>
+<item key="076D908B-A3BE-45B2-54B8-19BEA3140E8F" value="true"/>
+</engineerTo>
+<sourcePk>70A0F7F6-4447-64DF-5498-4357716511FE</sourcePk>
+<identifying>false</identifying>
+<optionalSource>true</optionalSource>
+<optionalTarget>false</optionalTarget>
+<sourceCardinality>1</sourceCardinality>
+<sourceEntity>6C9F2B8E-2086-3DC0-CFFA-D1292F6C2E5D</sourceEntity>
+<targetCardinalityString>*</targetCardinalityString>
+<targetEntity>32900D19-5F82-2806-752E-D94B9CAE2F58</targetEntity>
+<transferable>true</transferable>
+<deleteRule>NO ACTION</deleteRule>
+</Relation>

@@ -1,0 +1,179 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Table class="oracle.dbtools.crest.model.design.relational.Table" directorySegmentName="seg_0" id="E626FD1B-484D-3EFD-4DA1-AB8C92A16CCC" name="T_RS_AREA">
+<sourceDDLFile>ddl.sql</sourceDDLFile>
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<importedID>7B9A6B0F-3AF0-710C-F098-E7DD2FE06830</importedID>
+<allowColumnReorder>false</allowColumnReorder>
+<existDependencyGenerateInDDl>true</existDependencyGenerateInDDl>
+<parsed>true</parsed>
+<columns itemClass="oracle.dbtools.crest.model.design.relational.Column">
+<Column name="ID_AREA" id="1F605372-44A4-CD07-85B4-8ED493E42F86">
+<sourceDDLFile>ddl.sql</sourceDDLFile>
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<importedID>45A8A884-74FE-7313-C8DE-21FFDBC1F00F</importedID>
+<use>0</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<domain>AE35D331-650D-9C11-AD9E-B174BA0A9824</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementColumn>true</autoIncrementColumn>
+<identityColumn>true</identityColumn>
+<autoIncrementGenerateAlways>true</autoIncrementGenerateAlways>
+<autoIncrementCycle>false</autoIncrementCycle>
+<autoIncrementOrder>false</autoIncrementOrder>
+</Column>
+<Column name="NAME" id="BE4139C7-B141-E0D8-23C0-E20394182A80">
+<sourceDDLFile>ddl.sql</sourceDDLFile>
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<importedID>F245AAF2-77BF-8CC1-BE17-4C64D127701D</importedID>
+<use>0</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<domain>13DF4B70-1FED-5203-DACE-00608D5C91ED</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+<notNullConstraintName>NN_RS_AREA_NAME</notNullConstraintName>
+</Column>
+<Column name="CITY" id="F4F9E4EA-FCD8-7628-18C1-6FD1B1F1CE13">
+<sourceDDLFile>ddl.sql</sourceDDLFile>
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<importedID>CD005D3F-0669-0E37-FEB8-E84A7CA7FA64</importedID>
+<use>0</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<domain>980E44F4-6377-1E87-7B7C-5045FEA53EB9</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+<notNullConstraintName>NN_RS_AREA_CITY</notNullConstraintName>
+</Column>
+<Column name="DISTRICT" id="D0396BB6-BE81-18A0-6AFA-BBCE76098E88">
+<sourceDDLFile>ddl.sql</sourceDDLFile>
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<importedID>8CEE6E78-943F-702B-17AC-3C307C7CA1E1</importedID>
+<nullsAllowed>true</nullsAllowed>
+<use>0</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<domain>980E44F4-6377-1E87-7B7C-5045FEA53EB9</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="RISK_TYPE" id="BA80C48A-BF00-A50C-661E-100D32AA934B">
+<sourceDDLFile>ddl.sql</sourceDDLFile>
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<importedID>DF5F36B8-671F-0CC7-335F-CBDA7446F6C6</importedID>
+<use>0</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<domain>29525E47-E795-1A97-C488-00DFAC25834C</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+<notNullConstraintName>NN_RS_AREA_RISK_TYPE</notNullConstraintName>
+</Column>
+<Column name="LATITUDE" id="C3981CD2-1BBD-C6A7-21DC-CD1AE6441D38">
+<sourceDDLFile>ddl.sql</sourceDDLFile>
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<importedID>371060C1-8187-DDEC-655D-FA0D69AF9CA5</importedID>
+<use>0</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<domain>EB4D33A4-387C-24D7-5B7C-BED1A048914D</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+<notNullConstraintName>NN_RS_AREA_LATITUDE</notNullConstraintName>
+</Column>
+<Column name="LONGITUDE" id="527D3147-9589-AA2E-4F6F-AFE527C4F58F">
+<sourceDDLFile>ddl.sql</sourceDDLFile>
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<importedID>B9B2ABF4-7383-9920-DFDA-6854F441D6F2</importedID>
+<use>0</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<domain>EB4D33A4-387C-24D7-5B7C-BED1A048914D</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+<notNullConstraintName>NN_RS_AREA_LONGITUDE</notNullConstraintName>
+</Column>
+<Column name="RADIUS_M" id="28A535AF-1829-5B23-1C99-3E62B3CD5BFD">
+<sourceDDLFile>ddl.sql</sourceDDLFile>
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<importedID>C03E232C-F137-7544-8CCC-59242C3ADBDC</importedID>
+<use>0</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<domain>DF0BD0D9-F2D9-EBDD-7757-84A4702B5563</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+<notNullConstraintName>NN_RS_AREA_RADIUS_M</notNullConstraintName>
+</Column>
+</columns>
+<indexes itemClass="oracle.dbtools.crest.model.design.relational.Index">
+<ind_PK_UK id="1270E7AC-DD1F-F77B-DBC9-C0D0667AD74F" name="PK_RS_AREA">
+<sourceDDLFile>ddl.sql</sourceDDLFile>
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<importedID>0FA70702-7558-A906-7D6C-51083F72F7BE</importedID>
+<pk>true</pk>
+<indexState>Primary Constraint</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="1F605372-44A4-CD07-85B4-8ED493E42F86"/>
+</indexColumnUsage>
+</ind_PK_UK>
+<ind_PK_UK id="01BC3A3A-6543-D100-13F7-FA9FE9A7F4E3" name="UX_RS_AREA_NAME_CITY">
+<sourceDDLFile>ddl.sql</sourceDDLFile>
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<importedID>E952E206-2246-5E58-21EA-806574842766</importedID>
+<indexExpression>UPPER(NAME), UPPER(CITY)</indexExpression>
+<indexState>Unique Plain Index</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+</ind_PK_UK>
+</indexes>
+<tableCheckConstraints itemClass="oracle.dbtools.crest.model.design.constraint.TableLevelConstraint">
+<tableCheckConstraint name="CK_RS_AREA_RISK_TYPE" directorySegmentName="seg_0" id="2CFBF4A2-4AB2-3F50-CB03-B507AE944469">
+<sourceDDLFile>ddl.sql</sourceDDLFile>
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<importedID>6CE7BAA5-F448-F005-85F8-221C8CD0B5A3</importedID>
+<rule><![CDATA[RISK_TYPE IN ('FLOOD', 'LANDSLIDE')]]></rule>
+</tableCheckConstraint>
+<tableCheckConstraint name="CK_RS_AREA_LATITUDE" directorySegmentName="seg_0" id="2F905BAD-9C76-EC56-984B-74178709B8A1">
+<sourceDDLFile>ddl.sql</sourceDDLFile>
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<importedID>6D0DDC7D-DEC0-884F-9910-6521060B6248</importedID>
+<rule><![CDATA[LATITUDE BETWEEN -90 AND 90]]></rule>
+</tableCheckConstraint>
+<tableCheckConstraint name="CK_RS_AREA_LONGITUDE" directorySegmentName="seg_0" id="D587932D-20AD-4FA8-4264-5CE14137981E">
+<sourceDDLFile>ddl.sql</sourceDDLFile>
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<importedID>8F734EE2-B2FC-E816-0DDC-8A451B6B9314</importedID>
+<rule><![CDATA[LONGITUDE BETWEEN -180 AND 180]]></rule>
+</tableCheckConstraint>
+<tableCheckConstraint name="CK_RS_AREA_RADIUS_M" directorySegmentName="seg_0" id="B5F098E2-67CC-CEFE-6769-E7A4DE07B9F3">
+<sourceDDLFile>ddl.sql</sourceDDLFile>
+<createdBy>kelwin</createdBy>
+<createdTime>2026-11-18 12:10:09 UTC</createdTime>
+<ownerDesignName>rota-segura</ownerDesignName>
+<importedID>97AF9193-7CD2-EF86-77EE-9BBBBE005F8D</importedID>
+<rule><![CDATA[RADIUS_M BETWEEN 1 AND 2147483647]]></rule>
+</tableCheckConstraint>
+</tableCheckConstraints>
+</Table>
