@@ -41,6 +41,7 @@ O front é feito pelos três.
 
 - **API publicada:** https://global-solution-rota-segura.onrender.com
 - **Swagger UI:** https://global-solution-rota-segura.onrender.com/swagger-ui.html
+- **Serviço Python (rota segura e risco de alagamento):** https://rota-segura-python.onrender.com (`GET /health`, `POST /route`, `POST /risk`; documentação em `/docs`)
 - **Como executar a API:** [`domain-driven-design-java/docs/como-executar.md`](domain-driven-design-java/docs/como-executar.md)
 
 ## Dados
