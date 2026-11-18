@@ -11,7 +11,7 @@ O pacote `rota_dados/` reúne os scripts que preparam os dados.
 - **CGE:** PREFEITURA DE SÃO PAULO. Centro de Gerenciamento de Emergências Climáticas (CGE). Histórico de pontos de
   alagamento, https://www.cgesp.org/v3/alagamentos.jsp, 2016–2025, acesso em nov. 2026, raspagem automatizada (1 req./4 s).
 - **Reindesc:** CEMADEN. Registro de ocorrências de desastres (Reindesc): ocorrências hidrológicas e geológicas,
-  estado de SP, 2016–2026. Tabela exportada em nov. 2026. Disponível em: <LINK_REINDESC>.
+  estado de SP, 2016–2026. Tabela exportada em nov. 2026. Disponível em: https://reindesc.cemaden.gov.br/.
   Arquivo: dados/reindesc_ocorrencias_sp_2016_2026.csv.
 
 ## Premissas
