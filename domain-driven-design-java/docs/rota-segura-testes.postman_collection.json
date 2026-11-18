@@ -1,0 +1,1193 @@
+{
+  "info": {
+    "_postman_id": "5f0687f3-0973-5a2c-8848-5b91b6ca0afd",
+    "name": "Rota Segura - testes da API publicada",
+    "description": "Roteiro de testes da API no Render: rotas abertas, login com sessão e CSRF, privacidade das pessoas assistidas, rota segura até o abrigo (RF07) com o serviço Python e o cenário de chuva (RN05). Dados fictícios do dml.sql.\n\nAntes de rodar: feche o SQL Developer e a API local (o Oracle aceita uma única sessão). Defina user e pass num environment (ou com --env-var no Postman CLI); a senha nunca fica na coleção.\n\nA pasta 4 grava leituras de teste no Oracle e a pasta 5 cria e apaga uma área de teste.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "0. Acordar os serviços",
+      "item": [
+        {
+          "name": "API Java (Render)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v3/api-docs",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v3",
+                "api-docs"
+              ]
+            },
+            "description": "No plano gratuito, a primeira chamada depois de dormir demora de 30 a 60 s."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Serviço Python (Render)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{pythonUrl}}/health",
+              "host": [
+                "{{pythonUrl}}"
+              ],
+              "path": [
+                "health"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"mapa e modelo carregados\", () => {",
+                  "    const h = pm.response.json();",
+                  "    pm.expect(h.mapLoaded).to.be.true;",
+                  "    pm.expect(h.modelLoaded).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "description": "Feche o SQL Developer e a API local antes: a conta Oracle aceita uma única sessão."
+    },
+    {
+      "name": "1. Sem login",
+      "item": [
+        {
+          "name": "Áreas de risco (aberto)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/areas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "areas"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"10 áreas do dml.sql\", () => pm.expect(pm.response.json().length).to.be.at.least(10));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Abrigos com vagas livres (aberto)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/shelters",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "shelters"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status 200\", () => pm.response.to.have.status(200));",
+                  "const shelters = pm.response.json();",
+                  "pm.test(\"6 abrigos\", () => pm.expect(shelters.length).to.be.at.least(6));",
+                  "pm.test(\"um abrigo lotado (0 vagas)\", () => pm.expect(shelters.some(s => s.availableSpots === 0)).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Pessoas assistidas sem login: 401",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/assisted-people",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "assisted-people"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status 401\", () => pm.response.to.have.status(401));",
+                  "pm.test(\"ProblemDetail em português\", () => pm.expect(pm.response.json().title).to.eql(\"Login necessário\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Rota sem login: 401",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/assisted-people/1/route",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "assisted-people",
+                "1",
+                "route"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status 401\", () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "2. Login e token CSRF",
+      "item": [
+        {
+          "name": "Login com senha errada: 401",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{user}}\",\n  \"password\": \"senha-errada-de-teste\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (!pm.variables.get(\"user\") || !pm.variables.get(\"pass\")) {",
+                  "    throw new Error(\"Defina as variáveis user e pass (environment ou --env-var). Não grave a senha na coleção.\");",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status 401\", () => pm.response.to.have.status(401));",
+                  "pm.test(\"mensagem de login recusado\", () => pm.expect(pm.response.json().title).to.eql(\"Login não realizado\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{user}}\",\n  \"password\": \"{{pass}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (!pm.variables.get(\"user\") || !pm.variables.get(\"pass\")) {",
+                  "    throw new Error(\"Defina as variáveis user e pass (environment ou --env-var). Não grave a senha na coleção.\");",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Token CSRF",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/csrf",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "csrf"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status 200\", () => pm.response.to.have.status(200));",
+                  "const t = pm.response.json();",
+                  "pm.test(\"cabeçalho X-CSRF-TOKEN\", () => pm.expect(t.headerName).to.eql(\"X-CSRF-TOKEN\"));",
+                  "pm.collectionVariables.set(\"csrf\", t.token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Pessoas assistidas com login",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/assisted-people",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "assisted-people"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status 200\", () => pm.response.to.have.status(200));",
+                  "const people = pm.response.json();",
+                  "pm.test(\"6 pessoas, todas com responsável (RN03)\", () => {",
+                  "    pm.expect(people.length).to.be.at.least(6);",
+                  "    people.forEach(p => pm.expect(p.guardians.length).to.be.above(0));",
+                  "});",
+                  "pm.collectionVariables.set(\"beneditaId\", people.find(p => p.name === \"Benedita Moraes Lima\").id);",
+                  "pm.collectionVariables.set(\"antonioId\", people.find(p => p.name === \"Antônio Carvalho Nunes\").id);"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "3. Rota até o abrigo (RF07)",
+      "item": [
+        {
+          "name": "Benedita (Jardim Helena): rota encontrada",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/assisted-people/{{beneditaId}}/route",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "assisted-people",
+                "{{beneditaId}}",
+                "route"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status 200\", () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "const tries = Number(pm.collectionVariables.get(\"routeTries\") || 0);",
+                  "if (body.status === \"ROUTE_UNAVAILABLE\" && \"ROUTE_FOUND\" !== \"ROUTE_UNAVAILABLE\" && tries < 3) {",
+                  "    pm.collectionVariables.set(\"routeTries\", tries + 1);",
+                  "    console.log(\"Serviço Python acordando; nova tentativa em 20 s (\" + (tries + 1) + \"/3)\");",
+                  "    postman.setNextRequest(pm.info.requestName);",
+                  "    setTimeout(() => {}, 20000);",
+                  "    return;",
+                  "}",
+                  "pm.collectionVariables.set(\"routeTries\", 0);",
+                  "pm.test(\"status da rota = ROUTE_FOUND\", () => pm.expect(body.status).to.eql(\"ROUTE_FOUND\"));",
+                  "pm.test(\"sempre traz uma orientação (message)\", () => pm.expect(body.message).to.be.a(\"string\").and.not.empty);",
+                  "",
+                  "pm.test(\"abrigo com endereço do cadastro\", () => {",
+                  "    pm.expect(body.shelter).to.be.an(\"object\");",
+                  "    pm.expect(body.shelter.address).to.be.a(\"string\").and.not.empty;",
+                  "});",
+                  "pm.test(\"distância, tempo e caminho\", () => {",
+                  "    pm.expect(body.distanceMeters).to.be.above(0);",
+                  "    pm.expect(body.durationMin).to.be.above(0);",
+                  "    pm.expect(body.path.length).to.be.above(1);",
+                  "});",
+                  "console.log(\"Rota: \" + body.shelter.name + \" - \" + body.distanceMeters + \" m, \" + body.durationMin + \" min\");",
+                  "",
+                  "pm.collectionVariables.set(\"baseDistance\", body.distanceMeters);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Antônio (Poá): fora do bairro-piloto",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/assisted-people/{{antonioId}}/route",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "assisted-people",
+                "{{antonioId}}",
+                "route"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status 200\", () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "const tries = Number(pm.collectionVariables.get(\"routeTries\") || 0);",
+                  "if (body.status === \"ROUTE_UNAVAILABLE\" && \"OUTSIDE_PILOT_AREA\" !== \"ROUTE_UNAVAILABLE\" && tries < 3) {",
+                  "    pm.collectionVariables.set(\"routeTries\", tries + 1);",
+                  "    console.log(\"Serviço Python acordando; nova tentativa em 20 s (\" + (tries + 1) + \"/3)\");",
+                  "    postman.setNextRequest(pm.info.requestName);",
+                  "    setTimeout(() => {}, 20000);",
+                  "    return;",
+                  "}",
+                  "pm.collectionVariables.set(\"routeTries\", 0);",
+                  "pm.test(\"status da rota = OUTSIDE_PILOT_AREA\", () => pm.expect(body.status).to.eql(\"OUTSIDE_PILOT_AREA\"));",
+                  "pm.test(\"sempre traz uma orientação (message)\", () => pm.expect(body.message).to.be.a(\"string\").and.not.empty);",
+                  "",
+                  "pm.test(\"sem abrigo e sem caminho\", () => {",
+                  "    pm.expect(body.shelter).to.be.null;",
+                  "    pm.expect(body.path).to.be.an(\"array\").that.is.empty;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Pessoa inexistente: 404",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/assisted-people/99999/route",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "assisted-people",
+                "99999",
+                "route"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status 404\", () => pm.response.to.have.status(404));",
+                  "pm.test(\"detalhe em português\", () => pm.expect(pm.response.json().detail).to.include(\"não encontrada\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Id que não é número: 400",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/assisted-people/abc/route",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "assisted-people",
+                "abc",
+                "route"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status 400\", () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "4. Cenário de chuva (RN05)",
+      "item": [
+        {
+          "name": "Jardim Pantanal muito alto (7,5 cm)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/sensor-readings",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "sensor-readings"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sensorCode\": \"SEN-JP-001\",\n  \"rainMm\": 30.0,\n  \"waterLevelCm\": 7.5,\n  \"measuredAt\": \"{{$isoTimestamp}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status 201\", () => pm.response.to.have.status(201));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Nível de risco: Pantanal VERY_HIGH",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/areas/risk",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "areas",
+                "risk"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status 200\", () => pm.response.to.have.status(200));",
+                  "const area = pm.response.json().find(a => a.areaName === \"Beira-Rio do Jardim Pantanal\");",
+                  "pm.test(\"Beira-Rio do Jardim Pantanal: VERY_HIGH\", () => pm.expect(area.riskLevel).to.eql(\"VERY_HIGH\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Benedita: rota desviando do Pantanal",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/assisted-people/{{beneditaId}}/route",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "assisted-people",
+                "{{beneditaId}}",
+                "route"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status 200\", () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "const tries = Number(pm.collectionVariables.get(\"routeTries\") || 0);",
+                  "if (body.status === \"ROUTE_UNAVAILABLE\" && \"ROUTE_FOUND\" !== \"ROUTE_UNAVAILABLE\" && tries < 3) {",
+                  "    pm.collectionVariables.set(\"routeTries\", tries + 1);",
+                  "    console.log(\"Serviço Python acordando; nova tentativa em 20 s (\" + (tries + 1) + \"/3)\");",
+                  "    postman.setNextRequest(pm.info.requestName);",
+                  "    setTimeout(() => {}, 20000);",
+                  "    return;",
+                  "}",
+                  "pm.collectionVariables.set(\"routeTries\", 0);",
+                  "pm.test(\"status da rota = ROUTE_FOUND\", () => pm.expect(body.status).to.eql(\"ROUTE_FOUND\"));",
+                  "pm.test(\"sempre traz uma orientação (message)\", () => pm.expect(body.message).to.be.a(\"string\").and.not.empty);",
+                  "",
+                  "pm.test(\"abrigo com endereço do cadastro\", () => {",
+                  "    pm.expect(body.shelter).to.be.an(\"object\");",
+                  "    pm.expect(body.shelter.address).to.be.a(\"string\").and.not.empty;",
+                  "});",
+                  "pm.test(\"distância, tempo e caminho\", () => {",
+                  "    pm.expect(body.distanceMeters).to.be.above(0);",
+                  "    pm.expect(body.durationMin).to.be.above(0);",
+                  "    pm.expect(body.path.length).to.be.above(1);",
+                  "});",
+                  "console.log(\"Rota: \" + body.shelter.name + \" - \" + body.distanceMeters + \" m, \" + body.durationMin + \" min\");",
+                  "",
+                  "console.log(\"Antes: \" + pm.collectionVariables.get(\"baseDistance\") + \" m; com o Pantanal alagado: \" + body.distanceMeters + \" m\");"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Jardim Helena muito urgente (12 cm)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/sensor-readings",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "sensor-readings"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sensorCode\": \"SEN-JH-001\",\n  \"rainMm\": 45.0,\n  \"waterLevelCm\": 12.0,\n  \"measuredAt\": \"{{$isoTimestamp}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status 201\", () => pm.response.to.have.status(201));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Nível de risco: Jardim Helena VERY_URGENT",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/areas/risk",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "areas",
+                "risk"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status 200\", () => pm.response.to.have.status(200));",
+                  "const area = pm.response.json().find(a => a.areaName === \"Várzea do Jardim Helena\");",
+                  "pm.test(\"Várzea do Jardim Helena: VERY_URGENT\", () => pm.expect(area.riskLevel).to.eql(\"VERY_URGENT\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Benedita: sem rota segura (local alto)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/assisted-people/{{beneditaId}}/route",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "assisted-people",
+                "{{beneditaId}}",
+                "route"
+              ]
+            },
+            "description": "A própria área da pessoa só conta como alagada em MUITO URGENTE (decidido em 18/11)."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status 200\", () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "const tries = Number(pm.collectionVariables.get(\"routeTries\") || 0);",
+                  "if (body.status === \"ROUTE_UNAVAILABLE\" && \"NO_SAFE_ROUTE\" !== \"ROUTE_UNAVAILABLE\" && tries < 3) {",
+                  "    pm.collectionVariables.set(\"routeTries\", tries + 1);",
+                  "    console.log(\"Serviço Python acordando; nova tentativa em 20 s (\" + (tries + 1) + \"/3)\");",
+                  "    postman.setNextRequest(pm.info.requestName);",
+                  "    setTimeout(() => {}, 20000);",
+                  "    return;",
+                  "}",
+                  "pm.collectionVariables.set(\"routeTries\", 0);",
+                  "pm.test(\"status da rota = NO_SAFE_ROUTE\", () => pm.expect(body.status).to.eql(\"NO_SAFE_ROUTE\"));",
+                  "pm.test(\"sempre traz uma orientação (message)\", () => pm.expect(body.message).to.be.a(\"string\").and.not.empty);",
+                  "",
+                  "pm.test(\"sem abrigo e sem caminho\", () => {",
+                  "    pm.expect(body.shelter).to.be.null;",
+                  "    pm.expect(body.path).to.be.an(\"array\").that.is.empty;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Desfazer: Jardim Helena baixo (0,5 cm)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/sensor-readings",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "sensor-readings"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sensorCode\": \"SEN-JH-001\",\n  \"rainMm\": 0.0,\n  \"waterLevelCm\": 0.5,\n  \"measuredAt\": \"{{$isoTimestamp}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status 201\", () => pm.response.to.have.status(201));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Desfazer: Jardim Helena, segundo sensor, baixo (0,5 cm)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/sensor-readings",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "sensor-readings"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sensorCode\": \"SEN-JH-002\",\n  \"rainMm\": 0.0,\n  \"waterLevelCm\": 0.5,\n  \"measuredAt\": \"{{$isoTimestamp}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status 201\", () => pm.response.to.have.status(201));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Desfazer: Jardim Pantanal baixo (0,5 cm)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/sensor-readings",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "sensor-readings"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sensorCode\": \"SEN-JP-001\",\n  \"rainMm\": 0.0,\n  \"waterLevelCm\": 0.5,\n  \"measuredAt\": \"{{$isoTimestamp}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status 201\", () => pm.response.to.have.status(201));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Nível de risco de volta a baixo",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/areas/risk",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "areas",
+                "risk"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status 200\", () => pm.response.to.have.status(200));",
+                  "const area = pm.response.json().find(a => a.areaName === \"Várzea do Jardim Helena\");",
+                  "pm.test(\"Várzea do Jardim Helena: LOW\", () => pm.expect(area.riskLevel).to.eql(\"LOW\"));",
+                  "",
+                  "const jp = pm.response.json().find(a => a.areaName === \"Beira-Rio do Jardim Pantanal\");",
+                  "pm.test(\"Pantanal: LOW\", () => pm.expect(jp.riskLevel).to.eql(\"LOW\"));"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "description": "Leituras são abertas (sem login e sem token). Vale a leitura mais recente de cada sensor, então as leituras baixas do fim desfazem o cenário; de qualquer forma, elas saem da janela do nível de risco depois de 1 hora."
+    },
+    {
+      "name": "5. CSRF e logout",
+      "item": [
+        {
+          "name": "Criar área sem token: 403",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/areas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "areas"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Área de teste {{$timestamp}}\",\n  \"city\": \"São Paulo\",\n  \"district\": \"Jardim Helena\",\n  \"riskType\": \"FLOOD\",\n  \"latitude\": -23.485,\n  \"longitude\": -46.41,\n  \"radiusM\": 300\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status 403\", () => pm.response.to.have.status(403));",
+                  "pm.test(\"token CSRF inválido\", () => pm.expect(pm.response.json().title).to.eql(\"Token CSRF inválido\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Criar área com token: 201",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRF-TOKEN",
+                "value": "{{csrf}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/areas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "areas"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Área de teste {{$timestamp}}\",\n  \"city\": \"São Paulo\",\n  \"district\": \"Jardim Helena\",\n  \"riskType\": \"FLOOD\",\n  \"latitude\": -23.485,\n  \"longitude\": -46.41,\n  \"radiusM\": 300\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status 201\", () => pm.response.to.have.status(201));",
+                  "pm.test(\"cabeçalho Location\", () => pm.response.to.have.header(\"Location\"));",
+                  "pm.collectionVariables.set(\"testAreaId\", pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Apagar a área de teste: 204",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "X-CSRF-TOKEN",
+                "value": "{{csrf}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/areas/{{testAreaId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "areas",
+                "{{testAreaId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status 204\", () => pm.response.to.have.status(204));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Logout: 204",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-CSRF-TOKEN",
+                "value": "{{csrf}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/logout",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "logout"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status 204\", () => pm.response.to.have.status(204));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Rota depois do logout: 401",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/assisted-people/{{beneditaId}}/route",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "assisted-people",
+                "{{beneditaId}}",
+                "route"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status 401\", () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://global-solution-rota-segura.onrender.com"
+    },
+    {
+      "key": "pythonUrl",
+      "value": "https://rota-segura-python.onrender.com"
+    },
+    {
+      "key": "csrf",
+      "value": ""
+    },
+    {
+      "key": "beneditaId",
+      "value": ""
+    },
+    {
+      "key": "antonioId",
+      "value": ""
+    },
+    {
+      "key": "testAreaId",
+      "value": ""
+    },
+    {
+      "key": "baseDistance",
+      "value": ""
+    },
+    {
+      "key": "routeTries",
+      "value": "0"
+    }
+  ]
+}

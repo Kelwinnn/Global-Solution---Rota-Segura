@@ -127,6 +127,16 @@ Para rodar:
 
 Pode rodar mais de uma vez: cada execução usa a hora do momento. Antes, o banco precisa ter as áreas e os sensores do `dml.sql`.
 
+### Testes da API publicada (login, RF07 e cenário de chuva)
+
+A coleção `domain-driven-design-java/docs/rota-segura-testes.postman_collection.json` (29 requisições, com testes automáticos) confere as rotas abertas, o login com sessão e CSRF, a privacidade das pessoas assistidas, a rota até o abrigo (RF07) nos três resultados (rota encontrada, fora do bairro-piloto e sem rota segura) e o logout. A pasta 4 grava leituras de teste e as desfaz no fim; a pasta 5 cria e apaga uma área de teste. O usuário e a senha nunca ficam na coleção:
+
+```bash
+postman collection run domain-driven-design-java/docs/rota-segura-testes.postman_collection.json --env-var "user=<ADMIN_USERNAME>" --env-var "pass=<ADMIN_PASSWORD>"
+```
+
+Antes, feche o SQL Developer e a API local (o Oracle aceita uma única sessão).
+
 ## Como usar a API autenticada (resumo)
 
 1. `POST /api/auth/login` com `{"username": "...", "password": "..."}` (abre a sessão por cookie).
