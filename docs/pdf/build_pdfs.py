@@ -149,7 +149,8 @@ def put_images(rendered: str) -> str:
 
 def cover(subject: str, team_line: bool) -> str:
     rows = "".join(f"<tr><td>{n}</td><td>RM {rm}</td></tr>" for n, rm in MEMBERS)
-    team = '<p class="team"><b>Equipe:</b> Rota Segura</p>' if team_line else ""
+    team = ('<p class="team"><b>Solução:</b> Rota Segura<br><b>Equipe:</b> Rota Segura</p>' if team_line
+            else '<p class="team"><b>Solução:</b> Rota Segura</p>')
     return (f'<section class="cover"><p class="project">Rota Segura</p>'
             f'<p class="subject">{subject}</p>'
             f'<p class="event">Global Solution FIAP 2026.2 — CitizenTech</p>'
@@ -215,8 +216,9 @@ modelo = (md("Modelo feito no **Oracle SQL Developer Data Modeler** a partir do 
                "opcional (uma área *pode* ter sensores; todo sensor *precisa* de uma área). `#` marca o identificador e `*` "
                "os atributos obrigatórios. `T_RS_SHELTER` não se relaciona com as outras tabelas: a rota escolhe o abrigo "
                "mais próximo com vaga.")
-          + figure("database-design/modelo/ModeloLogico.png", "Modelo lógico (Oracle Data Modeler)")
-          + "<h2>Modelo relacional</h2>"
+          + figure("database-design/modelo/ModeloLogico.png", "Modelo lógico (Oracle Data Modeler)", "max-height: 112mm"))
+# O relacional (alto e estreito) fica numa página em pé, depois da página deitada do lógico
+relacional = ('<h2 style="break-before: page">Modelo relacional</h2>'
           + figure("database-design/modelo/ModeloRelacional.png", "Modelo relacional, com tipos, PKs, FKs e índices",
                    "max-height: 235mm"))
 db_sections = [
@@ -232,7 +234,8 @@ db_sections = [
 (OUT / "database.html").write_text(page("Rota Segura — Database Design", [
     cover("Database Design", True),
     toc([t for t, _ in db_sections]),
-    *[section(f"{i}. {t}", b) for i, (t, b) in enumerate(db_sections, 1)],
+    *[(f'<div class="landscape">{section(f"{i}. {t}", b)}</div>{relacional}' if t.startswith("Modelo lógico")
+       else section(f"{i}. {t}", b)) for i, (t, b) in enumerate(db_sections, 1)],
 ]), encoding="utf-8")
 
 # ---------------------------------------------------------------- Agile
@@ -261,17 +264,25 @@ casos = (figure(f"{AG}/img/casos-de-uso.png", "Diagrama de casos de uso (PlantUM
               "Cada caso de uso numerado corresponde à história de mesmo número no backlog (UC01 → H01). "
               "\"Fazer login\" é um caso de apoio, incluído pelos casos do operador. A pessoa assistida é um morador "
               "(generalização) e herda os casos de uso dele."))
+# Personas: entram do personas.md quando ele existir (escritas a partir das entrevistas reais)
+personas_file = ROOT / AG / "personas.md"
+personas_html = (md(re.sub(r"^\*\*Equipe:\*\*.*\n\n", "", strip_h1(personas_file.read_text(encoding="utf-8"))))
+                 if personas_file.exists() else
+                 '<div class="note">' + md("**Em elaboração.** As personas serão escritas a partir das entrevistas com "
+                                           "moradores e cuidadores das áreas de risco, sem dados pessoais reais.") + "</div>")
+# Link do vídeo: a linha "- **Link do vídeo:** ..." do pitch.md
+link_match = re.search(r"^- \*\*Link do vídeo:\*\* (.+)$", read(f"{AG}/pitch.md"), flags=re.M)
+video_link = link_match.group(1).strip() if link_match else "_a inserir_"
 ag_sections = [
     ("Apresentação da ideia", md(ideia)),
-    ("Personas", '<div class="note">' + md("**Em elaboração.** As personas serão escritas a partir das entrevistas com "
-                                            "moradores e cuidadores das áreas de risco, sem dados pessoais reais.") + "</div>"),
+    ("Personas", personas_html),
     ("Diagrama de casos de uso", casos),
     ("Backlog do produto", md(backlog)),
     ("Planning Poker", md("Os Story Points do backlog são estimados pela equipe em Planning Poker, na sequência de Fibonacci.")
                        + "<h2>Como a sessão funciona</h2>" + md(("### Abertura" + poker_how).replace("## 2. Para cada história", "### Para cada história"))
                        + "<h2>Folha de votação</h2>" + md(poker_sheet)),
     ("Protótipo de telas", "".join(prot_html_parts)),
-    ("Vídeo pitch", md("- **Link do vídeo (YouTube, não listado):** _a inserir_\n"
+    ("Vídeo pitch", md(f"- **Link do vídeo (YouTube, não listado):** {video_link}\n"
                        "- **Duração:** até 3 minutos, com narração dos três integrantes.\n"
                        "- **Conteúdo:** o problema, a solução e quem ela ajuda.")),
 ]

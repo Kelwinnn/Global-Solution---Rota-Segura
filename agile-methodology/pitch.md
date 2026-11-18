@@ -2,6 +2,7 @@
 
 - **Duração:** até 3 minutos. O texto tem cerca de 380 palavras, uns 2 min 40 s em ritmo calmo, com folga para as transições.
 - **Narração:** feita pelo grupo, dividida entre os três. A divisão abaixo é uma sugestão; troquem à vontade.
+- **Link do vídeo:** _a inserir_
 - **Publicação:** YouTube, como **não listado**. Antes de entregar, abram o link numa janela anônima para conferir.
 - **Imagens:** telas do protótipo no Figma (mapa, alerta com rota, check-in e painel), o Swagger da API no Render e, se quiserem, fotos públicas de alagamento na Zona Leste, com a fonte creditada.
 
@@ -21,7 +22,7 @@
 >
 > **João Paulo:** Além disso, um modelo treinado com dados de chuva do Cemaden e de alagamentos do CGE estima a chance de alagar antes de acontecer.
 >
-> **João Paulo:** Quando o risco chega a médio, o morador recebe um SMS com a rota mais segura até o abrigo mais próximo que ainda tem vaga. A rota nunca passa por rua alagada. Se não existir caminho seguro, a mensagem orienta procurar um lugar alto.
+> **João Paulo:** Quando o risco chega a médio, o morador recebe um SMS com a rota mais segura até o abrigo mais próximo que ainda tem vaga. A rota nunca passa por rua alagada. Se não existir caminho seguro, a mensagem orienta procurar um lugar alto. No piloto, a rota é calculada no Jardim Helena.
 >
 > **Kelwin:** É SMS porque funciona em qualquer celular, sem internet e sem instalar nada.
 

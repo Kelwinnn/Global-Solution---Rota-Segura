@@ -182,7 +182,7 @@ Resposta `200 OK` (trecho):
     "riskLevel": "VERY_URGENT",
     "waterLevelCm": 11.30,
     "sensorCode": "SEN-GRU-001",
-    "measuredAt": "2026-11-19T21:15:00Z"
+    "measuredAt": "2026-11-18T20:15:00Z"
   },
   {
     "areaId": 10,

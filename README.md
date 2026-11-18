@@ -28,7 +28,7 @@ O front é feito pelos três.
 
 | Pasta | Disciplina | O que faz |
 |---|---|---|
-| [`domain-driven-design-java/`](domain-driven-design-java/) | Domain Driven Design Java | API em Spring Boot (áreas de risco, sensores, leituras, nível de risco, abrigos e pessoas assistidas), publicada no Render. O front em React fica em `frontend/` |
+| [`domain-driven-design-java/`](domain-driven-design-java/) | Domain Driven Design Java | API em Spring Boot (áreas de risco, sensores, leituras, nível de risco, abrigos, pessoas assistidas e a rota segura até o abrigo pelo serviço Python), publicada no Render. O front em React fica em `frontend/` |
 | [`database-design/`](database-design/) | Database Design | Modelo de dados e scripts Oracle: `ddl.sql`, `dml.sql` e `dql.sql` |
 | [`agile-methodology/`](agile-methodology/) | Agile Methodology | Ideia, personas, casos de uso, backlog e protótipo |
 | [`data-science/`](data-science/) | Data Science | Modelo que estima a chance de alagamento a partir da chuva do Cemaden e dos alagamentos registrados pelo CGE |

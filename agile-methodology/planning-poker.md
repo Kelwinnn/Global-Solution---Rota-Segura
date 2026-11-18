@@ -11,7 +11,7 @@ Roteiro para a equipe estimar os **Story Points** do backlog (rubrica de Agile: 
 
 1. O facilitador explica que o ponto mede o **tamanho relativo** da história: esforço, complexidade e incerteza juntos, e não horas.
 2. **História de referência:** a equipe escolhe a primeira história a votar e combina o valor dela. Sugestão: a H01 (CRUD de áreas de risco), que já está pronta, todos conhecem e serve de régua para as outras. O valor é a equipe que define.
-3. Combinar a regra de desempate do passo 3.
+3. Combinar a regra de desempate (passos 4 a 6 de "Para cada história").
 
 ## 2. Para cada história (até 3 min)
 

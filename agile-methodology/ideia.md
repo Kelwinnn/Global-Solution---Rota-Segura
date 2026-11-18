@@ -32,9 +32,9 @@ Transformar o alerta de chuva em **ação**. A pessoa recebe a rota até um abri
 1. **Sensores de rua** medem a chuva (mm) e o nível d'água (cm) em cada área de risco.
 2. O sistema calcula o **nível de risco** da área: baixo, médio, alto, muito alto ou muito urgente. Um modelo de Data Science estima também a **chance de alagamento antes de acontecer** e, quando ela é alta, manda um SMS de preparação. O gatilho principal do alerta continua sendo o nível d'água medido. No teste com 2024 e 2025, dados que o modelo nunca tinha visto, ele avisou 75,7% dos dias de alagamento (28 de 37), com precisão de 40%. A regra simples "chuva de 23 mm ou mais" avisou 56,8%.
 3. A partir do risco médio, o morador recebe um **alerta por SMS**, com atualização a cada 15 minutos enquanto o risco durar.
-4. O alerta traz a **rota mais segura até o abrigo com vaga mais próximo**. A rota nunca passa por rua alagada e, se não houver rota segura, orienta procurar um local alto.
+4. O alerta traz a **rota mais segura até o abrigo com vaga mais próximo**. A rota nunca passa por rua alagada e, se não houver rota segura, orienta procurar um local alto. No MVP, a rota é calculada no bairro-piloto (Jardim Helena); fora dele, a mensagem orienta ir ao abrigo mais próximo ou a um local mais alto.
 5. A pessoa responde pelo SMS: **"Estou seguro"**, **"Estou a caminho de um local seguro"** ou **"Ainda não saí"**.
-6. Quem não responde em 15 minutos entra no **painel de prioridade de resgate**, e o responsável e os voluntários podem ser avisados.
+6. **Próxima etapa (Should):** quem não responder em 15 minutos vai entrar no **painel de prioridade de resgate**, e o responsável e os voluntários poderão ser avisados.
 
 Um **mapa interativo** mostra as áreas, o nível de risco de cada uma e os abrigos.
 

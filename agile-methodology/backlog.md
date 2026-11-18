@@ -6,7 +6,7 @@ Histórias no formato "Como <ator>, quero <ação>, para <benefício>", prioriza
 
 - **MVP:** as 11 histórias **Must** (marcadas com ★).
 - **Story Points:** estimados pela equipe em Planning Poker, na sequência de Fibonacci (roteiro em `planning-poker.md`). _A estimar._
-- **Situação:** pronto (API publicada no Render), a fazer.
+- **Situação:** pronto (API publicada no Render); pronto na API (a API já faz, mas faltam o SMS e a tela); a fazer; fora do escopo (Won't).
 - **Morador no MVP:** quem recebe o alerta e o SMS são as pessoas assistidas e os responsáveis cadastrados (H08), os únicos com telefone no sistema. O cadastro de qualquer morador da área fica para uma próxima versão.
 
 ## Resumo
@@ -19,7 +19,7 @@ Histórias no formato "Como <ator>, quero <ação>, para <benefício>", prioriza
 | H04 | UC04 | RF04 | Consultar nível de risco da área | Must | ★ | a estimar | pronto |
 | H05 | UC05 | RF05 | Receber alerta e atualizações | Must | ★ | a estimar | a fazer |
 | H06 | UC06 | RF06 | Cadastrar abrigo | Must | ★ | a estimar | pronto |
-| H07 | UC07 | RF07 | Receber rota segura até o abrigo | Must | ★ | a estimar | pronto na API (falta o SMS e a tela) |
+| H07 | UC07 | RF07 | Receber rota segura até o abrigo | Must | ★ | a estimar | pronto na API (consulta com login; falta o SMS e a tela) |
 | H08 | UC08 | RF08 | Cadastrar pessoa assistida e responsáveis | Must | ★ | a estimar | pronto |
 | H09 | UC09 | RF09 | Responder ao check-in | Must | ★ | a estimar | a fazer |
 | H10 | UC10 | RF12 | Receber mensagens por SMS | Must | ★ | a estimar | a fazer |
@@ -92,6 +92,7 @@ Como **morador**, quero receber a rota mais segura até o abrigo com vaga mais p
 - A rota nunca passa por rua alagada (RN05).
 - O destino é o abrigo mais próximo pela rota que ainda tenha vaga (RN06).
 - Sem rota segura, a orientação é ficar em local alto (e, quando houver o painel da H12, a pessoa entra nele).
+- No MVP, a rota só é calculada no bairro-piloto (Jardim Helena); fora dele, a orientação é ir ao abrigo mais próximo ou a um local mais alto.
 - Se o serviço de rota estiver fora do ar, o alerta sai mesmo assim, orientando ir ao abrigo ou a um local mais alto.
 
 ### ★ H08 — Cadastrar pessoa assistida e responsáveis (RF08, Must)

@@ -458,6 +458,9 @@ classDiagram
         +TIMEOUT
         +routeServiceRestClient() RestClient
     }
+    class RestClient {
+        <<Spring>>
+    }
     class RequestUris {
         <<util>>
         +toUri(String) URI
@@ -473,6 +476,7 @@ classDiagram
     GlobalExceptionHandler ..> InvalidFieldResponse
     OpenApiConfig ..> SecurityConfig
     OpenApiConfig ..> InvalidFieldResponse
+    RouteServiceConfig ..> RestClient
 ```
 
 - Todos os erros saem em `ProblemDetail` (RFC 7807), com textos em português: os do `GlobalExceptionHandler` e os 401/403 dos filtros de segurança (`SecurityProblemWriter`).

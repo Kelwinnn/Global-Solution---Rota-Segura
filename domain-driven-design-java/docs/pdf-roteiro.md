@@ -33,11 +33,7 @@ Na seção 6, os links precisam aparecer por extenso:
 
 ## Como montar
 
-1. Crie o documento no Word ou no Google Docs, com estilos de título (Título 1 para as seções), para o índice sair sozinho.
-2. Copie o texto dos arquivos `.md` de cada seção. As tabelas do Markdown podem ser coladas a partir da pré-visualização do IntelliJ ou do GitHub.
-3. **Imagens dos diagramas:** já estão em `img/`. Para gerar de novo depois de mudar um diagrama, use o mermaid-cli com `-s 2 -b white`.
-4. **Telas:** no Figma, selecione cada frame (1 a 4) e use **Export > PNG 2x**.
-5. Exporte em PDF e confira se os links abrem.
+O PDF sai pronto do script `docs/pdf/build_pdfs.py` (capa, índice e as 6 seções, a partir dos `.md` e das imagens em `img/`); os comandos estão no começo do script. Para mudar o PDF, mude o `.md` e gere de novo. As imagens dos diagramas são geradas com o mermaid-cli (`-s 2 -b white`) a partir dos blocos de `class-diagram.md` e `der.md`.
 
 ## Antes de enviar
 
