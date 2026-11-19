@@ -1,9 +1,9 @@
 # Rota Segura — roteiro do Planning Poker
 
-Roteiro para a equipe estimar os **Story Points** do backlog (rubrica de Agile: "Story Points por Planning Poker"). As histórias abaixo saem dos requisitos do `CLAUDE.md`. Os pontos ficam **vazios** até a votação: quem estima é a equipe.
+Roteiro para a equipe estimar os **Story Points** do backlog (rubrica de Agile: "Story Points por Planning Poker"). As histórias abaixo saem dos requisitos do `CLAUDE.md`. Os pontos foram votados pela equipe na sessão de 18/11.
 
 - **Participantes:** Kelwin Silva Bastos (RM 566348), João Paulo Santana Basta (RM 565383) e Vitor Mantovani Camilo (RM 556537).
-- **Facilitador:** _definir_ (lê as histórias, controla o tempo e anota os votos).
+- **Facilitador:** João Paulo (lê as histórias, controla o tempo e anota os votos).
 - **Duração:** cerca de 45 minutos (14 histórias, até 3 minutos cada, mais a abertura).
 - **Cartas:** sequência de Fibonacci: 1, 2, 3, 5, 8, 13, 21, mais `?` (não sei) e `☕` (pausa). Podem ser cartas de papel ou qualquer app de Planning Poker.
 
@@ -54,22 +54,22 @@ Uma linha por história. Anote o voto de cada um em cada rodada e o valor final.
 
 | ID | Rodada 1 (Kelwin / João Paulo / Vitor) | Rodada 2 | Rodada 3 | Story Points | Observação |
 |---|---|---|---|---|---|
-| H01 | / / | | | | referência |
-| H02 | / / | | | | |
-| H03 | / / | | | | |
-| H04 | / / | | | | |
-| H05 | / / | | | | |
-| H06 | / / | | | | |
-| H07 | / / | | | | |
-| H08 | / / | | | | |
-| H09 | / / | | | | |
-| H10 | / / | | | | |
-| H11 | / / | | | | |
-| H12 | / / | | | | |
-| H13 | / / | | | | |
-| H14 | / / | | | | |
+| H01 | 3 / 3 / 3 | | | 3 | referência |
+| H02 | 3 / 3 / 3 | | | 3 | igual à H01, com o vínculo à área |
+| H03 | 5 / 5 / 3 | | | 5 | vizinhos, fica o maior |
+| H04 | 5 / 3 / 5 | | | 5 | vizinhos, fica o maior |
+| H05 | 13 / 8 / 21 | 13 / 13 / 13 | | 13 | distantes na 1ª rodada; o 21 considerou os ciclos de 15 min e o aviso antecipado, o 8 não tinha contado o check-in repetido |
+| H06 | 2 / 2 / 2 | | | 2 | |
+| H07 | 8 / 8 / 5 | | | 8 | vizinhos, fica o maior (integração com o serviço Python) |
+| H08 | 5 / 3 / 5 | | | 5 | vizinhos, fica o maior |
+| H09 | 3 / 5 / 5 | | | 5 | vizinhos, fica o maior |
+| H10 | 8 / 3 / 5 | 5 / 5 / 5 | | 5 | distantes na 1ª rodada; o SMS é simulado, então só registra e mostra na tela |
+| H11 | 8 / 5 / 13 | 8 / 8 / 8 | | 8 | distantes na 1ª rodada; o 13 pensava em mapa com rota, o 5 não contou o acesso no celular |
+| H12 | 8 / 5 / 8 | | | 8 | vizinhos, fica o maior |
+| H13 | 5 / 5 / 3 | | | 5 | vizinhos, fica o maior |
+| H14 | 3 / 5 / 3 | | | 5 | vizinhos, fica o maior |
 
-**Total do MVP (H01 a H11):** ___ pontos. **Total geral:** ___ pontos.
+**Total do MVP (H01 a H11):** 62 pontos. **Total geral:** 80 pontos.
 
 ## 5. Depois da sessão
 
