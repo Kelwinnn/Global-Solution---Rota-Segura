@@ -5,7 +5,7 @@
 Histórias no formato "Como <ator>, quero <ação>, para <benefício>", priorizadas por **MoSCoW**. Cada história corresponde a um caso de uso do diagrama (`casos-de-uso.puml`), com o mesmo número.
 
 - **MVP:** as 11 histórias **Must** (marcadas com ★).
-- **Story Points:** estimados pela equipe em Planning Poker, na sequência de Fibonacci (roteiro em `planning-poker.md`). _A estimar._
+- **Story Points:** estimados pela equipe em Planning Poker, na sequência de Fibonacci (roteiro e folha de votação em `planning-poker.md`).
 - **Situação:** pronto (API publicada no Render); pronto na API (a API já faz, mas faltam o SMS e a tela); a fazer; fora do escopo (Won't).
 - **Morador no MVP:** quem recebe o alerta e o SMS são as pessoas assistidas e os responsáveis cadastrados (H08), os únicos com telefone no sistema. O cadastro de qualquer morador da área fica para uma próxima versão.
 
@@ -13,23 +13,23 @@ Histórias no formato "Como <ator>, quero <ação>, para <benefício>", prioriza
 
 | ID | Caso de uso | RF | História (resumo) | MoSCoW | MVP | Story Points | Situação |
 |---|---|---|---|---|---|---|---|
-| H01 | UC01 | RF01 | Gerenciar áreas de risco | Must | ★ | a estimar | pronto |
-| H02 | UC02 | RF02 | Cadastrar sensor numa área | Must | ★ | a estimar | pronto |
-| H03 | UC03 | RF03 | Enviar leitura do sensor | Must | ★ | a estimar | pronto |
-| H04 | UC04 | RF04 | Consultar nível de risco da área | Must | ★ | a estimar | pronto |
-| H05 | UC05 | RF05 | Receber alerta e atualizações | Must | ★ | a estimar | a fazer |
-| H06 | UC06 | RF06 | Cadastrar abrigo | Must | ★ | a estimar | pronto |
-| H07 | UC07 | RF07 | Receber rota segura até o abrigo | Must | ★ | a estimar | pronto na API (consulta com login; falta o SMS e a tela) |
-| H08 | UC08 | RF08 | Cadastrar pessoa assistida e responsáveis | Must | ★ | a estimar | pronto |
-| H09 | UC09 | RF09 | Responder ao check-in | Must | ★ | a estimar | a fazer |
-| H10 | UC10 | RF12 | Receber mensagens por SMS | Must | ★ | a estimar | a fazer |
-| H11 | UC11 | RF14 | Ver mapa interativo | Must | ★ | a estimar | a fazer |
-| H12 | UC12 | RF10 | Acompanhar painel de prioridade de resgate | Should | | a estimar | a fazer |
-| H13 | UC13 | RF11 | Receber aviso sobre o assistido | Should | | a estimar | a fazer |
-| H14 | UC14 | RF13 | Receber pedido de ajuda | Should | | a estimar | a fazer |
+| H01 | UC01 | RF01 | Gerenciar áreas de risco | Must | ★ | 3 | pronto |
+| H02 | UC02 | RF02 | Cadastrar sensor numa área | Must | ★ | 3 | pronto |
+| H03 | UC03 | RF03 | Enviar leitura do sensor | Must | ★ | 5 | pronto |
+| H04 | UC04 | RF04 | Consultar nível de risco da área | Must | ★ | 5 | pronto |
+| H05 | UC05 | RF05 | Receber alerta e atualizações | Must | ★ | 13 | a fazer |
+| H06 | UC06 | RF06 | Cadastrar abrigo | Must | ★ | 2 | pronto |
+| H07 | UC07 | RF07 | Receber rota segura até o abrigo | Must | ★ | 8 | pronto na API (consulta com login; falta o SMS e a tela) |
+| H08 | UC08 | RF08 | Cadastrar pessoa assistida e responsáveis | Must | ★ | 5 | pronto |
+| H09 | UC09 | RF09 | Responder ao check-in | Must | ★ | 5 | a fazer |
+| H10 | UC10 | RF12 | Receber mensagens por SMS | Must | ★ | 5 | a fazer |
+| H11 | UC11 | RF14 | Ver mapa interativo | Must | ★ | 8 | a fazer |
+| H12 | UC12 | RF10 | Acompanhar painel de prioridade de resgate | Should | | 8 | a fazer |
+| H13 | UC13 | RF11 | Receber aviso sobre o assistido | Should | | 5 | a fazer |
+| H14 | UC14 | RF13 | Receber pedido de ajuda | Should | | 5 | a fazer |
 | — | UC15 | RF15 | Integrar com a Defesa Civil | Won't | | — | fora do escopo |
 
-**Total do MVP:** a estimar. **Total geral:** a estimar.
+**Total do MVP:** 62 pontos. **Total geral:** 80 pontos.
 
 ## Histórias e critérios de aceite
 

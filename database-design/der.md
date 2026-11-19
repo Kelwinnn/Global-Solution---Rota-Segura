@@ -1,6 +1,6 @@
 # Rota Segura — DER (modelo de dados)
 
-Gerado a partir de `database-design/ddl.sql` (Oracle). Serve de referência para o modelo lógico do **Oracle Data Modeler** (exigido pela rubrica de Database Design) e para o PDF de DDD Java.
+Gerado a partir do `ddl.sql` (Oracle; em `database-design/` no repositório completo e em `docs/sql/` no repositório de DDD Java). Serve de referência para o modelo lógico do **Oracle Data Modeler** (exigido pela rubrica de Database Design) e para o PDF de DDD Java.
 
 No diagrama, o tipo de cada coluna aparece entre aspas (o Mermaid não aceita vírgula no nome do tipo). Todos os textos são `VARCHAR2(n CHAR)` e todas as chaves primárias são `NUMBER(19) GENERATED ALWAYS AS IDENTITY`. `UK` marca as colunas cobertas por um **índice único** (sobre `UPPER(...)`, para não diferenciar maiúsculas); não são constraints `UNIQUE`, e é assim que aparecem no Data Modeler.
 

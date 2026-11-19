@@ -39,6 +39,8 @@ O front é feito pelos três.
 
 ## Links
 
+- **Repositório da entrega de DDD Java:** https://github.com/Kelwinnn/Global-Solution---Rota-Segura-DDD-Java
+- **Vídeo pitch:** https://www.youtube.com/watch?v=taJKTqr1J7I
 - **API publicada:** https://global-solution-rota-segura.onrender.com
 - **Swagger UI:** https://global-solution-rota-segura.onrender.com/swagger-ui.html
 - **Serviço Python (rota segura e risco de alagamento):** https://rota-segura-python.onrender.com (`GET /health`, `POST /route`, `POST /risk`; documentação em `/docs`)

@@ -2,7 +2,7 @@
 
 - **Duração:** até 3 minutos. O texto tem cerca de 380 palavras, uns 2 min 40 s em ritmo calmo, com folga para as transições.
 - **Narração:** feita pelo grupo, dividida entre os três. A divisão abaixo é uma sugestão; troquem à vontade.
-- **Link do vídeo:** _a inserir_
+- **Link do vídeo:** https://www.youtube.com/watch?v=taJKTqr1J7I
 - **Publicação:** YouTube, como **não listado**. Antes de entregar, abram o link numa janela anônima para conferir.
 - **Imagens:** telas do protótipo no Figma (mapa, alerta com rota, check-in e painel), o Swagger da API no Render e, se quiserem, fotos públicas de alagamento na Zona Leste, com a fonte creditada.
 

@@ -2,7 +2,7 @@
 
 Gerada a partir dos controllers em `domain-driven-design-java/backend/src/main/java/br/com/rotasegura/controller/`.
 
-- **Documentação interativa (Swagger UI):** `<endereço da API>/swagger-ui.html` (redireciona para `/swagger-ui/index.html`); o JSON do OpenAPI fica em `/v3/api-docs`.
+- **Documentação interativa (Swagger UI):** `https://global-solution-rota-segura.onrender.com/swagger-ui.html` (redireciona para `/swagger-ui/index.html`); o JSON do OpenAPI fica em `/v3/api-docs`.
 - **Login:** `GET` e `HEAD` são abertos; `POST`, `PUT` e `DELETE` exigem login (sessão por cookie) e o cabeçalho `X-CSRF-TOKEN`. Exceções: o `POST` de login e o `POST` de leituras do sensor são abertos e sem token; `GET /api/auth/me` e **todas** as rotas de pessoas assistidas exigem login, inclusive o `GET` (dados pessoais).
 - **Erros:** sempre em `ProblemDetail` (`application/problem+json`) com `title` e `detail` em português. Status comuns a todas as rotas: **401** sem login nas rotas protegidas (sem login é sempre 401, mesmo que falte também o token), **403** com login mas sem token CSRF válido, **400** quando o `{id}` não é um número, **405** método não aceito, **415** corpo que não é JSON, **500** erro interno.
 - **Reservado:** `POST /api/check-ins` (RF09) já está liberado na segurança, mas ainda não existe: hoje responde 404.
@@ -110,7 +110,7 @@ Requisição:
 }
 ```
 
-Resposta `201 Created` (cabeçalho `Location: <endereço da API>/api/areas/11`; o id depende do banco):
+Resposta `201 Created` (cabeçalho `Location: https://global-solution-rota-segura.onrender.com/api/areas/11`; o id depende do banco):
 
 ```json
 {

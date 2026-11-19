@@ -39,7 +39,7 @@ A API resolve a base desse problema: guarda **onde** está o risco (áreas e sen
 
 Algumas escolhas técnicas seguem diretamente o problema:
 - **Nível de risco calculado na hora,** e não gravado: o mapa sempre mostra a situação atual, pela pior leitura recente da área.
-- **Leituras sem login:** na emergência, nada pode depender de cadastro ou senha. O risco dessa escolha, aceito para o MVP, está registrado em `docs/decisions.md`.
+- **Leituras sem login:** na emergência, nada pode depender de cadastro ou senha. O risco dessa escolha, aceito para o MVP, está registrado nas decisões do projeto (`docs/decisions.md` do repositório completo).
 - **Dados das pessoas assistidas só com login:** são pessoas vulneráveis, e seus dados pessoais ficam protegidos, mesmo sendo fictícios nos exemplos (LGPD).
 - **Vagas livres calculadas pela API:** a rota (RN06) precisa saber quais abrigos ainda têm vaga.
 

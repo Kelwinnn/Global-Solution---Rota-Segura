@@ -9,14 +9,15 @@ Checklist para quem envia (João Paulo). Prazo: **19/11/2026 às 23h55**. Commit
 - **Swagger UI:** https://global-solution-rota-segura.onrender.com/swagger-ui.html
 - **Serviço Python (Render):** https://rota-segura-python.onrender.com
 - **Protótipo (Figma):** https://www.figma.com/design/EyUuqW4eIANQGnDVRNSYdR
-- **Vídeo pitch (YouTube, não listado):** _a inserir_
+- **Vídeo pitch (YouTube, não listado):** https://www.youtube.com/watch?v=taJKTqr1J7I
+- **Repositório da entrega de DDD Java:** https://github.com/Kelwinnn/Global-Solution---Rota-Segura-DDD-Java
 
 ## Domain Driven Design Java (Kelwin)
 
 A rubrica pede um **ZIP** com:
 
 - [ ] `domain-driven-design-java/docs/Rota-Segura-DDD-Java.pdf`
-- [ ] o link do GitHub
+- [ ] o link do GitHub **do repositório de DDD**: https://github.com/Kelwinnn/Global-Solution---Rota-Segura-DDD-Java
 - [ ] o link do deploy (API Java no Render)
 
 Os links podem ir num `links.txt` dentro do ZIP e também no campo de texto do Portal, se houver.
@@ -32,7 +33,7 @@ Sem link para diagrama em nuvem: o modelo vai como imagem no PDF e como arquivo 
 ## Agile Methodology (Kelwin)
 
 - [ ] **Um único PDF:** `agile-methodology/Rota-Segura-Agile.pdf`. Mais de um PDF ou link externo no lugar do conteúdo tira 10 pontos.
-- [ ] Antes de enviar, confira no PDF: as personas preenchidas, os Story Points votados e o link do vídeo (hoje: _a inserir_).
+- [x] Personas, Story Points votados e link do vídeo já estão no PDF.
 
 ## Data Science e Dynamic Programming (João Paulo)
 

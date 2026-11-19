@@ -16,7 +16,8 @@ Instruções para rodar a API Java localmente e no Render (seção "Instruções
 
 ## Links
 
-- **Repositório:** https://github.com/Kelwinnn/Global-Solution---Rota-Segura (API em `domain-driven-design-java/backend/`)
+- **Repositório da entrega de DDD Java:** https://github.com/Kelwinnn/Global-Solution---Rota-Segura-DDD-Java (API em `backend/`, scripts em `docs/sql/`)
+- **Repositório completo do projeto:** https://github.com/Kelwinnn/Global-Solution---Rota-Segura (API em `domain-driven-design-java/backend/`, scripts em `database-design/`; é dele que o Render faz o deploy)
 - **API publicada:** https://global-solution-rota-segura.onrender.com
 - **Swagger UI:** https://global-solution-rota-segura.onrender.com/swagger-ui.html
 
@@ -42,9 +43,9 @@ O modelo está em `domain-driven-design-java/backend/.env.example`.
 A API **não cria tabelas**: ela sobe com `spring.jpa.hibernate.ddl-auto=validate` e só confere se as tabelas batem com as entidades. Por isso, antes da primeira execução:
 
 1. Abra o SQL Developer conectado ao Oracle da FIAP.
-2. Abra `database-design/ddl.sql` e rode com **Executar Script (F5)**.
-3. Abra `database-design/dml.sql` e rode com **Executar Script (F5)** (dados de exemplo simulados).
-4. Opcional: `database-design/dql.sql` traz as três consultas de exemplo.
+2. Abra o `ddl.sql` (`docs/sql/` no repositório de DDD; `database-design/` no repositório completo) e rode com **Executar Script (F5)**.
+3. Abra o `dml.sql`, na mesma pasta, e rode com **Executar Script (F5)** (dados de exemplo simulados).
+4. Opcional: o `dql.sql` traz as três consultas de exemplo.
 
 Os arquivos estão em UTF-8 (Ferramentas > Preferências > Ambiente > Codificação = UTF-8).
 
